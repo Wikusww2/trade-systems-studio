@@ -12,6 +12,8 @@ import { BilledVsLawfulDiff } from "./BilledVsLawfulDiff";
 import { PenaltyExposureLadder } from "./PenaltyExposureLadder";
 import { DifferentialistMatrix } from "./DifferentialistMatrix";
 import { ExecutiveDossierModal } from "./ExecutiveDossierModal";
+import { AmbientMotionBackground } from "./AmbientMotionBackground";
+import { FilmTheaterModal } from "./FilmTheaterModal";
 import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
 import { RollingNumber } from "./RollingNumber";
 import { sound } from "@/lib/audio";
@@ -41,6 +43,7 @@ import {
   Sparkles,
   Crosshair,
   Briefcase,
+  Film,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -94,6 +97,7 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
+  const [isFilmOpen, setIsFilmOpen] = useState<boolean>(false);
   const [selectedServiceTier, setSelectedServiceTier] = useState<string>("contingent_audit");
 
   // ICP Persona Lens ('cfo' | 'counsel')
@@ -185,7 +189,10 @@ export const DualPaneAuditViewer: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0E1015] text-slate-900 dark:text-[#E2E8F0] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0E1015] text-slate-900 dark:text-[#E2E8F0] flex flex-col font-sans transition-colors duration-200 relative">
+      {/* HyperFrames Ambient Living Background Depth Layer */}
+      <AmbientMotionBackground />
+
       {/* 1. TOP GLOBAL NAVIGATION & IDENTITY */}
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#14171E]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#262B35] px-4 sm:px-6 lg:px-8 py-3 shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -226,6 +233,19 @@ export const DualPaneAuditViewer: React.FC = () => {
                 Advisory Services
               </a>
             </nav>
+
+            {/* Keynote Film Teaser Button */}
+            <button
+              onClick={() => {
+                sound.click();
+                setIsFilmOpen(true);
+              }}
+              title="Watch 30s Keynote Film"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-900 dark:bg-[#1E2533] text-white hover:bg-slate-800 dark:hover:bg-[#252E3E] border border-slate-700 dark:border-slate-600 rounded-sm font-mono text-xs font-semibold transition-all shadow-xs"
+            >
+              <Film className="w-3.5 h-3.5 text-sky-400" />
+              <span className="hidden md:inline">Keynote Film</span>
+            </button>
 
             {/* Audio Micro-Haptics Toggle */}
             <button
@@ -370,6 +390,28 @@ export const DualPaneAuditViewer: React.FC = () => {
                 </>
               )}
             </p>
+
+            {/* Action Bar with Keynote Film Trigger */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <button
+                onClick={() => {
+                  sound.click();
+                  setIsFilmOpen(true);
+                }}
+                className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 dark:bg-[#1E2533] hover:bg-slate-800 dark:hover:bg-[#262F40] text-white font-mono text-xs font-bold rounded-sm border border-slate-700 transition-all shadow-xs group"
+              >
+                <Film className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+                <span>Watch 30s Keynote Film</span>
+              </button>
+
+              <a
+                href="#audit-workspace"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-[#151922] hover:bg-slate-200 dark:hover:bg-[#1C222E] text-slate-700 dark:text-slate-300 font-mono text-xs font-semibold rounded-sm border border-slate-300 dark:border-slate-800 transition-colors"
+              >
+                <span>Jump to Live Diagnostic Console</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
 
             {/* Proof Metrics Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-200 dark:border-[#262B35]/80">
@@ -722,6 +764,13 @@ export const DualPaneAuditViewer: React.FC = () => {
         isOpen={isDossierOpen}
         onClose={() => setIsDossierOpen(false)}
         auditData={auditData}
+      />
+
+      {/* 12. HYPERFRAMES KEYNOTE FILM THEATER MODAL */}
+      <FilmTheaterModal
+        isOpen={isFilmOpen}
+        onClose={() => setIsFilmOpen(false)}
+        onOpenLeadModal={() => setIsModalOpen(true)}
       />
     </div>
   );

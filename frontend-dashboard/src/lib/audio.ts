@@ -38,6 +38,10 @@ class SoundEngine {
     return this.isMuted;
   }
 
+  public click() {
+    this.playTick();
+  }
+
   // Soft mechanical tick (like an Apple Watch digital crown or Leica shutter)
   public playTick() {
     if (this.isMuted) return;
