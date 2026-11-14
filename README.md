@@ -165,6 +165,10 @@ npm run build
 cd backend-engine
 python benchmark.py
 # Outputs p50/p95/p99 breakdown to docs/PERFORMANCE_AND_SCALE_BENCHMARKS.md
+
+# 4. Run Executive CLI Multi-Statute Suite Evaluation (<1s)
+python demo.py
+# Executes all 6 statutory compliance audits with colorized telemetry & metrics
 ```
 
 ---
