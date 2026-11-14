@@ -391,6 +391,17 @@ export const DualPaneAuditViewer: React.FC = () => {
               <span>Dossier</span>
             </button>
 
+            {/* Interactive Technical Whitepaper Publication */}
+            <a
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/whitepaper/`}
+              onClick={() => sound.playTick()}
+              title="Read Interactive Systems Architecture Whitepaper"
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 dark:bg-[#1E2533] text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-[#252E3E] border border-slate-300 dark:border-slate-600 rounded-sm font-mono text-xs font-semibold transition-all shadow-xs"
+            >
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Whitepaper</span>
+            </a>
+
             {/* System Architecture & 40/40 Tests Button */}
             <button
               onClick={() => {
