@@ -18,6 +18,8 @@ import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
 import { RollingNumber } from "./RollingNumber";
 import { FunnelRedesignStudio } from "./funnel-variations/FunnelRedesignStudio";
 import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
+import { HtsClassifierViewer } from "./HtsClassifierViewer";
+import { CustomsValuationViewer } from "./CustomsValuationViewer";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
@@ -47,6 +49,8 @@ import {
   Briefcase,
   Film,
   Network,
+  Binary,
+  Landmark,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -98,6 +102,24 @@ const CONCEPTS = [
     statute: "31 CFR § 501 / OFAC 50% Rule",
     metricLabel: "Beneficial Ownership Traversed",
     metricColor: "text-rose-600 dark:text-rose-400",
+  },
+  {
+    id: "concept_5_hts",
+    name: "05 / HTS Classification Copilot",
+    shortTag: "GRI 1-6 COPILOT",
+    icon: <Binary className="w-4 h-4" />,
+    statute: "WCO GRI 1–6 & 19 CFR § 24.23",
+    metricLabel: "Path-Dependent Reasoning",
+    metricColor: "text-cyan-600 dark:text-cyan-400",
+  },
+  {
+    id: "concept_6_valuation",
+    name: "06 / CBP Assist & Valuation Register",
+    shortTag: "152.103 ASSISTS",
+    icon: <Landmark className="w-4 h-4" />,
+    statute: "19 CFR § 152.103 & 19 CFR § 162.74",
+    metricLabel: "Prior Disclosure Mitigation",
+    metricColor: "text-emerald-600 dark:text-emerald-400",
   },
 ];
 
@@ -620,10 +642,18 @@ export const DualPaneAuditViewer: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. DUAL-PANE AUDIT VIEWER WORKSPACE / SANCTIONS GRAPH */}
+      {/* 4. DUAL-PANE AUDIT VIEWER WORKSPACE / SANCTIONS GRAPH / HTS COPILOT / VALUATION REGISTER */}
       <section id="audit-workspace" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeConceptId === "concept_4_sanctions" ? (
           <SanctionsGraphViewer onOpenLeadModal={() => setIsModalOpen(true)} />
+        ) : activeConceptId === "concept_5_hts" ? (
+          <div className="h-[750px] border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden flex flex-col shadow-lg dark:shadow-2xl">
+            <HtsClassifierViewer onLeadTrigger={() => setIsModalOpen(true)} />
+          </div>
+        ) : activeConceptId === "concept_6_valuation" ? (
+          <div className="h-[750px] border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden flex flex-col shadow-lg dark:shadow-2xl">
+            <CustomsValuationViewer onLeadTrigger={() => setIsModalOpen(true)} />
+          </div>
         ) : (
           <div className="h-[750px] flex flex-col lg:flex-row border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden bg-white dark:bg-[#0E1015] shadow-lg dark:shadow-2xl">
           {/* LEFT PANE: Canvas PDF Viewer (hidden on mobile if mobileTab === 'findings') */}

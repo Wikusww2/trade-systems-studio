@@ -1,4 +1,12 @@
-import { AuditResult, KillShotMetrics, CorporateGraphResponse } from "@/lib/types";
+import {
+  AuditResult,
+  KillShotMetrics,
+  CorporateGraphResponse,
+  HTSClassificationResult,
+  AssistItem,
+  EntryValuationAudit,
+  PriorDisclosurePackage,
+} from "@/lib/types";
 
 export const AGGREGATE_METRICS: KillShotMetrics = {
   penalty_exposure_avoided: 125000.0,
@@ -478,4 +486,409 @@ export const MOCK_SANCTIONS_GRAPHS: Record<string, CorporateGraphResponse> = {
       compliance_action: "CLEAR_TRANSACTION",
     },
   },
+};
+
+// -------------------------------------------------------------
+// Pillar 3: HTS Classification Copilot Mock Presets
+// -------------------------------------------------------------
+export const MOCK_HTS_PRESETS: Record<string, HTSClassificationResult> = {
+  drone_motor: {
+    item_id: "hts-drone_motor",
+    product_title: "Industrial Brushless DC Drone Motor with Integrated Electronic Speed Controller (ESC)",
+    input_description: "High-torque 480W brushless DC motor for agricultural UAVs with integrated ESC module.",
+    country_of_origin: "CN",
+    declared_hts_code: "8543.70.9650",
+    classified_hts_code: "8501.31.8000",
+    confidence: 0.94,
+    requires_human_review: false,
+    chapter_notes_cited: [
+      "Section XVI Note 2 (Classification of Parts of Machines)",
+      "Chapter 85 Note 2 (Electric Motors & Generators)",
+      "WCO Explanatory Notes to Heading 85.01",
+    ],
+    gri_path: [
+      {
+        step_rule: "GRI 1",
+        heading_or_subheading: "Chapter 85",
+        description: "Electrical machinery and equipment and parts thereof",
+        legal_rationale: "Merchandise is primarily an electro-mechanical energy conversion apparatus covered by Chapter 85 terms.",
+        confidence: 0.99,
+        passed: true,
+        competing_candidates: ["Chapter 84 (Machinery and Mechanical Appliances)", "Chapter 88 (Aircraft & Drones)"],
+      },
+      {
+        step_rule: "GRI 1 / GRI 3(b)",
+        heading_or_subheading: "Heading 8501",
+        description: "Electric motors and generators (excluding generating sets)",
+        legal_rationale: "Composite article of an electric motor and speed controller. Under GRI 3(b), the motor provides the essential character of motive propulsion.",
+        confidence: 0.93,
+        passed: true,
+        competing_candidates: ["8504.40 (Static Converters / Speed Controllers)", "8543.70 (Electrical machines with individual functions)"],
+      },
+      {
+        step_rule: "GRI 6",
+        heading_or_subheading: "Subheading 8501.31",
+        description: "Other DC motors; DC generators: Of an output not exceeding 750 W",
+        legal_rationale: "Rated continuous output is 480 Watts, strictly satisfying the under-750W threshold of subheading 8501.31.",
+        confidence: 0.96,
+        passed: true,
+        competing_candidates: ["8501.32 (Output exceeding 750 W but not exceeding 75 kW)"],
+      },
+      {
+        step_rule: "Statutory Suffix",
+        heading_or_subheading: "8501.31.8000",
+        description: "Other DC motors of an output not exceeding 750 W: Other: Brushless",
+        legal_rationale: "Permanent magnet brushless architecture satisfies statistical annotation 8000.",
+        confidence: 0.95,
+        passed: true,
+        competing_candidates: ["8501.31.4000 (Motors of under 18.65 W)"],
+      },
+    ],
+    landed_cost: {
+      entered_value: "45000.00",
+      duty_rate_ad_valorem: "0.024",
+      customs_duty: "1080.00",
+      mpf_rate: "0.003464",
+      mpf_min_cap: "31.67",
+      mpf_max_cap: "614.35",
+      mpf_fee: "155.88",
+      hmf_rate: "0.00125",
+      hmf_fee: "56.25",
+      freight_and_insurance: "1500.00",
+      total_customs_cost: "1292.13",
+      total_landed_cost: "47792.13",
+    },
+  },
+  server_accelerator: {
+    item_id: "hts-server_accelerator",
+    product_title: "Enterprise AI Tensor Accelerator PCIe Card with Integrated Vapor Chamber",
+    input_description: "High-performance PCIe computation accelerator utilizing multicomponent integrated circuits (MCOs).",
+    country_of_origin: "TW",
+    declared_hts_code: "8471.80.1000",
+    classified_hts_code: "8542.31.0001",
+    confidence: 0.96,
+    requires_human_review: false,
+    chapter_notes_cited: [
+      "Chapter 84 Note 5(E) (Exclusion of machines incorporating ADP units)",
+      "Chapter 85 Note 9(b)(i) (Definition of Multicomponent Integrated Circuits MCOs)",
+      "WTO Information Technology Agreement (ITA-1) Zero-Duty Concession",
+    ],
+    gri_path: [
+      {
+        step_rule: "GRI 1",
+        heading_or_subheading: "Chapter 85",
+        description: "Electrical machinery and equipment and parts thereof",
+        legal_rationale: "Electronic integrated circuit assembly functioning as a tensor computation accelerator.",
+        confidence: 0.98,
+        passed: true,
+        competing_candidates: ["Chapter 84 (Heading 8471 ADP Machines)"],
+      },
+      {
+        step_rule: "GRI 1 / Note 5(E)",
+        heading_or_subheading: "Heading 8542",
+        description: "Electronic integrated circuits and microassemblies",
+        legal_rationale: "Chapter 84 Note 5(E) directs that electronic acceleration coprocessor cards are classified in their own heading. Heading 8542 specifically covers processors and controllers.",
+        confidence: 0.97,
+        passed: true,
+        competing_candidates: ["8473.30 (Parts and accessories of the machines of heading 8471)"],
+      },
+      {
+        step_rule: "GRI 6",
+        heading_or_subheading: "Subheading 8542.31",
+        description: "Processors and controllers, whether or not combined with memories, converters, logic circuits",
+        legal_rationale: "The neural processing core executes programmable arithmetic and matrix tensor multiplication.",
+        confidence: 0.96,
+        passed: true,
+        competing_candidates: ["8542.32 (Memories)", "8542.39 (Other)"],
+      },
+      {
+        step_rule: "Statutory Suffix",
+        heading_or_subheading: "8542.31.0001",
+        description: "Electronic integrated circuits: Processors: Microprocessors, having a 64-bit or greater architecture",
+        legal_rationale: "64-bit wide register addressing qualifies under statistical reporting number 0001.",
+        confidence: 0.95,
+        passed: true,
+        competing_candidates: [],
+      },
+    ],
+    landed_cost: {
+      entered_value: "120000.00",
+      duty_rate_ad_valorem: "0.000",
+      customs_duty: "0.00",
+      mpf_rate: "0.003464",
+      mpf_min_cap: "31.67",
+      mpf_max_cap: "614.35",
+      mpf_fee: "415.68",
+      hmf_rate: "0.00125",
+      hmf_fee: "150.00",
+      freight_and_insurance: "3200.00",
+      total_customs_cost: "565.68",
+      total_landed_cost: "123765.68",
+    },
+  },
+  ev_battery_pack: {
+    item_id: "hts-ev_battery_pack",
+    product_title: "Lithium Iron Phosphate (LiFePO4) Battery Module with Battery Management System (BMS)",
+    input_description: "48V 100Ah modular lithium energy storage accumulator pack for solar and commercial power backup.",
+    country_of_origin: "CN",
+    declared_hts_code: "8504.40.9580",
+    classified_hts_code: "8507.60.0000",
+    confidence: 0.91,
+    requires_human_review: false,
+    chapter_notes_cited: [
+      "Chapter 85 Note 2",
+      "US Note 20 to Subchapter III, Chapter 99 (Section 301 Tariff on Chinese Lithium-Ion Accumulators)",
+    ],
+    gri_path: [
+      {
+        step_rule: "GRI 1",
+        heading_or_subheading: "Heading 8507",
+        description: "Electric storage batteries, including separators therefor, whether or not rectangular",
+        legal_rationale: "Heading 8507 explicitly describes electric storage batteries and accumulators.",
+        confidence: 0.98,
+        passed: true,
+        competing_candidates: ["8504.40 (Power Supplies)"],
+      },
+      {
+        step_rule: "GRI 6",
+        heading_or_subheading: "Subheading 8507.60",
+        description: "Lithium-ion accumulators",
+        legal_rationale: "Electrochemical cell chemistry is based on lithium iron phosphate intercalation.",
+        confidence: 0.95,
+        passed: true,
+        competing_candidates: ["8507.20 (Other lead-acid accumulators)", "8507.80 (Other storage batteries)"],
+      },
+      {
+        step_rule: "Statutory Suffix",
+        heading_or_subheading: "8507.60.0000",
+        description: "Lithium-ion accumulators (including battery packs and modules)",
+        legal_rationale: "Complete modular pack assembly classified under 8507.60.0000.",
+        confidence: 0.92,
+        passed: true,
+        competing_candidates: [],
+      },
+    ],
+    landed_cost: {
+      entered_value: "85000.00",
+      duty_rate_ad_valorem: "0.034",
+      customs_duty: "2890.00",
+      mpf_rate: "0.003464",
+      mpf_min_cap: "31.67",
+      mpf_max_cap: "614.35",
+      mpf_fee: "294.44",
+      hmf_rate: "0.00125",
+      hmf_fee: "106.25",
+      freight_and_insurance: "2400.00",
+      total_customs_cost: "3290.69",
+      total_landed_cost: "90690.69",
+    },
+  },
+  smart_apparel_watch: {
+    item_id: "hts-smart_apparel_watch",
+    product_title: "Multi-Sensor Fitness Tracking Smartband with Heart Rate Sensor & Bluetooth Low Energy",
+    input_description: "Wearable wrist-worn fitness tracker with optical PPG biometric sensor, OLED display, and BLE sync.",
+    country_of_origin: "VN",
+    declared_hts_code: "9102.12.8000",
+    classified_hts_code: "8517.62.0050",
+    confidence: 0.81, // < 0.85 triggers visual uncertainty dashed amber border!
+    requires_human_review: true,
+    chapter_notes_cited: [
+      "Chapter 90 Note 1(h) (Exclusion of smart wearables with primary data communication)",
+      "Chapter 91 Note 1(n) (Exclusion of chronometers that are wireless transceivers)",
+      "CBP Ruling HQ H258957 (Classification of wearable fitness devices)",
+    ],
+    gri_path: [
+      {
+        step_rule: "GRI 1 / GRI 3(b)",
+        heading_or_subheading: "Heading 8517",
+        description: "Telephone sets... other apparatus for the transmission or reception of voice, images or other data",
+        legal_rationale: "Composite machine with optical heart rate monitor (Ch 90), time display (Ch 91), and BLE transmission (Ch 85). Essential character determined to be two-way wireless data connectivity.",
+        confidence: 0.82,
+        passed: true,
+        competing_candidates: ["9031.80 (Measuring or checking instruments)", "9102.12 (Wristwatches with opto-electronic display)"],
+      },
+      {
+        step_rule: "GRI 6",
+        heading_or_subheading: "Subheading 8517.62",
+        description: "Machines for the reception, conversion and transmission or regeneration of voice, images or other data",
+        legal_rationale: "Device converts photoplethysmography sensor pulses into encrypted digital BLE packets.",
+        confidence: 0.80,
+        passed: true,
+        competing_candidates: ["8517.69 (Other)"],
+      },
+      {
+        step_rule: "Statutory Suffix",
+        heading_or_subheading: "8517.62.0050",
+        description: "Machines for the reception, conversion and transmission of data: Other",
+        legal_rationale: "Qualified as other data communications hardware under 8517.62.0050.",
+        confidence: 0.81,
+        passed: true,
+        competing_candidates: [],
+      },
+    ],
+    landed_cost: {
+      entered_value: "35000.00",
+      duty_rate_ad_valorem: "0.000",
+      customs_duty: "0.00",
+      mpf_rate: "0.003464",
+      mpf_min_cap: "31.67",
+      mpf_max_cap: "614.35",
+      mpf_fee: "121.24",
+      hmf_rate: "0.00125",
+      hmf_fee: "43.75",
+      freight_and_insurance: "950.00",
+      total_customs_cost: "164.99",
+      total_landed_cost: "36114.99",
+    },
+  },
+};
+
+// -------------------------------------------------------------
+// Pillar 4: CBP Assist & Valuation Register Mock Fixtures
+// -------------------------------------------------------------
+export const MOCK_ASSIST_ITEMS: AssistItem[] = [
+  {
+    id: "AST-2026-001",
+    description: "Multi-Cavity Liquid Silicone Injection Tooling & Molds",
+    category: "tooling_dies_molds",
+    supplier_name: "Dongguan Precision Tooling Co., Ltd.",
+    country_of_origin: "CN",
+    total_acquisition_cost: "185000.00",
+    anticipated_total_units: 100000,
+    units_shipped_to_date: 15000,
+    amortization_method: "units_produced",
+    is_declared_to_cbp: false,
+    per_unit_amortized_cost: "1.85",
+    remaining_unamortized_cost: "157250.00",
+  },
+  {
+    id: "AST-2026-002",
+    description: "Custom ASIC Firmware & Overseas PCB Micro-Architecture Layout",
+    category: "foreign_engineering_design",
+    supplier_name: "Kyoto Micro-Embedded Labs",
+    country_of_origin: "JP",
+    total_acquisition_cost: "120000.00",
+    anticipated_total_units: 60000,
+    units_shipped_to_date: 10000,
+    amortization_method: "units_produced",
+    is_declared_to_cbp: false,
+    per_unit_amortized_cost: "2.00",
+    remaining_unamortized_cost: "100000.00",
+  },
+  {
+    id: "AST-2026-003",
+    description: "Specialized CNC Milling Fixtures & Progressive Stamping Dies",
+    category: "tooling_dies_molds",
+    supplier_name: "Bavaria Precision Machining GmbH",
+    country_of_origin: "DE",
+    total_acquisition_cost: "95000.00",
+    anticipated_total_units: 50000,
+    units_shipped_to_date: 50000,
+    amortization_method: "first_entry",
+    is_declared_to_cbp: true,
+    per_unit_amortized_cost: "1.90",
+    remaining_unamortized_cost: "0.00",
+  },
+];
+
+export const MOCK_VALUATION_AUDIT: EntryValuationAudit = {
+  entry_number: "CBP-7501-84920184",
+  importer_of_record: "Pacific Tech Imports LLC (EIN 94-8291048)",
+  declared_transaction_value: "450000.00",
+  duty_rate_ad_valorem: "0.054",
+  invoice_incoterm: "CIF Los Angeles",
+  international_freight_in_invoice: "24500.00",
+  marine_insurance_in_invoice: "3200.00",
+  improper_cif_overvaluation: "27700.00",
+  assists_omitted_cost: "57750.00",
+  adjusted_lawful_dutiable_value: "480050.00",
+  lawful_duty_due: "25922.70",
+  declared_duty_paid: "24300.00",
+  duty_underpayment: "1622.70",
+  statutory_interest_19usc1505: "85.19",
+  negligence_penalty_exposure: "3245.40",
+  gross_negligence_penalty_exposure: "6490.80",
+  prior_disclosure_tender_amount: "1707.89",
+  total_liability_avoided: "4782.91",
+  assists_audited: MOCK_ASSIST_ITEMS,
+};
+
+export const MOCK_PRIOR_DISCLOSURE: PriorDisclosurePackage = {
+  filing_reference_id: "PD-84920184-20261114",
+  port_of_entry: "Los Angeles / Long Beach (2704)",
+  addressed_to: "Port Director & FP&F Officer, Port of Los Angeles / Long Beach (2704)",
+  statutory_statutes_cited: [
+    "19 U.S.C. § 1401a (Value of Merchandise)",
+    "19 CFR § 152.103 (Transaction Value)",
+    "19 U.S.C. § 1592(c)(4) (Prior Disclosure Mitigation)",
+    "19 CFR § 162.74 (Prior Disclosure Procedures)",
+    "19 U.S.C. § 1505 (Statutory Interest)",
+  ],
+  narrative_explanation: "Voluntary prior disclosure of omitted tooling and engineering assists on entry summary.",
+  affected_entries: ["CBP-7501-84920184"],
+  actual_duty_loss: "1622.70",
+  interest_tender_amount: "85.19",
+  total_tender_check: "1707.89",
+  letter_text: `FORMAL PRIOR DISCLOSURE UNDER 19 CFR § 162.74
+AND 19 U.S.C. § 1592(c)(4)
+
+DATE: November 14, 2026
+REFERENCE: PD-84920184-20261114
+
+TO:
+Port Director, U.S. Customs and Border Protection
+Fines, Penalties, and Forfeitures Officer
+Port of Los Angeles / Long Beach (2704)
+
+FROM:
+TradeTech Systems Studio / Special Customs Counsel
+On Behalf of Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
+
+SUBJECT: Prior Disclosure of Inadvertent Valuation Understatement Pertaining to Assists
+         Under 19 U.S.C. § 1401a and 19 CFR § 152.103 on Entry #CBP-7501-84920184
+
+1. STATUTORY NOTICE OF VOLUNTARY DISCLOSURE
+Pursuant to Section 592(c)(4) of the Tariff Act of 1930, as amended (19 U.S.C. § 1592(c)(4)),
+and Section 162.74 of the Customs Regulations (19 CFR § 162.74), the Importer of Record
+hereby formally discloses circumstances of a violation of 19 U.S.C. § 1592 prior to, or without
+knowledge of, the formal commencement of an investigation by U.S. Customs and Border Protection.
+
+2. AFFECTED MERCHANDISE AND ENTRY IDENTIFICATION
+- Entry Number: CBP-7501-84920184
+- Declared Transaction Value: $450,000.00 USD
+- Port of Entry: Los Angeles / Long Beach (2704)
+- Applicable HTS General Duty Rate: 5.40%
+
+3. NARRATIVE EXPLANATION OF CIRCUMSTANCES
+During an internal compliance review conducted via TradeTech Systems Studio's Autonomous
+Valuation Ledger, the Importer identified that certain assists provided to the foreign manufacturer
+(specifically tools, dies, molds, and foreign engineering design qualifying under 19 U.S.C. § 1401a(h)(1)(A))
+were inadvertently omitted from the dutiable value declared upon entry.
+
+Furthermore, commercial invoice review indicates that CIF ocean freight of $24,500.00
+and marine insurance of $3,200.00 were improperly included in the entered
+value contrary to 19 CFR § 152.103.
+
+4. STATUTORY RECONCILIATION & MATHEMATICAL DETERMINATION (100% PYTHON DECIMAL)
+- Declared Transaction Value:               $450,000.00
+- Less: Excludable Ocean Freight/Insurance: -$27,700.00
+- Plus: Unapportioned Statutory Assists:    +$57,750.00
+-------------------------------------------------------------------------
+- Adjusted Lawful Dutiable Value:           $480,050.00
+- Lawful Customs Duty Due:                  $25,922.70
+- Customs Duty Previously Tendered:         $24,300.00
+-------------------------------------------------------------------------
+- ACTUAL DUTY LOSS / UNDERPAYMENT:          $1,622.70
+- STATUTORY INTEREST DUE (19 U.S.C. § 1505): $85.19
+=========================================================================
+- TOTAL TENDER CHECK ENCLOSED:              $1,707.89
+
+5. PENALTY MITIGATION EFFECTUATION
+Under 19 U.S.C. § 1592(c)(4), upon tender of the actual duty loss plus statutory interest,
+all civil monetary penalties under 19 U.S.C. § 1592 (including gross negligence exposure of
+$6,490.80) are statutorily barred.
+
+Respectfully submitted,
+TradeTech Systems Studio Compliance Automation Engine
+Counsel of Record for Pacific Tech Imports LLC (EIN 94-8291048)`,
 };
