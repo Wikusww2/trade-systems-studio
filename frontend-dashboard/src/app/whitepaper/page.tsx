@@ -39,7 +39,7 @@ export default function WhitepaperPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-[#F8FAFC] selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-transparent text-[#F8FAFC] selection:bg-cyan-500 selection:text-black">
       {/* Top Sticky Header */}
       <header className="sticky top-0 z-40 bg-[#0F172A]/90 backdrop-blur-md border-b border-[#1F2937] px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">

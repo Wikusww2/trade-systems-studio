@@ -9,7 +9,6 @@ import { LeadCaptureModal } from "./LeadCaptureModal";
 import { BilledVsLawfulDiff } from "./BilledVsLawfulDiff";
 import { PenaltyExposureLadder } from "./PenaltyExposureLadder";
 import { ExecutiveDossierModal } from "./ExecutiveDossierModal";
-import { AmbientMotionBackground } from "./AmbientMotionBackground";
 import { FilmTheaterModal } from "./FilmTheaterModal";
 import { RollingNumber } from "./RollingNumber";
 import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
@@ -281,10 +280,7 @@ export const DualPaneAuditViewer: React.FC = () => {
     null;
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0B0F19] text-slate-100 flex flex-col font-sans transition-colors duration-200 relative selection:bg-blue-600 selection:text-white">
-      {/* Subtle Static Dot Grid Background */}
-      <AmbientMotionBackground />
-
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-transparent text-slate-100 flex flex-col font-sans transition-colors duration-200 relative selection:bg-blue-600 selection:text-white">
       {/* 1. STICKY MINIMALIST DEVELOPER HEADER (56px) */}
       <header className="sticky top-0 z-40 bg-[#0F172A]/90 backdrop-blur-md border-b border-[#1F2937] px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full max-w-full overflow-hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
