@@ -51,9 +51,9 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#121212] text-[#E2E8F0] overflow-hidden">
+    <div className="flex-1 flex flex-col bg-[#0B0F19] text-[#F8FAFC] overflow-hidden">
       {/* Top Controller Bar */}
-      <div className="border-b border-[#2A2F3A] bg-[#161920]/90 backdrop-blur px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="border-b border-[#1F2937] bg-[#0F172A]/90 backdrop-blur px-6 py-4 flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
@@ -77,7 +77,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                 className={`px-3 py-1.5 text-xs font-mono font-medium rounded transition-all flex items-center gap-2 border ${
                   isActive
                     ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-sm"
-                    : "bg-[#1A1D24] text-[#94A3B8] border-[#2A2F3A] hover:border-slate-600 hover:text-white"
+                    : "bg-[#0F172A] text-[#94A3B8] border-[#1F2937] hover:border-slate-600 hover:text-white"
                 }`}
               >
                 <span>{opt.label}</span>
@@ -95,7 +95,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
         {/* Left Column: WCO GRI Hierarchical Decision Tree */}
         <div className="lg:col-span-8 space-y-6">
           {/* Header Card */}
-          <div className="p-5 rounded-lg border border-[#2A2F3A] bg-[#1A1D24] relative overflow-hidden">
+          <div className="p-5 rounded-lg border border-[#1F2937] bg-[#0F172A] relative overflow-hidden">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-1.5 max-w-xl">
                 <div className="flex items-center gap-2.5">
@@ -168,8 +168,8 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                     }}
                     className={`p-4 rounded-lg border transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-[#1E232E] border-cyan-500/60 shadow-lg shadow-cyan-950/20"
-                        : "bg-[#1A1D24] border-[#2A2F3A] hover:border-slate-600"
+                        ? "bg-[#1E293B] border-cyan-500/60 shadow-lg shadow-cyan-950/20"
+                        : "bg-[#0F172A] border-[#1F2937] hover:border-slate-600"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -178,7 +178,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                           className={`w-7 h-7 rounded flex items-center justify-center font-mono text-xs font-bold ${
                             isSelected
                               ? "bg-cyan-500 text-black"
-                              : "bg-[#252A36] text-slate-300"
+                              : "bg-[#1E293B] text-slate-300"
                           }`}
                         >
                           {idx + 1}
@@ -193,7 +193,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                               {node.heading_or_subheading}
                             </span>
                           </div>
-                          <div className="text-xs text-[#CBD5E1] mt-0.5">
+                          <div className="text-xs text-[#94A3B8] mt-0.5">
                             {node.description}
                           </div>
                         </div>
@@ -201,7 +201,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
 
                       {/* Confidence Meter */}
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className="w-16 bg-[#252A36] h-2 rounded-full overflow-hidden">
+                        <div className="w-16 bg-[#1E293B] h-2 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
                               isLowConfidence ? "bg-amber-500" : "bg-emerald-500"
@@ -220,7 +220,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                     </div>
 
                     {/* Legal Rationale Box */}
-                    <div className="mt-3 pt-3 border-t border-[#2A2F3A] text-xs text-[#94A3B8] leading-relaxed">
+                    <div className="mt-3 pt-3 border-t border-[#1F2937] text-xs text-[#94A3B8] leading-relaxed">
                       <div className="font-mono text-[10px] uppercase text-[#64748B] mb-1">
                         Statutory Rationale:
                       </div>
@@ -235,7 +235,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                           {node.competing_candidates.map((cand, cIdx) => (
                             <span
                               key={cIdx}
-                              className="text-[11px] font-mono line-through text-rose-400/80 bg-rose-950/20 px-2 py-0.5 rounded border border-rose-900/30"
+                              className="text-[11px] font-mono line-through text-red-400/80 bg-red-950/20 px-2 py-0.5 rounded border border-red-900/30"
                             >
                               {cand}
                             </span>
@@ -250,7 +250,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
           </div>
 
           {/* Section & Chapter Notes Cited */}
-          <div className="p-4 rounded-lg border border-[#2A2F3A] bg-[#161920]">
+          <div className="p-4 rounded-lg border border-[#1F2937] bg-[#0F172A]">
             <div className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-2">
               <span>🏛️</span>
               <span>Statutory Chapter & Section Notes Cited</span>
@@ -259,7 +259,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
               {data?.chapter_notes_cited.map((note, nIdx) => (
                 <div
                   key={nIdx}
-                  className="text-xs font-mono text-slate-300 bg-[#1A1D24] px-3 py-1.5 rounded border border-[#2A2F3A] flex items-center gap-2"
+                  className="text-xs font-mono text-slate-300 bg-[#0F172A] px-3 py-1.5 rounded border border-[#1F2937] flex items-center gap-2"
                 >
                   <span className="text-cyan-400">§</span>
                   <span>{note}</span>
@@ -271,8 +271,8 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
 
         {/* Right Column: Deterministic Landed Cost Calculator */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="p-5 rounded-lg border border-[#2A2F3A] bg-[#1A1D24] space-y-5">
-            <div className="flex items-center justify-between border-b border-[#2A2F3A] pb-3">
+          <div className="p-5 rounded-lg border border-[#1F2937] bg-[#0F172A] space-y-5">
+            <div className="flex items-center justify-between border-b border-[#1F2937] pb-3">
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white">
                   Deterministic Landed Cost
@@ -298,7 +298,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                     type="number"
                     value={enteredValue}
                     onChange={(e) => setEnteredValue(Math.max(100, Number(e.target.value) || 0))}
-                    className="w-full bg-[#121212] border border-[#2A2F3A] rounded px-7 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#0B0F19] border border-[#1F2937] rounded px-7 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -307,7 +307,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                 <span className="text-xs text-[#94A3B8]">Transport Mode</span>
                 <button
                   onClick={() => setIsOceanFreight(!isOceanFreight)}
-                  className="px-2.5 py-1 text-xs font-mono rounded border border-[#2A2F3A] bg-[#121212] hover:border-slate-500 text-slate-200"
+                  className="px-2.5 py-1 text-xs font-mono rounded border border-[#1F2937] bg-[#0B0F19] hover:border-slate-500 text-slate-200"
                 >
                   {isOceanFreight ? "🚢 Ocean (HMF 0.125%)" : "✈️ Air / Truck ($0 HMF)"}
                 </button>
@@ -315,7 +315,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
             </div>
 
             {/* Itemized Landed Cost Math */}
-            <div className="space-y-2.5 pt-2 border-t border-[#2A2F3A] text-xs font-mono">
+            <div className="space-y-2.5 pt-2 border-t border-[#1F2937] text-xs font-mono">
               <div className="flex justify-between items-center text-[#94A3B8]">
                 <span>Entered Value:</span>
                 <span className="text-white">${Number(data?.landed_cost.entered_value || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
@@ -344,19 +344,19 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                 <span className="text-slate-200">${Number(data?.landed_cost.freight_and_insurance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
 
-              <div className="pt-2 border-t border-[#2A2F3A] flex justify-between items-center font-bold">
+              <div className="pt-2 border-t border-[#1F2937] flex justify-between items-center font-bold">
                 <span className="text-cyan-400">Total Customs Fees:</span>
                 <span className="text-cyan-400 text-sm">${Number(data?.landed_cost.total_customs_cost || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
 
-              <div className="p-3 rounded bg-[#121212] border border-cyan-500/30 flex justify-between items-center font-bold">
+              <div className="p-3 rounded bg-[#0B0F19] border border-cyan-500/30 flex justify-between items-center font-bold">
                 <span className="text-white text-xs uppercase tracking-wider">Total Landed Cost:</span>
                 <span className="text-base text-emerald-400">${Number(data?.landed_cost.total_landed_cost || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
 
             {/* Enterprise CTA Card */}
-            <div className="p-4 rounded bg-gradient-to-br from-cyan-950/30 to-[#121212] border border-cyan-500/30 space-y-2.5">
+            <div className="p-4 rounded bg-gradient-to-br from-cyan-950/30 to-[#0B0F19] border border-cyan-500/30 space-y-2.5">
               <div className="text-xs font-bold text-white flex items-center gap-1.5">
                 <span>⚡</span>
                 <span>Automate 10,000+ SKU Classifications</span>

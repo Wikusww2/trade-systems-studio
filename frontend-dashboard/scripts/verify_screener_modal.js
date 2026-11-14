@@ -21,7 +21,7 @@ async function run() {
 
   // Open Architecture Modal
   console.log('Opening Architecture Modal...');
-  const archBtn = await page.waitForSelector('button ::-p-text(Architecture & Tests (41/41 Passing))', { timeout: 10000 });
+  const archBtn = await page.waitForSelector('button ::-p-text(Architecture & Tests (43/43 Passing))', { timeout: 10000 });
   if (archBtn) {
     await archBtn.click();
     await new Promise(r => setTimeout(r, 1200));

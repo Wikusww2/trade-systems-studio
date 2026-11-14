@@ -100,7 +100,7 @@ trade-systems-studio/
 │   │   │   ├── hts_classifier.py   # Hierarchical WCO GRI 1-6 state machine
 │   │   │   └── valuation_ledger.py # GAAP assist amortization & prior disclosure generator
 │   │   └── data/nightmares/     # Ground-truth PDF fixtures with known statutory defects
-│   ├── tests/                   # 41 automated test suites (pytest -v)
+│   ├── tests/                   # 43 automated tests (pytest -v)
 │   └── main.py
 │
 ├── docs/                        # Executive Briefing & Architecture Dossiers

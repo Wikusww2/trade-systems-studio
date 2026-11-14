@@ -20,7 +20,7 @@ const STAGES: PipelineStage[] = [
     step: "Stage 01",
     title: "Multi-Format Ingestion",
     subtitle: "PDF, EDI 810/856 & Scans",
-    icon: <FileText className="w-4 h-4 text-blue-400" />,
+    icon: <FileText className="w-4 h-4" />,
     serviceFile: "backend-engine/app/services/extractor.py",
     contract: "Stream[bytes] → RawLayoutTokens",
     details: [
@@ -34,7 +34,7 @@ const STAGES: PipelineStage[] = [
     step: "Stage 02",
     title: "Spatial Layout Extraction",
     subtitle: "Docling Bounding Box Parser",
-    icon: <Cpu className="w-4 h-4 text-cyan-400" />,
+    icon: <Cpu className="w-4 h-4" />,
     serviceFile: "backend-engine/app/services/layout_extractor.py",
     contract: "Normalized Coordinates [0, 1000) Space",
     details: [
@@ -48,7 +48,7 @@ const STAGES: PipelineStage[] = [
     step: "Stage 03",
     title: "Deterministic Trade Math",
     subtitle: "Python Decimal Ledgers",
-    icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+    icon: <CheckCircle2 className="w-4 h-4" />,
     serviceFile: "backend-engine/app/services/customs_audit.py",
     contract: "Strict Python Decimal (0% Floating Drift)",
     details: [
@@ -62,7 +62,7 @@ const STAGES: PipelineStage[] = [
     step: "Stage 04",
     title: "Sanctions & Valuation Graph",
     subtitle: "OFAC 50% Rule & Assists",
-    icon: <Network className="w-4 h-4 text-amber-400" />,
+    icon: <Network className="w-4 h-4" />,
     serviceFile: "backend-engine/app/services/sanctions_screener.py",
     contract: "Recursive Graph Traversal + RapidFuzz C++",
     details: [
@@ -76,7 +76,7 @@ const STAGES: PipelineStage[] = [
     step: "Stage 05",
     title: "CargoWise eAdaptor Relay",
     subtitle: "UniversalShipment XML v1.1",
-    icon: <ShieldCheck className="w-4 h-4 text-purple-400" />,
+    icon: <ShieldCheck className="w-4 h-4" />,
     serviceFile: "backend-engine/app/services/cargowise_xml.py",
     contract: "UniversalInterchange XML Schema 2011/11",
     details: [
@@ -102,9 +102,9 @@ export const InlineArchitectureFlow: React.FC = () => {
               43/43 Verified Automated Tests
             </span>
           </div>
-          <h3 className="text-lg sm:text-xl font-black text-slate-100 tracking-tight mt-1">
+          <h2 className="text-lg sm:text-xl font-black text-slate-100 tracking-tight mt-1 font-sans">
             Deterministic Pre-Ingest Verification Kernel
-          </h3>
+          </h2>
         </div>
         <p className="text-xs text-slate-400 max-w-md">
           Coupling spatial document extraction with deterministic Python rules. Click any pipeline stage to inspect underlying service files and contracts.
@@ -119,7 +119,7 @@ export const InlineArchitectureFlow: React.FC = () => {
             <button
               key={stage.id}
               onClick={() => setActiveStage(stage)}
-              className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between gap-2 relative ${
+              className={`p-3 rounded-xl border text-left transition-colors flex flex-col justify-between gap-2 relative ${
                 isSelected
                   ? "bg-slate-800/90 border-blue-500 ring-1 ring-blue-500/50 shadow-md"
                   : "bg-slate-900/60 hover:bg-slate-800/50 border-slate-800/90"

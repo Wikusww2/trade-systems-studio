@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Maximize2,
   Film,
-  Sparkles,
   CheckCircle2,
   ExternalLink,
   ShieldAlert,
@@ -165,12 +164,12 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="relative w-full max-w-5xl bg-[#0E1015] border border-slate-700/80 rounded-xl overflow-hidden shadow-2xl flex flex-col"
+          className="relative w-full max-w-5xl bg-[#0B0F19] border border-slate-700/80 rounded-xl overflow-hidden shadow-2xl flex flex-col"
         >
           {/* Top Bar */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-[#14171E]/90">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-[#0F172A]/90">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-sm bg-sky-950 border border-sky-800 text-sky-400 flex items-center justify-center font-mono font-bold text-xs">
+              <div className="w-7 h-7 rounded-sm bg-cobalt-950 border border-cobalt-800 text-cobalt-400 flex items-center justify-center font-mono font-bold text-xs">
                 🎬
               </div>
               <div>
@@ -179,7 +178,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
                     KEYNOTE FILM TEASER
                   </span>
                   <span className="text-[10px] font-mono text-slate-500">•</span>
-                  <span className="font-mono text-[11px] text-sky-400 font-semibold uppercase">
+                  <span className="font-mono text-[11px] text-cobalt-400 font-semibold uppercase">
                     30s BROADCAST CUT
                   </span>
                 </div>
@@ -212,7 +211,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
 
             {/* In-Frame Statutory Badge Overlay */}
             <div className="absolute top-4 left-4 z-10 flex items-center gap-2 pointer-events-none">
-              <span className="px-2.5 py-1 bg-black/75 backdrop-blur-md border border-slate-700 rounded-sm font-mono text-[11px] text-sky-400 font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-1 bg-black/75 backdrop-blur-md border border-slate-700 rounded-sm font-mono text-[11px] text-cobalt-400 font-bold uppercase tracking-wider">
                 {activeScene.chapterBadge}
               </span>
               <span className="px-2 py-1 bg-black/75 backdrop-blur-md border border-slate-800 rounded-sm font-mono text-[10px] text-slate-300">
@@ -225,14 +224,14 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
               onClick={togglePlay}
               className="absolute inset-0 w-full h-full opacity-0 hover:opacity-100 transition-opacity bg-black/25 flex items-center justify-center"
             >
-              <div className="w-16 h-16 rounded-full bg-sky-500/90 text-white flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <div className="w-16 h-16 rounded-full bg-cobalt-500/90 text-white flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
                 {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
               </div>
             </button>
           </div>
 
           {/* Timeline & Chapter Bar */}
-          <div className="px-5 py-4 bg-[#14171E] border-t border-slate-800 flex flex-col gap-3">
+          <div className="px-5 py-4 bg-[#0F172A] border-t border-slate-800 flex flex-col gap-3">
             {/* Progress Scrubbing Bar */}
             <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
               {FILM_SCENES.map((scene, idx) => {
@@ -248,9 +247,9 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
                     <div
                       className={`h-full ${
                         isPast
-                          ? "bg-sky-500"
+                          ? "bg-cobalt-500"
                           : isActive
-                          ? "bg-sky-400"
+                          ? "bg-cobalt-400"
                           : "bg-transparent"
                       }`}
                       style={{
@@ -275,7 +274,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
 
                 <button
                   onClick={togglePlay}
-                  className="p-2 bg-sky-600 hover:bg-sky-500 text-white rounded-sm transition-colors shadow-sm"
+                  className="p-2 bg-cobalt-600 hover:bg-cobalt-500 text-white rounded-sm transition-colors shadow-sm"
                   title={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -293,7 +292,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
                   <div className="font-mono text-xs font-bold text-slate-100 flex items-center gap-2">
                     <span>{activeScene.conceptNumber}</span>
                     <span className="text-slate-500">•</span>
-                    <span className="text-sky-400 font-semibold">{activeScene.title}</span>
+                    <span className="text-cobalt-400 font-semibold">{activeScene.title}</span>
                   </div>
                   <div className="text-[11px] text-slate-400 hidden sm:block">
                     {activeScene.subtitle}

@@ -29,7 +29,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
         {/* Top Control Bar */}
         <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 print:hidden">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-sky-100 text-sky-800 font-bold rounded-xs">
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-cobalt-100 text-cobalt-800 font-bold rounded-xs">
               Executive Briefing Paper
             </span>
             <span className="text-xs text-slate-500 font-mono">
@@ -82,7 +82,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
             TradeTech Systems Studio executed an automated deterministic audit of{" "}
             <strong>{auditData.document_filename}</strong> using localized Docling coordinate tokenization and Python Decimal precision arithmetic. The system identified{" "}
             <strong>{auditData.discrepancies.length} material compliance defects</strong> representing a statutory financial exposure of{" "}
-            <span className="font-bold text-rose-600">
+            <span className="font-bold text-red-600">
               ${auditData.discrepancies
                 .reduce((acc, d) => acc + d.exposure_amount, 0)
                 .toLocaleString("en-US", { minimumFractionDigits: 2 })}
@@ -114,7 +114,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
                     <div className="font-semibold text-slate-800">{disc.title}</div>
                     <div className="text-[10px] text-slate-600 mt-0.5">{disc.description}</div>
                   </td>
-                  <td className="p-2 font-mono font-bold text-rose-600 border-r border-slate-300 text-right">
+                  <td className="p-2 font-mono font-bold text-red-600 border-r border-slate-300 text-right">
                     ${disc.exposure_amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </td>
                   <td className="p-2 font-mono text-slate-600">
@@ -129,7 +129,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
         {/* Samuel's Recommended Architectural Remediation */}
         <div className="p-4 bg-slate-50 border border-slate-300 rounded-xs mb-6">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono mb-1.5 flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-sky-600" />
+            <ShieldCheck className="w-4 h-4 text-cobalt-600" />
             <span>3. Samuel's Mandatory Remediation Protocol</span>
           </h4>
           <ol className="list-decimal list-inside text-xs text-slate-700 space-y-1 leading-relaxed">

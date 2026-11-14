@@ -39,14 +39,14 @@ export default function WhitepaperPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0E1015] text-[#E2E8F0] selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-[#0B0F19] text-[#F8FAFC] selection:bg-cyan-500 selection:text-black">
       {/* Top Sticky Header */}
-      <header className="sticky top-0 z-40 bg-[#161920]/90 backdrop-blur-md border-b border-[#2A2F3A] px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-[#0F172A]/90 backdrop-blur-md border-b border-[#1F2937] px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
             href="/"
             onClick={() => sound.playTick()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1A1D24] border border-[#2A2F3A] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all group"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all group"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-slate-400 group-hover:-translate-x-0.5 transition-transform" />
             <span>Live Console</span>
@@ -62,7 +62,7 @@ export default function WhitepaperPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1A1D24] border border-[#2A2F3A] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all"
           >
             <Printer className="w-3.5 h-3.5 text-slate-400" />
             <span className="hidden sm:inline">Print / PDF</span>
@@ -83,7 +83,7 @@ export default function WhitepaperPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Sticky Sidebar / Table of Contents */}
         <aside className="lg:col-span-3">
-          <div className="sticky top-20 rounded-xl bg-[#161920] border border-[#2A2F3A] p-4 space-y-4">
+          <div className="sticky top-20 rounded-xl bg-[#0F172A] border border-[#1F2937] p-4 space-y-4">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-2">
               <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
               <span>Table of Contents</span>
@@ -121,10 +121,10 @@ export default function WhitepaperPage() {
               })}
             </nav>
 
-            <div className="pt-3 border-t border-[#2A2F3A] text-[11px] font-mono text-slate-500 space-y-1">
+            <div className="pt-3 border-t border-[#1F2937] text-[11px] font-mono text-slate-500 space-y-1">
               <div>Author: <span className="text-slate-300 font-semibold">Samuel</span></div>
               <div>Role: <span className="text-slate-300">Principal AI Systems Architect</span></div>
-              <div>Status: <span className="text-emerald-400 font-semibold">41/41 Tests Verified</span></div>
+              <div>Status: <span className="text-emerald-400 font-semibold">43/43 Tests Verified</span></div>
             </div>
           </div>
         </aside>
@@ -132,7 +132,7 @@ export default function WhitepaperPage() {
         {/* Right Article Body */}
         <main className="lg:col-span-9 space-y-12">
           {/* Paper Title Block */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-[#161920] to-[#12141A] border border-[#2A2F3A] space-y-4">
+          <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-[#0F172A] to-[#0B0F19] border border-[#1F2937] space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-1 text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded">
                 Systems Architecture Whitepaper
@@ -147,7 +147,7 @@ export default function WhitepaperPage() {
               Autonomous Trade Intelligence: Strict Mathematical Determinism, Hierarchical GRI State Machines, and Multi-Hop Corporate Entity Resolution
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 pt-2 border-t border-[#2A2F3A]">
+            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 pt-2 border-t border-[#1F2937]">
               <div>Author: <span className="text-white font-bold">Samuel</span></div>
               <div>•</div>
               <div>Target Roles: <span className="text-cyan-400">Principal AI Systems Architect / Lead TradeTech Engineer</span></div>
@@ -158,18 +158,18 @@ export default function WhitepaperPage() {
 
           {/* SECTION 1: ABSTRACT */}
           <section id="abstract" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">1.</span>
               <span>Abstract</span>
             </h2>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Commercial trade operations and customs compliance represent an asymmetric operational surface: mid-market enterprise importers lose <strong className="text-amber-400">5% to 15% of total freight spend</strong> to carrier accessorial overbilling and face catastrophic civil monetary penalties under <strong className="text-rose-400">19 U.S.C. § 1592 ($100k–$2.4M+)</strong> due to line-item arithmetic discrepancies, assist omissions, and Harmonized Tariff Schedule (HTS) misclassifications.
+              Commercial trade operations and customs compliance represent an asymmetric operational surface: mid-market enterprise importers lose <strong className="text-amber-400">5% to 15% of total freight spend</strong> to carrier accessorial overbilling and face catastrophic civil monetary penalties under <strong className="text-red-400">19 U.S.C. § 1592 ($100k–$2.4M+)</strong> due to line-item arithmetic discrepancies, assist omissions, and Harmonized Tariff Schedule (HTS) misclassifications.
             </p>
             <p className="text-slate-300 text-sm leading-relaxed">
               Contemporary attempts to apply generative artificial intelligence (LLMs) to international trade document processing fail because generic language models are fundamentally non-deterministic: flat prompts hallucinate statutory citations, perform inaccurate arithmetic on floating-point currencies, and cannot navigate the path-dependent legal decision trees mandated by the World Customs Organization (WCO) General Rules of Interpretation (GRI 1 to 6).
             </p>
 
-            <div className="p-4 rounded-xl bg-[#161920] border border-[#2A2F3A] space-y-2">
+            <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] space-y-2">
               <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 font-mono">
                 The Three Non-Negotiable Invariants:
               </div>
@@ -192,7 +192,7 @@ export default function WhitepaperPage() {
 
           {/* SECTION 2: ARITHMETIC DETERMINISM */}
           <section id="determinism" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">2.</span>
               <span>The Arithmetic Determinism Principle</span>
             </h2>
@@ -203,7 +203,7 @@ export default function WhitepaperPage() {
                 In standard IEEE 754 double-precision floating-point arithmetic, binary approximations of fractional numbers introduce representation drift:
               </p>
               
-              <div className="p-3 rounded-lg bg-[#0E1015] border border-rose-500/30 text-xs font-mono text-rose-300 overflow-x-auto">
+              <div className="p-3 rounded-lg bg-[#0B0F19] border border-red-500/30 text-xs font-mono text-red-300 overflow-x-auto">
                 0.1 + 0.2 = 0.3000000000000000444089209850062616169452667236328125 ≠ 0.3
               </div>
 
@@ -212,13 +212,13 @@ export default function WhitepaperPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-slate-400">Negligence Penalty Exposure</div>
                   <div className="text-sm font-bold text-amber-400 mt-1">0.25x – 2.0x lawful duty loss</div>
                 </div>
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-slate-400">Gross Negligence Penalty Exposure</div>
-                  <div className="text-sm font-bold text-rose-400 mt-1">2.5x – 4.0x lawful duty loss</div>
+                  <div className="text-sm font-bold text-red-400 mt-1">2.5x – 4.0x lawful duty loss</div>
                 </div>
               </div>
 
@@ -227,7 +227,7 @@ export default function WhitepaperPage() {
                 To eliminate arithmetic variance, TradeTech Systems Studio enforces the Python <code className="text-emerald-300">decimal.Decimal</code> standard across all financial, tariff, and drawback operations:
               </p>
 
-              <div className="p-4 rounded-lg bg-[#0E1015] border border-[#2A2F3A] font-mono text-xs text-slate-300 overflow-x-auto">
+              <div className="p-4 rounded-lg bg-[#0B0F19] border border-[#1F2937] font-mono text-xs text-slate-300 overflow-x-auto">
                 <pre className="text-emerald-400 leading-relaxed">
 {`from decimal import Decimal, ROUND_HALF_UP
 
@@ -238,14 +238,14 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
               </div>
 
               <p>
-                Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified across 41 automated test suites.
+                Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified across 43 automated tests.
               </p>
             </div>
           </section>
 
           {/* SECTION 3: WCO GRI 1-6 STATE MACHINE */}
           <section id="state-machine" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">3.</span>
               <span>Hierarchical WCO GRI 1 to 6 State Machine</span>
             </h2>
@@ -255,7 +255,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                 Standard LLM wrappers treat 10-digit HTS classification as a flat text generation task (<code className="text-cyan-300">x → y</code>). This violates international customs law because tariff classification is strictly hierarchical and path-dependent. 
               </p>
 
-              <div className="p-4 rounded-lg bg-[#161920] border border-[#2A2F3A] font-mono text-xs space-y-2">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] font-mono text-xs space-y-2">
                 <div className="text-cyan-400 font-bold">Mathematical Formulation:</div>
                 <div className="text-white text-sm">
                   y = concat(c, h, s₁, s₂, t)
@@ -269,7 +269,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                 At each node vᵢ in the hierarchy, child selection is conditioned on the product description x, technical attributes A, and the accumulated statutory path π₀:ᵢ:
               </p>
 
-              <div className="p-3 rounded bg-[#0E1015] border border-[#2A2F3A] font-mono text-xs text-amber-300">
+              <div className="p-3 rounded bg-[#0B0F19] border border-[#1F2937] font-mono text-xs text-amber-300">
                 v_{`{i+1}`} = argmax_{`{c ∈ C(v_i)}`} p(c | x, A, π_{`{0:i}`})
               </div>
 
@@ -279,15 +279,15 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-amber-400 font-bold">1. Visual Gating</div>
                   <div className="text-slate-400 mt-1">Applies dashed amber border styling to cue human inspection.</div>
                 </div>
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
-                  <div className="text-rose-400 font-bold">2. Auto-Submission Stop</div>
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
+                  <div className="text-red-400 font-bold">2. Auto-Submission Stop</div>
                   <div className="text-slate-400 mt-1">Halts automatic ACE transmission to avoid port hold liability.</div>
                 </div>
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-cyan-400 font-bold">3. Broker Routing</div>
                   <div className="text-slate-400 mt-1">Flags conflicting legal notes for licensed customs broker review.</div>
                 </div>
@@ -297,7 +297,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
 
           {/* SECTION 4: OFAC 50% GRAPH */}
           <section id="sanctions-graph" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">4.</span>
               <span>Multi-Hop Corporate Sanctions Graph (OFAC 50% Rule)</span>
             </h2>
@@ -308,7 +308,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                 Under guidance issued by the U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC), any entity owned <strong>50 percent or more in the aggregate</strong>, directly or indirectly, by one or more blocked persons is itself considered blocked merchandise, regardless of whether the entity is named on the Specially Designated Nationals (SDN) List.
               </p>
 
-              <div className="p-4 rounded-lg bg-[#0E1015] border border-cyan-500/30 font-mono text-xs text-slate-300 overflow-x-auto">
+              <div className="p-4 rounded-lg bg-[#0B0F19] border border-cyan-500/30 font-mono text-xs text-slate-300 overflow-x-auto">
                 <pre className="text-cyan-300 leading-tight">
 {`┌────────────────────────────────────────────────────────────────────────┐
 │               OFAC 50% RULE RECURSIVE RESOLUTION TRACE                 │
@@ -330,7 +330,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
 
           {/* SECTION 5: CBP ASSISTS & PRIOR DISCLOSURE */}
           <section id="valuation-ledger" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">5.</span>
               <span>CBP Assist Valuation Ledger & Prior Disclosure Engine</span>
             </h2>
@@ -342,11 +342,11 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-slate-400">Unit Apportionment Formula</div>
                   <div className="text-sm font-bold text-cyan-400 mt-1">Assist / Anticipated Units</div>
                 </div>
-                <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A]">
+                <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-slate-400">Entry Allocated Assist</div>
                   <div className="text-sm font-bold text-emerald-400 mt-1">Assist Unit Cost × Entry Units</div>
                 </div>
@@ -365,12 +365,12 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
 
           {/* SECTION 6: BENCHMARKS */}
           <section id="benchmarks" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">6.</span>
               <span>Empirical Performance & Scale Benchmarks</span>
             </h2>
 
-            <div className="p-4 rounded-xl bg-[#161920] border border-[#2A2F3A] space-y-3">
+            <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] space-y-3">
               <div className="flex items-center justify-between">
                 <div className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                   Continuous Concurrency Benchmark (3,000 Audits)
@@ -383,14 +383,14 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-[#2A2F3A] text-slate-400">
+                    <tr className="border-b border-[#1F2937] text-slate-400">
                       <th className="py-2">Metric</th>
                       <th className="py-2">Observed Value</th>
                       <th className="py-2">Production SLA</th>
                       <th className="py-2">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#2A2F3A] text-slate-300">
+                  <tbody className="divide-y divide-[#1F2937] text-slate-300">
                     <tr>
                       <td className="py-2 text-white font-bold">p50 Latency</td>
                       <td className="py-2 text-cyan-400">0.024 ms</td>
@@ -423,12 +423,12 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
 
           {/* SECTION 7: CONCLUSION & HIRING COMMITTEE CONTACT */}
           <section id="conclusion" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">7.</span>
               <span>Conclusion & Engineering Committee Contact</span>
             </h2>
 
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-sky-950/40 to-slate-900 border border-sky-500/30 space-y-4">
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-cobalt-950/40 to-slate-900 border border-cobalt-500/30 space-y-4">
               <p className="text-sm text-slate-300 leading-relaxed">
                 By grounding artificial intelligence in <strong>strict mathematical determinism</strong>, <strong>local document layout parsing</strong>, and <strong>path-dependent statutory state machines</strong>, TradeTech Systems Studio establishes a new architectural standard for enterprise logistics and customs technology.
               </p>
@@ -437,7 +437,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                 <Link
                   href="/"
                   onClick={() => sound.playTick()}
-                  className="px-4 py-2.5 rounded bg-sky-500 hover:bg-sky-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-sky-950/50"
+                  className="px-4 py-2.5 rounded bg-cobalt-500 hover:bg-cobalt-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-cobalt-950/50"
                 >
                   Explore Interactive Console
                 </Link>
@@ -446,9 +446,9 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                   href="https://github.com/sssammyboyyy/trade-systems-studio"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-4 py-2.5 rounded bg-[#161920] hover:bg-slate-800 text-slate-200 border border-[#2A2F3A] font-mono text-xs transition-all flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded bg-[#0F172A] hover:bg-slate-800 text-slate-200 border border-[#1F2937] font-mono text-xs transition-colors flex items-center gap-1.5"
                 >
-                  <span>Review Codebase (41/41 Tests)</span>
+                  <span>Review Codebase (43/43 Tests)</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>

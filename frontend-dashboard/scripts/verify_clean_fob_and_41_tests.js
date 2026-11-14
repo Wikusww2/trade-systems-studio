@@ -39,13 +39,13 @@ async function run() {
 
   // 3. Open Architecture Modal and capture 41/41 tests tab
   console.log('Opening Architecture Modal...');
-  const archBtn = await page.waitForSelector('button ::-p-text(Architecture & Tests (41/41 Passing))', { timeout: 10000 });
+  const archBtn = await page.waitForSelector('button ::-p-text(Architecture & Tests (43/43 Passing))', { timeout: 10000 });
   if (archBtn) {
     await archBtn.click();
     await new Promise(r => setTimeout(r, 1500));
 
     // Click tab 02 Pytest Execution
-    const testTab = await page.waitForSelector('button ::-p-text(02. Pytest Execution (41/41))', { timeout: 5000 });
+    const testTab = await page.waitForSelector('button ::-p-text(02. Pytest Execution (43/43))', { timeout: 5000 });
     if (testTab) {
       await testTab.click();
       await new Promise(r => setTimeout(r, 1000));
@@ -53,7 +53,7 @@ async function run() {
 
     const modalShot = path.join(ARTIFACTS_DIR, 'live_modal_41_tests_passing.png');
     await page.screenshot({ path: modalShot, fullPage: false });
-    console.log(`Saved 41/41 tests modal screenshot to: ${modalShot}`);
+    console.log(`Saved 43/43 tests modal screenshot to: ${modalShot}`);
   }
 
   await browser.close();

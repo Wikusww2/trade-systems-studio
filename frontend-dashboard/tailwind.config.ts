@@ -24,6 +24,20 @@ const config: Config = {
           cobalt: "#2563EB",
           hover: "#1D4ED8",
         },
+        // Single accent ramp. 600 is the documented --accent-cobalt.
+        cobalt: {
+          50: "#EFF6FF",
+          100: "#DBEAFE",
+          200: "#BFDBFE",
+          300: "#93C5FD",
+          400: "#60A5FA",
+          500: "#3B82F6",
+          600: "#2563EB",
+          700: "#1D4ED8",
+          800: "#1E40AF",
+          900: "#1E3A8A",
+          950: "#172554",
+        },
         status: {
           crimson: "#EF4444",
           amber: "#F59E0B",
@@ -39,6 +53,11 @@ const config: Config = {
           amber: "#F59E0B",
           emerald: "#10B981",
           cyan: "#38BDF8",
+        },
+        // slate.500 lifted from #64748b to #8494ab: 4.5:1+ on every dark surface at 10px.
+        // Rule 03 keeps slate-400 as the lighter muted tier; this only fixes the failing tier.
+        slate: {
+          500: "#8494ab",
         },
       },
       fontFamily: {

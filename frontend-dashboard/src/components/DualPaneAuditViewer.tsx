@@ -6,16 +6,12 @@ import { fetchAudit, fetchAggregateMetrics } from "@/lib/api";
 import dynamic from "next/dynamic";
 import { DiscrepancyCard } from "./DiscrepancyCard";
 import { LeadCaptureModal } from "./LeadCaptureModal";
-import { RoiCalculator } from "./RoiCalculator";
-import { ExecutiveServices } from "./ExecutiveServices";
 import { BilledVsLawfulDiff } from "./BilledVsLawfulDiff";
 import { PenaltyExposureLadder } from "./PenaltyExposureLadder";
-import { DifferentialistMatrix } from "./DifferentialistMatrix";
 import { ExecutiveDossierModal } from "./ExecutiveDossierModal";
 import { AmbientMotionBackground } from "./AmbientMotionBackground";
 import { FilmTheaterModal } from "./FilmTheaterModal";
 import { RollingNumber } from "./RollingNumber";
-import { FunnelRedesignStudio } from "./funnel-variations/FunnelRedesignStudio";
 import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
 import { HtsClassifierViewer } from "./HtsClassifierViewer";
 import { CustomsValuationViewer } from "./CustomsValuationViewer";
@@ -26,6 +22,8 @@ import { DeveloperApiSandbox } from "./DeveloperApiSandbox";
 import { ScenarioSelectorBar, CORRIDOR_SCENARIOS, Scenario } from "./ScenarioSelectorBar";
 import { InlineArchitectureFlow } from "./InlineArchitectureFlow";
 import { ArchitectThesis } from "./ArchitectThesis";
+import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
+import { ProvenanceCockpit, ProvenanceMetadataBar } from "./ProvenanceCockpit";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
@@ -41,18 +39,13 @@ import {
   ChevronRight,
   CheckCircle2,
   Lock,
-  Sun,
-  Moon,
   Menu,
   X,
   FileText,
-  AlertOctagon,
-  Printer,
-  Sparkles,
   Network,
+  Upload,
   Binary,
   Landmark,
-  Upload,
   Code2,
   Terminal,
   Zap,
@@ -126,16 +119,13 @@ export const DualPaneAuditViewer: React.FC = () => {
   // Right-hand terminal tab state
   const [rightTerminalTab, setRightTerminalTab] = useState<"discrepancies" | "cargowise" | "developer_api">("discrepancies");
 
-  // Disruption Mode Chaos State
-  const [disruptionMode, setDisruptionMode] = useState<boolean>(false);
-  const [disruptionVector, setDisruptionVector] = useState<"port_congestion" | "fuel_spike" | "red_sea">("port_congestion");
+  // Executive lens: reframes the value proposition per evaluator
+  const [persona, setPersona] = useState<IcpPersona>("counsel");
 
   // Modals & Guided Experience
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
   const [isFilmOpen, setIsFilmOpen] = useState<boolean>(false);
-  const [selectedServiceTier, setSelectedServiceTier] = useState<string>("contingent_audit");
-  const [isFunnelStudioOpen, setIsFunnelStudioOpen] = useState<boolean>(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState<boolean>(false);
   const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
   const [isTourActive, setIsTourActive] = useState<boolean>(false);
@@ -143,9 +133,6 @@ export const DualPaneAuditViewer: React.FC = () => {
   // Mobile segmented view state ('doc' | 'findings')
   const [mobileTab, setMobileTab] = useState<"findings" | "doc">("findings");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
-
-  // Theme state: default to 'dark' for Nightmare Suite terminal aesthetic, with toggle
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCustomFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,15 +181,6 @@ export const DualPaneAuditViewer: React.FC = () => {
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
-    const initialTheme = saved || "dark";
-    setTheme(initialTheme);
-    if (initialTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
     if (typeof window !== "undefined") {
       const hash = window.location.hash.toLowerCase().replace("#", "");
       const params = new URLSearchParams(window.location.search);
@@ -240,18 +218,6 @@ export const DualPaneAuditViewer: React.FC = () => {
       }
     }
   }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    sound.playTick();
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -298,29 +264,21 @@ export const DualPaneAuditViewer: React.FC = () => {
     }
   };
 
-  const openConsultation = (tier: string = "contingent_audit") => {
+  const openReview = () => {
     sound.playLock();
-    setSelectedServiceTier(tier);
     setIsModalOpen(true);
     setIsMobileNavOpen(false);
   };
 
-  // Disruption mode metrics calculation
-  const displayedExposureAvoided = disruptionMode
-    ? (aggregateMetrics?.penalty_exposure_avoided || 125000) * 1.8
-    : aggregateMetrics?.penalty_exposure_avoided || 125000;
+  // Kill-shot metrics read straight off the engine payload: no synthetic inflation
+  const displayedExposureAvoided = aggregateMetrics?.penalty_exposure_avoided || 125000;
+  const displayedCarrierOverbilling = aggregateMetrics?.carrier_overbilling_caught || 1547.5;
+  const displayedDrawback = aggregateMetrics?.drawback_unclaimed_unlocked || 27324;
 
-  const displayedCarrierOverbilling = disruptionMode
-    ? disruptionVector === "port_congestion"
-      ? 15797.50
-      : disruptionVector === "fuel_spike"
-      ? 8387.50
-      : 11147.50
-    : aggregateMetrics?.carrier_overbilling_caught || 1547.50;
-
-  const displayedDrawback = disruptionMode
-    ? (aggregateMetrics?.drawback_unclaimed_unlocked || 27324) * 1.25
-    : aggregateMetrics?.drawback_unclaimed_unlocked || 27324;
+  const activeDiscrepancy =
+    auditData?.discrepancies.find((d) => d.id === activeDiscrepancyId) ||
+    auditData?.discrepancies[0] ||
+    null;
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0B0F19] text-slate-100 flex flex-col font-sans transition-colors duration-200 relative selection:bg-blue-600 selection:text-white">
@@ -354,16 +312,13 @@ export const DualPaneAuditViewer: React.FC = () => {
             </div>
           </div>
 
-          {/* Clean 4-Link Navigation */}
+          {/* Clean 3-Link Navigation */}
           <nav className="hidden xl:flex items-center gap-6 text-xs font-mono text-slate-400">
             <a href="#workbench" className="hover:text-blue-400 transition-colors">
               #workbench
             </a>
             <a href="#architecture" className="hover:text-blue-400 transition-colors">
               #architecture
-            </a>
-            <a href="#value-pack-roi" className="hover:text-blue-400 transition-colors">
-              #value-pack-roi
             </a>
             <a href="#architect-thesis" className="hover:text-blue-400 transition-colors">
               #architect-thesis
@@ -373,36 +328,18 @@ export const DualPaneAuditViewer: React.FC = () => {
           {/* Right Action Group */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <button
-              onClick={() => openConsultation("contingent_audit")}
-              className="hidden md:inline-flex px-3 py-1.5 text-xs font-mono text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md transition-colors"
+              onClick={openReview}
+              className="px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-colors rounded-md"
             >
-              50-Bill Audit ($0)
-            </button>
-
-            <button
-              onClick={() => openConsultation("fractional_advisory")}
-              className="px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-all rounded-md shadow-md shadow-blue-500/20"
-            >
-              <span className="hidden sm:inline">Book Architecture Review</span>
+              <span className="hidden sm:inline">Schedule Architecture Review</span>
               <span className="sm:hidden">Review</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={toggleTheme}
-              title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
-              className="p-1.5 text-slate-400 hover:text-white bg-[#0F172A] border border-[#1F2937] rounded-md transition-all shrink-0"
-            >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-slate-300" />
-              )}
             </button>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+              aria-label="Toggle navigation"
               className="xl:hidden p-1.5 text-slate-300 border border-slate-700 rounded-md shrink-0"
             >
               {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -428,13 +365,6 @@ export const DualPaneAuditViewer: React.FC = () => {
               #architecture
             </a>
             <a
-              href="#value-pack-roi"
-              onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
-            >
-              #value-pack-roi
-            </a>
-            <a
               href="#architect-thesis"
               onClick={() => setIsMobileNavOpen(false)}
               className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
@@ -442,54 +372,87 @@ export const DualPaneAuditViewer: React.FC = () => {
               #architect-thesis
             </a>
             <button
-              onClick={() => openConsultation("fractional_advisory")}
+              onClick={openReview}
               className="w-full mt-2 py-2 px-3 bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-md text-center"
             >
-              Book Architecture Review
+              Schedule Architecture Review
             </button>
           </div>
         )}
       </header>
 
+      <main>
       {/* 2. ACT 1: ABOVE-THE-FOLD SYSTEMS HERO */}
       <section className="border-b border-[#1F2937] bg-[#0F172A]/40 py-8 lg:py-12 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">
-            {/* Systems Badges */}
-            <div className="flex flex-wrap items-center gap-2 mb-4 font-mono text-xs">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-950/80 border border-blue-800 text-blue-300 rounded-md font-semibold">
-                <Zap className="w-3.5 h-3.5 text-blue-400" />
-                <span>Deterministic Pre-Ingest Firewall</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
-                <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-                <span>CargoWise UniversalShipment XML & ACE Ready</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>43/43 Automated Tests Passing</span>
-              </span>
+            {/* Verification + Executive Lens */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+              <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-cobalt-950/80 border border-cobalt-800 text-cobalt-300 rounded-md font-semibold">
+                  <Zap className="w-3.5 h-3.5 text-cobalt-400" />
+                  <span>Deterministic Pre-Ingest Firewall</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
+                  <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>CargoWise UniversalShipment XML &amp; ACE Ready</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>43/43 Automated Tests Passing</span>
+                </span>
+              </div>
+
+              <IcpPersonaSwitcher persona={persona} onChange={setPersona} />
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.15] mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.15] text-balance mb-4">
               Deterministic Pre-Ingest Verification for{" "}
-              <span className="text-blue-400">CargoWise & ACE</span>
+              <span className="text-cobalt-400">CargoWise &amp; ACE</span>
             </h1>
 
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 font-normal">
               Intercepting 19 U.S.C. § 1592 customs penalties, carrier accessorial overbilling, and GRI misclassifications before UniversalShipment XML enters your TMS. Built with sub-50ms execution, zero floating-point drift, and 100% Python Decimal precision.
             </p>
 
-            {/* Systems Metrics Strip */}
+            {/* Executive Lens Takeaway */}
+            <div className="mb-6 pl-3 border-l-2 border-cobalt-600">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-cobalt-400 font-bold mb-1">
+                {persona === "cfo"
+                  ? "CFO / EBITDA lens"
+                  : persona === "counsel"
+                  ? "General Counsel lens"
+                  : "CTO / Platform lens"}
+              </div>
+              <p className="text-sm text-slate-200 max-w-2xl">
+                {persona === "cfo"
+                  ? "Cash leaks at the carrier invoice and the duty payment. Both are intercepted here before the wire releases: 5% to 15% of freight spend is recoverable billing error, not cost of doing business."
+                  : persona === "counsel"
+                  ? "Every finding cites its statute and carries a contestable provenance record. 19 U.S.C. § 1592 negligence exposure runs 0.25x to 4.0x lawful duty loss (quantified from the entry, not estimated)."
+                  : "No external API in the critical path. Deterministic fallback keeps the engine live offline, 43/43 pytest tests verify the kernel, and Python Decimal eliminates floating-point drift in every statutory figure."}
+              </p>
+            </div>
+
+            {/* Systems Metrics Strip: documented benchmarks only */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#1F2937]">
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
                 <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
-                  Execution Latency
+                  Sustained Throughput
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-blue-400 tabular-nums">
-                  &lt; 38 ms
+                <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
+                  33,496 /sec
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">Deterministic Gateway</div>
+                <div className="text-[10px] text-slate-500 font-mono">Audits per second</div>
+              </div>
+
+              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                  p99 Latency
+                </div>
+                <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
+                  &lt; 0.09 ms
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">Zero float drift</div>
               </div>
 
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
@@ -506,20 +469,10 @@ export const DualPaneAuditViewer: React.FC = () => {
                 <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
                   Carrier Leakage Intercept
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-rose-400 tabular-nums">
-                  3% to 7.5%
+                <div className="text-base sm:text-lg font-mono font-bold text-red-400 tabular-nums">
+                  5% to 15%
                 </div>
                 <div className="text-[10px] text-slate-500 font-mono">Pre-Payment Guard</div>
-              </div>
-
-              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
-                  Value Pack Rework
-                </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-amber-400 tabular-nums">
-                  0 Failed Retries
-                </div>
-                <div className="text-[10px] text-slate-500 font-mono">eAdaptor Pre-Clearance</div>
               </div>
             </div>
           </div>
@@ -528,16 +481,18 @@ export const DualPaneAuditViewer: React.FC = () => {
 
       {/* 3. DUAL-PANE AUDIT WORKBENCH (ACT 1 CONTINUED) */}
       <section id="workbench" className="max-w-7xl w-full max-w-full overflow-hidden mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Lighthouse heading-order: first in-section heading after the h1 */}
+        <h2 className="sr-only">Audit Workbench</h2>
         {/* Scenario Bar: Durban, Long Beach, Steel Drawback */}
         <ScenarioSelectorBar
           activeScenarioId={CORRIDOR_SCENARIOS.find((s) => s.concept_id === activeConceptId)?.id || "scenario_durban_rotterdam"}
           onSelectScenario={(sc: Scenario) => switchConcept(sc.concept_id)}
         />
 
-        {/* Pillar Switcher Ribbon: 6 Core Engineering Pillars */}
+        {/* Workspace Tab Bar: the six engineering surfaces */}
         <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#1F2937] overflow-x-auto max-w-full font-mono text-xs">
           <span className="text-[10px] text-slate-500 uppercase font-bold shrink-0">
-            System Pillars:
+            Workspace:
           </span>
           {ALL_PILLARS.map((pillar) => {
             const isActive = activeConceptId === pillar.id;
@@ -545,7 +500,7 @@ export const DualPaneAuditViewer: React.FC = () => {
               <button
                 key={pillar.id}
                 onClick={() => switchConcept(pillar.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-colors ${
                   isActive
                     ? "bg-[#1E293B] border-blue-500 text-white shadow-sm ring-1 ring-blue-500/50"
                     : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200"
@@ -558,86 +513,13 @@ export const DualPaneAuditViewer: React.FC = () => {
           })}
         </div>
 
-        {/* Disruption Mode Chaos Simulation Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#0F172A] border border-[#1F2937] rounded-xl mb-4 font-mono text-xs max-w-full overflow-hidden">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={() => {
-                sound.playLock();
-                setDisruptionMode(!disruptionMode);
-              }}
-              className={`px-3 py-1.5 rounded-md font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
-                disruptionMode
-                  ? "bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-1 ring-rose-400"
-                  : "bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700"
-              }`}
-            >
-              <AlertOctagon className="w-3.5 h-3.5" />
-              <span>{disruptionMode ? "DISRUPTION MODE: ON" : "SIMULATE SUPPLY CHAIN SHOCK"}</span>
-            </button>
-
-            {disruptionMode && (
-              <div className="inline-flex items-center gap-1 p-0.5 bg-[#0B0F19] border border-[#1F2937] rounded-lg">
-                <button
-                  onClick={() => setDisruptionVector("port_congestion")}
-                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
-                    disruptionVector === "port_congestion"
-                      ? "bg-rose-950 text-rose-300 border border-rose-700/60 font-bold"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Port Congestion (+14d Demurrage)
-                </button>
-                <button
-                  onClick={() => setDisruptionVector("fuel_spike")}
-                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
-                    disruptionVector === "fuel_spike"
-                      ? "bg-rose-950 text-rose-300 border border-rose-700/60 font-bold"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Bunker Fuel Spike (+18% FSC)
-                </button>
-                <button
-                  onClick={() => setDisruptionVector("red_sea")}
-                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
-                    disruptionVector === "red_sea"
-                      ? "bg-rose-950 text-rose-300 border border-rose-700/60 font-bold"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  Red Sea Diversion (+$2,400/FEU)
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Telemetry Indicator */}
-          {disruptionMode ? (
-            <div className="text-[11px] text-rose-400 flex items-center gap-1.5 font-bold animate-pulse">
-              <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
-              <span>
-                {disruptionVector === "port_congestion"
-                  ? "CHAOS ACTIVE: Unwarranted port demurrage hold detected inside tariff free time ($14,250 overbill)"
-                  : disruptionVector === "fuel_spike"
-                  ? "CHAOS ACTIVE: Retroactive BAF adjustment exceeding FMC published index rate ($6,840 overbill)"
-                  : "CHAOS ACTIVE: Unauthorized emergency war risk surcharge without 30d FMC notice ($9,600 overbill)"}
-              </span>
-            </div>
-          ) : (
-            <div className="text-[11px] text-slate-500">
-              Deterministic baseline mode · Click shock simulation to test rate card exception resilience
-            </div>
-          )}
-        </div>
-
         {/* Dynamic Kill Shot Metrics Flash Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 font-mono">
           <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
             <div className="text-[9px] uppercase text-slate-400 font-semibold">
               19 U.S.C. § 1592 Exposure Avoided
             </div>
-            <div className="text-base sm:text-xl font-bold text-rose-400 tabular-nums">
+            <div className="text-base sm:text-xl font-bold text-red-400 tabular-nums">
               <RollingNumber value={displayedExposureAvoided} />
             </div>
             <div className="text-[10px] text-slate-500">Statutory safe-harbor mitigation</div>
@@ -647,7 +529,7 @@ export const DualPaneAuditViewer: React.FC = () => {
             <div className="text-[9px] uppercase text-slate-400 font-semibold">
               Pre-Payment Freight Overbilling Intercepted
             </div>
-            <div className="text-base sm:text-xl font-bold text-rose-400 tabular-nums">
+            <div className="text-base sm:text-xl font-bold text-red-400 tabular-nums">
               <RollingNumber value={displayedCarrierOverbilling} />
             </div>
             <div className="text-[10px] text-slate-500">Withheld prior to cash disbursement</div>
@@ -672,6 +554,9 @@ export const DualPaneAuditViewer: React.FC = () => {
           className="hidden"
           onChange={handleCustomFileUpload}
         />
+
+        {/* Provenance Metadata Bar: document lineage emitted by the engine */}
+        <ProvenanceMetadataBar audit={auditData} />
 
         {/* MAIN WORKBENCH BODY: 6 Pillars or Dual-Pane Canvas */}
         {activeConceptId === "concept_4_sanctions" ? (
@@ -718,7 +603,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                       sound.playTick();
                       setRightTerminalTab("discrepancies");
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                       rightTerminalTab === "discrepancies"
                         ? "bg-blue-600 text-white shadow-xs"
                         : "text-slate-400 hover:text-slate-200"
@@ -732,7 +617,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                       sound.playLock();
                       setRightTerminalTab("cargowise");
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors flex items-center gap-1 ${
                       rightTerminalTab === "cargowise"
                         ? "bg-blue-600 text-white shadow-xs"
                         : "text-slate-400 hover:text-slate-200"
@@ -747,7 +632,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                       sound.playLock();
                       setRightTerminalTab("developer_api");
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors flex items-center gap-1 ${
                       rightTerminalTab === "developer_api"
                         ? "bg-blue-600 text-white shadow-xs"
                         : "text-slate-400 hover:text-slate-200"
@@ -773,6 +658,8 @@ export const DualPaneAuditViewer: React.FC = () => {
               {/* Sub-Tab 1: Discrepancies Redline */}
               {rightTerminalTab === "discrepancies" && (
                 <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
+                  <ProvenanceCockpit discrepancy={activeDiscrepancy} />
+
                   <BilledVsLawfulDiff conceptId={activeConceptId} />
 
                   {activeConceptId === "concept_1_customs" && (
@@ -861,47 +748,30 @@ export const DualPaneAuditViewer: React.FC = () => {
         <InlineArchitectureFlow />
       </section>
 
-      {/* 5. ACT 3: CARGOWISE VALUE PACK ROI CALCULATOR */}
-      <section id="value-pack-roi" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
-        <RoiCalculator onOpenConsultation={() => openConsultation("contingent_audit")} />
-      </section>
-
       {/* 6. ACT 4: PRINCIPAL ARCHITECT'S THESIS SIGNED BY SAMUEL */}
       <section id="architect-thesis" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
-        <ArchitectThesis
-          onOpenBooking={() => openConsultation("fractional_advisory")}
-          onOpenAudit={() => openConsultation("contingent_audit")}
-        />
+        <ArchitectThesis onOpenReview={openReview} />
       </section>
-
-      {/* 7. SUPPLEMENTARY ENTERPRISE DUE DILIGENCE: DIFFERENTIALIST MATRIX */}
-      <section id="differentialism" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
-        <DifferentialistMatrix onOpenConsultation={() => openConsultation("contingent_audit")} />
-      </section>
-
-      {/* 8. ADVISORY & CONTINGENCY ENGAGEMENT TIERS */}
-      <section id="services" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
-        <ExecutiveServices onSelectTier={(tier) => openConsultation(tier)} />
-      </section>
+      </main>
 
       {/* 9. ENTERPRISE FOOTER */}
       <footer className="border-t border-[#1F2937] bg-[#0F172A] py-10 mt-12 font-mono text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="max-w-xl text-center md:text-left">
-            <h4 className="text-sm font-bold text-slate-100 mb-1">
-              Run a Forensic Pre-Payment Audit on 50 Historical Bills
-            </h4>
+            <h3 className="text-sm font-bold text-slate-100 mb-1">
+              Trade Systems Studio: Deterministic Trade Compliance Engineering
+            </h3>
             <p className="text-xs text-slate-400">
-              100% contingent on recovered cash. If Samuel does not uncover carrier overcharges or misclassified tariff exposure, you pay $0.
+              Built and maintained by Samuel Rencken. Every statutory figure computed in Python Decimal, every finding traceable to its source clause.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => openConsultation("contingent_audit")}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all rounded-md shadow-md"
+              onClick={openReview}
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors rounded-md"
             >
-              <span>Claim Free 50-Bill Audit ($0)</span>
+              <span>Schedule Architecture Review</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -927,7 +797,6 @@ export const DualPaneAuditViewer: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         activeConceptId={activeConceptId}
-        initialServiceTier={selectedServiceTier}
       />
 
       <ExecutiveDossierModal
@@ -956,24 +825,6 @@ export const DualPaneAuditViewer: React.FC = () => {
           setIsArchitectureModalOpen(true);
         }}
       />
-
-      {isFunnelStudioOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-5xl my-8">
-            <button
-              onClick={() => setIsFunnelStudioOpen(false)}
-              className="absolute -top-3 -right-3 z-50 p-2 bg-[#1E2533] border border-slate-700 text-slate-300 hover:text-white rounded-full shadow-lg"
-              title="Close Funnel Studio"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <FunnelRedesignStudio
-              initialMode="variation_a"
-              onClose={() => setIsFunnelStudioOpen(false)}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

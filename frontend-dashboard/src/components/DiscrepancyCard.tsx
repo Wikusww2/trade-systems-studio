@@ -39,10 +39,10 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
       case "critical":
         return {
           badge:
-            "bg-rose-500/10 text-rose-400 border-rose-500/30",
-          icon: <AlertOctagon className="w-4 h-4 text-rose-400 shrink-0" />,
-          accent: "text-rose-400",
-          highlightBg: "hover:border-rose-500/50",
+            "bg-red-500/10 text-red-400 border-red-500/30",
+          icon: <AlertOctagon className="w-4 h-4 text-red-400 shrink-0" />,
+          accent: "text-red-400",
+          highlightBg: "hover:border-red-500/50",
         };
       case "opportunity":
         return {
@@ -72,12 +72,12 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
       onMouseEnter={() => onHover(discrepancy.id)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onClick(discrepancy.id)}
-      className={`p-4 transition-all duration-200 cursor-pointer border rounded-lg ${
+      className={`p-4 transition-colors duration-200 cursor-pointer border rounded-lg ${
         isActive
           ? "bg-[#1E293B] border-blue-500 ring-1 ring-blue-500 shadow-lg"
           : isUncertain
-          ? "bg-[#141B28] border-dashed border-amber-500/70 hover:border-amber-400"
-          : `bg-[#141B28] border-[#1F2937] ${style.highlightBg}`
+          ? "bg-[#0F172A] border-dashed border-amber-500/70 hover:border-amber-400"
+          : `bg-[#0F172A] border-[#1F2937] ${style.highlightBg}`
       }`}
     >
       {/* Top Metadata Strip */}
@@ -89,7 +89,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
           >
             {discrepancy.severity}
           </span>
-          <span className="text-[10px] font-mono text-slate-400 bg-slate-900/60 px-2 py-0.5 border border-slate-800 rounded-md font-serif">
+          <span className="text-[10px] font-mono text-slate-400 bg-slate-900/60 px-2 py-0.5 border border-slate-800 rounded-md">
             {discrepancy.statutory_code}
           </span>
         </div>
@@ -109,10 +109,10 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
       </div>
 
       {/* Discrepancy Title */}
-      <h4 className="text-sm font-semibold text-slate-100 mb-1 flex items-start justify-between gap-2">
+      <h3 className="text-sm font-semibold text-slate-100 mb-1 flex items-start justify-between gap-2">
         <span>{discrepancy.title}</span>
         <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-      </h4>
+      </h3>
 
       {/* Concise Summary / Core Finding */}
       <p className="text-xs text-slate-300 leading-snug mb-2 line-clamp-2">

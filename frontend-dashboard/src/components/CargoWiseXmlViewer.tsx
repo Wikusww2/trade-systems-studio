@@ -149,14 +149,14 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
 
   return (
     <div className="w-full bg-[#0F172A] border border-[#1F2937] rounded-xl overflow-hidden font-mono text-xs shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 border-b border-[#1E293B]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 border-b border-[#1F2937]">
         <div className="flex items-center gap-2">
           <Code2 className="w-4 h-4 text-blue-400" />
           <span className="font-bold text-slate-200">CargoWise One eAdaptor XML (UniversalShipment v1.1)</span>
           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
             viewMode === "reconciled"
               ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-              : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+              : "bg-red-500/10 text-red-400 border border-red-500/20"
           }`}>
             {viewMode === "reconciled" ? "READY FOR INGESTION" : "COMPLIANCE HOLD"}
           </span>
@@ -175,7 +175,7 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
             <button
               onClick={() => setViewMode("raw")}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                viewMode === "raw" ? "bg-rose-600 text-white font-bold" : "text-slate-400 hover:text-slate-200"
+                viewMode === "raw" ? "bg-red-600 text-white font-bold" : "text-slate-400 hover:text-slate-200"
               }`}
             >
               Raw Unaudited XML
@@ -206,7 +206,7 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
         </pre>
       </div>
 
-      <div className="p-3 bg-[#0F172A] border-t border-[#1E293B] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-400">
+      <div className="p-3 bg-[#0F172A] border-t border-[#1F2937] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-400">
         <div className="flex items-center gap-2 text-[11px]">
           <span className="text-slate-400 font-semibold">eAdaptor Ingest Protocol:</span>
           <span className="text-slate-300">HTTP POST /xHub/UniversalShipment</span>

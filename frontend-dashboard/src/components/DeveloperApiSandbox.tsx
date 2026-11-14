@@ -110,25 +110,22 @@ X-GRI-Rule: WCO GRI 3(b) Essential Character
           <div className="flex bg-[#1E293B] rounded-lg p-0.5 border border-[#334155]/60">
             <button
               onClick={() => { setActiveEndpoint("cargowise"); setResponseOutput(null); }}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "cargowise" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${activeEndpoint === "cargowise" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
+                }`}
             >
               /export/cargowise-xml
             </button>
             <button
               onClick={() => { setActiveEndpoint("evaluate_gri"); setResponseOutput(null); }}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "evaluate_gri" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${activeEndpoint === "evaluate_gri" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
+                }`}
             >
               /hts/classify
             </button>
             <button
               onClick={() => { setActiveEndpoint("valuation"); setResponseOutput(null); }}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "valuation" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${activeEndpoint === "valuation" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
+                }`}
             >
               /valuation/audit-entry
             </button>
@@ -169,7 +166,7 @@ X-GRI-Rule: WCO GRI 3(b) Essential Character
             <span>Terminal Response Payload</span>
             <span className="text-emerald-400">Deterministic Parity Verified</span>
           </div>
-          <pre className="p-3 bg-[#060911] rounded-lg border border-emerald-950 text-emerald-300/90 overflow-x-auto text-[10px] leading-relaxed max-h-48">
+          <pre className="p-3 bg-[#0B0F19] rounded-lg border border-emerald-950 text-emerald-300/90 overflow-x-auto text-[10px] leading-relaxed max-h-48">
             <code>{responseOutput}</code>
           </pre>
         </motion.div>

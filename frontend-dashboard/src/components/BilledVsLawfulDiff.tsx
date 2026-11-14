@@ -11,36 +11,36 @@ interface BilledVsLawfulDiffProps {
 export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptId }) => {
   if (conceptId === "client_upload_audit") {
     return (
-      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-sky-800/60 shadow-inner font-mono">
+      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-cobalt-800/60 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
-          <span className="flex items-center gap-1.5 font-bold text-sky-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+          <span className="flex items-center gap-1.5 font-bold text-cobalt-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cobalt-400 animate-pulse" />
             Client-Side Confidential Document Audit
           </span>
-          <span className="text-sky-400 font-semibold">100% On-Device Sandbox</span>
+          <span className="text-cobalt-400 font-semibold">100% On-Device Sandbox</span>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="bg-sky-950/30 border border-sky-900/60 p-2.5 rounded-md">
-            <div className="text-[10px] text-sky-400 font-bold uppercase mb-1 flex items-center justify-between">
+          <div className="bg-cobalt-950/30 border border-cobalt-900/60 p-2.5 rounded-md">
+            <div className="text-[10px] text-cobalt-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Security &amp; Privacy</span>
-              <ShieldCheck className="w-3 h-3 text-sky-400" />
+              <ShieldCheck className="w-3 h-3 text-cobalt-400" />
             </div>
             <div className="text-slate-300 text-[11px] leading-tight mb-1">
               Zero External Cloud Calls
             </div>
-            <div className="text-sky-300 font-bold text-sm">
+            <div className="text-cobalt-300 font-bold text-sm">
               Local Web Worker
             </div>
-            <div className="text-[10px] text-sky-200/70 mt-1">
+            <div className="text-[10px] text-cobalt-200/70 mt-1">
               Parsed in browser memory
             </div>
           </div>
 
-          <div className="bg-sky-950/50 border border-sky-700/60 p-2.5 rounded-md">
-            <div className="text-[10px] text-sky-300 font-bold uppercase mb-1 flex items-center justify-between">
+          <div className="bg-cobalt-950/50 border border-cobalt-700/60 p-2.5 rounded-md">
+            <div className="text-[10px] text-cobalt-300 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Statutory Engine</span>
-              <CheckCircle2 className="w-3 h-3 text-sky-400" />
+              <CheckCircle2 className="w-3 h-3 text-cobalt-400" />
             </div>
             <div className="text-slate-300 text-[11px] leading-tight mb-1">
               19 U.S.C. § 1592 &amp; Incoterms
@@ -56,13 +56,13 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-sky-600/20 border border-sky-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-sky-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-cobalt-600/20 border border-cobalt-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-cobalt-600/30 transition-colors"
         >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-sky-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-cobalt-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-cobalt-400" />
             <span>CONFIDENTIAL AUDIT COMPLETE: READY FOR ENTERPRISE INTEGRATION</span>
           </div>
-          <span className="text-[10px] text-sky-400 uppercase font-semibold">Protected</span>
+          <span className="text-[10px] text-cobalt-400 uppercase font-semibold">Protected</span>
         </div>
       </div>
     );
@@ -134,8 +134,8 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
     return (
       <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-slate-700/80 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
-          <span className="flex items-center gap-1.5 font-bold text-sky-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+          <span className="flex items-center gap-1.5 font-bold text-cobalt-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cobalt-400 animate-pulse" />
             Billed Invoice vs. Lawful Statutory Base
           </span>
           <span className="text-amber-400 font-semibold">19 CFR § 152.103 Valuation Defect</span>
@@ -143,18 +143,18 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           {/* As Billed Column */}
-          <div className="bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-md">
-            <div className="text-[10px] text-rose-400 font-bold uppercase mb-1 flex items-center justify-between">
+          <div className="bg-red-950/40 border border-red-900/60 p-2.5 rounded-md">
+            <div className="text-[10px] text-red-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>As Billed (Vendor)</span>
-              <AlertTriangle className="w-3 h-3 text-rose-400" />
+              <AlertTriangle className="w-3 h-3 text-red-400" />
             </div>
             <div className="text-slate-300 text-[11px] leading-tight mb-1">
               Line 1: 500 pcs × $45.00
             </div>
-            <div className="text-rose-400 font-bold text-sm">
+            <div className="text-red-400 font-bold text-sm">
               $25,500.00
             </div>
-            <div className="text-[10px] text-rose-300/70 mt-1 line-through decoration-rose-400">
+            <div className="text-[10px] text-red-300/70 mt-1 line-through decoration-red-400">
               Math: $3,000 arithmetic defect
             </div>
           </div>
@@ -180,13 +180,13 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         {/* The Intercept Stamp */}
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-rose-600/20 border border-rose-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-rose-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-red-600/20 border border-red-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-red-600/30 transition-colors"
         >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-red-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
             <span>INTERCEPTED: $3,000.00 OVERBILLING WITHHELD PRE-PAYMENT</span>
           </div>
-          <span className="text-[10px] text-rose-400 uppercase font-semibold">Protected</span>
+          <span className="text-[10px] text-red-400 uppercase font-semibold">Protected</span>
         </div>
       </div>
     );
@@ -196,8 +196,8 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
     return (
       <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-slate-700/80 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
-          <span className="flex items-center gap-1.5 font-bold text-sky-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+          <span className="flex items-center gap-1.5 font-bold text-cobalt-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cobalt-400 animate-pulse" />
             Ocean Carrier Bill vs. Contract Tariff Rate
           </span>
           <span className="text-amber-400 font-semibold">OSRA 2022 & FMC Docket 21-08</span>
@@ -205,18 +205,18 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           {/* As Invoiced Column */}
-          <div className="bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-md">
-            <div className="text-[10px] text-rose-400 font-bold uppercase mb-1 flex items-center justify-between">
+          <div className="bg-red-950/40 border border-red-900/60 p-2.5 rounded-md">
+            <div className="text-[10px] text-red-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Carrier Invoiced Total</span>
-              <AlertTriangle className="w-3 h-3 text-rose-400" />
+              <AlertTriangle className="w-3 h-3 text-red-400" />
             </div>
             <div className="text-slate-300 text-[11px] leading-tight mb-1">
               Base + Split + FSC + Detention
             </div>
-            <div className="text-rose-400 font-bold text-sm">
+            <div className="text-red-400 font-bold text-sm">
               $7,047.50
             </div>
-            <div className="text-[10px] text-rose-300/70 mt-1">
+            <div className="text-[10px] text-red-300/70 mt-1">
               3 unauthorized accessorial line items
             </div>
           </div>
@@ -242,13 +242,13 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         {/* The Intercept Stamp */}
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-rose-600/20 border border-rose-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-rose-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-red-600/20 border border-red-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-red-600/30 transition-colors"
         >
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-red-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
             <span>INTERCEPTED: $1,547.50 OVERBILLING (21.9% OF CARRIER BILL)</span>
           </div>
-          <span className="text-[10px] text-rose-400 uppercase font-semibold">Withheld</span>
+          <span className="text-[10px] text-red-400 uppercase font-semibold">Withheld</span>
         </div>
       </div>
     );
@@ -262,7 +262,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           CBP Form 7501 Duties Paid vs. 99% Re-Export Refund
         </span>
-        <span className="text-sky-400 font-semibold">19 U.S.C. § 1313(j)(1)</span>
+        <span className="text-cobalt-400 font-semibold">19 U.S.C. § 1313(j)(1)</span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-xs">

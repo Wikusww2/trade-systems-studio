@@ -83,7 +83,7 @@ export const ScenarioSelectorBar: React.FC<ScenarioSelectorBarProps> = ({
                 }`}
               >
                 {sc.severity === "critical" ? (
-                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                  <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
                 ) : (
                   <FileCheck2 className="w-3.5 h-3.5 text-emerald-400" />
                 )}
@@ -92,7 +92,7 @@ export const ScenarioSelectorBar: React.FC<ScenarioSelectorBarProps> = ({
                 <span
                   className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
                     sc.severity === "critical"
-                      ? "bg-rose-500/10 text-rose-400"
+                      ? "bg-red-500/10 text-red-400"
                       : "bg-emerald-500/10 text-emerald-400"
                   }`}
                 >

@@ -153,15 +153,15 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
   const renderedHeight = renderedWidth * pageAspectRatio;
 
   return (
-    <div className="flex flex-col h-full bg-slate-100 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] overflow-hidden">
+    <div className="flex flex-col h-full bg-slate-100 dark:bg-[#0B0F19] border border-slate-200 dark:border-[#1F2937] overflow-hidden">
       {/* Canvas Top Toolbar */}
-      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 bg-white dark:bg-[#14171E] border-b border-slate-200 dark:border-[#262B35] shrink-0">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 bg-white dark:bg-[#0F172A] border-b border-slate-200 dark:border-[#1F2937] shrink-0">
         <div className="flex items-center gap-2 truncate">
-          <FileText className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
+          <FileText className="w-4 h-4 text-cobalt-600 dark:text-cobalt-400 shrink-0" />
           <span className="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">
             {filename}
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 dark:bg-black/40 border border-slate-300 dark:border-[#2A2F3A] text-slate-600 dark:text-slate-400 shrink-0">
+          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 dark:bg-black/40 border border-slate-300 dark:border-[#1F2937] text-slate-600 dark:text-slate-400 shrink-0">
             PAGE 1 / {numPages}
           </span>
         </div>
@@ -171,16 +171,16 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
           <button
             onClick={triggerManualScan}
             title="Trigger Cybernetic Scanner Beam"
-            className="flex items-center gap-1 px-2 py-1 bg-sky-50 dark:bg-sky-950/80 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800 rounded-sm font-mono text-[10px] uppercase font-bold transition-all shadow-xs"
+            className="flex items-center gap-1 px-2 py-1 bg-cobalt-50 dark:bg-cobalt-950/80 hover:bg-cobalt-100 dark:hover:bg-cobalt-900/60 text-cobalt-700 dark:text-cobalt-300 border border-cobalt-300 dark:border-cobalt-800 rounded-sm font-mono text-[10px] uppercase font-bold transition-all shadow-xs"
           >
-            <Scan className="w-3 h-3 text-sky-600 dark:text-sky-400" />
+            <Scan className="w-3 h-3 text-cobalt-600 dark:text-cobalt-400" />
             <span className="hidden sm:inline">Laser Scan</span>
           </button>
 
           <button
             onClick={handleZoomOut}
             title="Zoom Out"
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#202530] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#262B35] rounded-sm"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1E293B] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#1F2937] rounded-sm"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
@@ -190,14 +190,14 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
           <button
             onClick={handleZoomIn}
             title="Zoom In"
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#202530] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#262B35] rounded-sm"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1E293B] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#1F2937] rounded-sm"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleResetZoom}
             title="Fit Scale"
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#202530] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#262B35] rounded-sm"
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1E293B] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#1F2937] rounded-sm"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -207,17 +207,17 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
       {/* Viewport Scroll Canvas */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto p-3 sm:p-6 flex justify-center items-start rectilinear-grid relative bg-slate-200/50 dark:bg-[#0B0D11]"
+        className="flex-1 overflow-auto p-3 sm:p-6 flex justify-center items-start rectilinear-grid relative bg-slate-200/50 dark:bg-[#0B0F19]"
       >
         {isLoading && (
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-slate-300 dark:bg-slate-800 overflow-hidden z-40">
-            <div className="h-full bg-sky-500 animate-pulse w-1/3" />
+            <div className="h-full bg-cobalt-500 animate-pulse w-1/3" />
           </div>
         )}
 
         {hasError ? (
-          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-white dark:bg-[#14171E] border border-rose-400 dark:border-rose-900/40 max-w-md text-center my-auto rounded-sm shadow-sm">
-            <AlertCircle className="w-10 h-10 text-rose-500 mb-3" />
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-white dark:bg-[#0F172A] border border-red-400 dark:border-red-900/40 max-w-md text-center my-auto rounded-sm shadow-sm">
+            <AlertCircle className="w-10 h-10 text-red-500 mb-3" />
             <h4 className="text-sm font-bold font-mono text-slate-900 dark:text-slate-100 mb-1">
               Document Stream Notice
             </h4>
@@ -228,7 +228,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
               href={resolveAssetPath(`/nightmares/${filename}`)}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-[#202530] hover:bg-slate-800 text-xs font-mono text-white border border-slate-700 transition-colors rounded-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-[#1E293B] hover:bg-slate-800 text-xs font-mono text-white border border-slate-700 transition-colors rounded-sm"
             >
               <span>Inspect Raw Document</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -282,9 +282,9 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                 const isUncertain = disc.confidence < 0.85;
 
                 // Color schemes based on severity for Light & Dark
-                let borderColor = "border-rose-600 dark:border-rose-500";
-                let bgColor = isSelected ? "bg-rose-500/25" : "bg-rose-500/12";
-                let badgeBg = "bg-rose-600 text-white dark:bg-rose-600 dark:text-white";
+                let borderColor = "border-red-600 dark:border-red-500";
+                let bgColor = isSelected ? "bg-red-500/25" : "bg-red-500/12";
+                let badgeBg = "bg-red-600 text-white dark:bg-red-600 dark:text-white";
 
                 if (disc.severity === "opportunity") {
                   borderColor = "border-emerald-600 dark:border-emerald-500";
@@ -320,7 +320,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                       isUncertain ? "border-dashed" : "border-solid"
                     } ${
                       isSelected
-                        ? "ring-2 ring-sky-500 dark:ring-sky-400 z-30 scale-[1.01]"
+                        ? "ring-2 ring-cobalt-500 dark:ring-cobalt-400 z-30 scale-[1.01]"
                         : "z-20 hover:scale-[1.005]"
                     }`}
                   >
@@ -339,7 +339,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
                     {/* Biometric Target Locked Indicator when active */}
                     {isSelected && (
-                      <div className="absolute -bottom-5 right-0 bg-sky-950 text-sky-400 border border-sky-500 font-mono text-[8px] font-bold px-1 py-0.2 rounded-xs tracking-wider flex items-center gap-1 shadow-md">
+                      <div className="absolute -bottom-5 right-0 bg-cobalt-950 text-cobalt-400 border border-cobalt-500 font-mono text-[8px] font-bold px-1 py-0.2 rounded-xs tracking-wider flex items-center gap-1 shadow-md">
                         <Crosshair className="w-2.5 h-2.5 animate-spin" />
                         <span>TARGET LOCKED</span>
                       </div>

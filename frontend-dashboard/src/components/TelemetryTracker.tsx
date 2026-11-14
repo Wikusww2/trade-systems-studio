@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { recordTelemetry } from "@/lib/supabase";
 import { LeadCaptureModal } from "./LeadCaptureModal";
-import { ShieldAlert, Sparkles, ArrowRight, Activity } from "lucide-react";
+import { ShieldAlert, ArrowRight, Activity } from "lucide-react";
 
 interface TelemetryTrackerProps {
   activeConceptId: string;
@@ -26,9 +26,9 @@ export const TelemetryTracker: React.FC<TelemetryTrackerProps> = ({
   return (
     <>
       {/* Bottom Conversion Bar */}
-      <aside aria-label="Enterprise Audit Diagnostic Offer" className="w-full bg-[#1A1D24] border-t border-[#2A2F3A] px-6 py-3 shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
+      <aside aria-label="Enterprise Audit Diagnostic Offer" className="w-full bg-[#0F172A] border-t border-[#1F2937] px-6 py-3 shrink-0 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#FF3B30]/15 border border-[#FF3B30]/30 text-[#FF3B30]">
+          <div className="p-2 bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#EF4444]">
             <ShieldAlert className="w-4 h-4" />
           </div>
           <div>
@@ -54,9 +54,8 @@ export const TelemetryTracker: React.FC<TelemetryTrackerProps> = ({
 
           <button
             onClick={handleOpenModal}
-            className="w-full md:w-auto px-5 py-2.5 bg-[#FF3B30] hover:bg-red-600 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all duration-150 flex items-center justify-center gap-2 border border-red-500 shadow-lg shadow-red-950/20"
+            className="w-full md:w-auto px-5 py-2.5 bg-[#EF4444] hover:bg-red-600 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all duration-150 flex items-center justify-center gap-2 border border-red-500 shadow-lg shadow-red-950/20"
           >
-            <Sparkles className="w-3.5 h-3.5" />
             <span>Claim Free 25-Invoice Audit</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, Terminal, Cpu, FileText, ExternalLink, ShieldCheck, Download, Code, Play, Copy, Check, RotateCcw, Send, Sparkles } from "lucide-react";
+import { X, CheckCircle2, Terminal, Cpu, FileText, ExternalLink, ShieldCheck, Download, Code, Play, Copy, Check, RotateCcw, Send } from "lucide-react";
 import { sound } from "@/lib/audio";
 
 interface SystemArchitectureModalProps {
@@ -315,12 +315,12 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="relative w-full max-w-4xl bg-[#121212] text-[#E2E8F0] border border-[#2A2F3A] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-4xl bg-[#0B0F19] text-[#F8FAFC] border border-[#1F2937] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Modal Header */}
-        <div className="p-5 border-b border-[#2A2F3A] bg-[#161920] flex items-center justify-between">
+        <div className="p-5 border-b border-[#1F2937] bg-[#0F172A] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-400">
+            <div className="w-8 h-8 rounded bg-cobalt-500/20 border border-cobalt-500/40 flex items-center justify-center text-cobalt-400">
               <Cpu className="w-4 h-4" />
             </div>
             <div>
@@ -330,7 +330,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </h3>
                 <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  <span>41/41 Tests Passing (1.77s)</span>
+                  <span>43/43 Tests Passing</span>
                 </span>
               </div>
               <p className="text-xs text-[#94A3B8] font-mono mt-0.5">
@@ -347,7 +347,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
         </div>
 
         {/* Tab Selector */}
-        <div className="flex items-center gap-1 px-5 pt-3 bg-[#161920] border-b border-[#2A2F3A] text-xs font-mono">
+        <div className="flex items-center gap-1 px-5 pt-3 bg-[#0F172A] border-b border-[#1F2937] text-xs font-mono">
           <button
             onClick={() => {
               sound.playTick();
@@ -355,7 +355,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
             }}
             className={`px-3 py-2 border-b-2 font-semibold transition-all ${
               activeTab === "architecture"
-                ? "border-sky-400 text-sky-400 bg-sky-950/20"
+                ? "border-cobalt-400 text-cobalt-400 bg-cobalt-950/20"
                 : "border-transparent text-[#94A3B8] hover:text-white"
             }`}
           >
@@ -373,7 +373,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 : "border-transparent text-[#94A3B8] hover:text-white"
             }`}
           >
-            <span>02. Pytest Execution (41/41)</span>
+            <span>02. Pytest Execution (43/43)</span>
           </button>
 
           <button
@@ -440,7 +440,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
           {/* TAB 1: ARCHITECTURE */}
           {activeTab === "architecture" && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#1A1D24] border border-[#2A2F3A] space-y-2">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center gap-2">
                   <span>🏛️</span>
                   <span>End-to-End Enterprise Dataflow Pipeline</span>
@@ -451,7 +451,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
               </div>
 
               {/* Architecture Blueprint Diagram */}
-              <div className="p-4 rounded-lg bg-[#0E1015] border border-[#2A2F3A] font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto">
+              <div className="p-4 rounded-lg bg-[#0B0F19] border border-[#1F2937] font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto">
                 <pre className="text-cyan-400 text-[11px] leading-tight">
 {`┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                        TRADETECH SYSTEMS STUDIO: SYSTEM ARCHITECTURE                  │
@@ -487,14 +487,14 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
 
               {/* Invariants Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded bg-[#1A1D24] border border-[#2A2F3A]">
-                  <div className="text-sky-400 font-bold uppercase text-[11px]">Strict Mathematical Determinism</div>
+                <div className="p-3.5 rounded bg-[#0F172A] border border-[#1F2937]">
+                  <div className="text-cobalt-400 font-bold uppercase text-[11px]">Strict Mathematical Determinism</div>
                   <div className="text-[#94A3B8] text-[11px] mt-1">
                     Zero LLM arithmetic. 100% of duties, surcharges, amortizations, and penalty exposure calculated using Python <code className="text-white">decimal.Decimal</code> with <code className="text-white">ROUND_HALF_UP</code>.
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded bg-[#1A1D24] border border-[#2A2F3A]">
+                <div className="p-3.5 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-emerald-400 font-bold uppercase text-[11px]">Sub-Millisecond Engine Latency</div>
                   <div className="text-[#94A3B8] text-[11px] mt-1">
                     Pre-Payment freight audit runs in <code className="text-white">0.08ms</code>. HTS GRI classification in <code className="text-white">5.60ms</code>. Assist valuation audit in <code className="text-white">4.67ms</code>.
@@ -513,11 +513,11 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     Automated Pytest Suite Execution
                   </h4>
                   <div className="text-[11px] text-[#94A3B8] font-mono mt-0.5">
-                    Ran 41 test suites in 1.77 seconds • Exit Code: 0 • Zero Failures
+                    Ran 43 tests • Exit Code: 0 • Zero Failures
                   </div>
                 </div>
                 <span className="px-2.5 py-1 text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/40 rounded font-bold">
-                  41 / 41 PASSED
+                  43 / 43 PASSED
                 </span>
               </div>
 
@@ -550,7 +550,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   <div className="flex justify-between"><span>tests/test_edge_cases.py::test_duty_drawback_untimely_5yr_window</span><span className="text-emerald-400 font-bold">PASSED [100%]</span></div>
                 </div>
                 <div className="text-emerald-400 mt-3 font-bold">
-                  ============================= 41 passed in 1.77s =============================
+                  ============================= 43 passed =============================
                 </div>
               </div>
             </div>
@@ -559,7 +559,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
           {/* TAB 3: MATHEMATICAL PROOF */}
           {activeTab === "math_proof" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-[#1A1D24] border border-[#2A2F3A]">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937]">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                   Why Floating-Point Arithmetic Fails in Regulated Customs
                 </h4>
@@ -570,33 +570,33 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
 
               {/* Comparative Table */}
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs font-mono border border-[#2A2F3A] rounded">
-                  <thead className="bg-[#161920] text-[#94A3B8] uppercase text-[10px] tracking-wider border-b border-[#2A2F3A]">
+                <table className="w-full text-left text-xs font-mono border border-[#1F2937] rounded">
+                  <thead className="bg-[#0F172A] text-[#94A3B8] uppercase text-[10px] tracking-wider border-b border-[#1F2937]">
                     <tr>
                       <th className="py-2.5 px-3">Calculation Domain</th>
-                      <th className="py-2.5 px-3 text-rose-400">Standard Float / LLM Wrapper</th>
+                      <th className="py-2.5 px-3 text-red-400">Standard Float / LLM Wrapper</th>
                       <th className="py-2.5 px-3 text-emerald-400">Samuel's Deterministic Decimal</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#2A2F3A] text-[11px]">
+                  <tbody className="divide-y divide-[#1F2937] text-[11px]">
                     <tr>
                       <td className="py-2.5 px-3 font-bold text-white">Line Multiplication ($0.10 + $0.20)</td>
-                      <td className="py-2.5 px-3 text-rose-400">$0.30000000000000004 (Drift)</td>
+                      <td className="py-2.5 px-3 text-red-400">$0.30000000000000004 (Drift)</td>
                       <td className="py-2.5 px-3 text-emerald-400 font-bold">$0.30 (Exact)</td>
                     </tr>
                     <tr>
                       <td className="py-2.5 px-3 font-bold text-white">MPF Cap (0.3464% on $500k)</td>
-                      <td className="py-2.5 px-3 text-rose-400">Overbills uncapped $1,732.00</td>
+                      <td className="py-2.5 px-3 text-red-400">Overbills uncapped $1,732.00</td>
                       <td className="py-2.5 px-3 text-emerald-400 font-bold">Clamped to statutory max $614.35</td>
                     </tr>
                     <tr>
                       <td className="py-2.5 px-3 font-bold text-white">OFAC 50% Blocked Aggregation</td>
-                      <td className="py-2.5 px-3 text-rose-400">Fails on multi-tier holding shells</td>
+                      <td className="py-2.5 px-3 text-red-400">Fails on multi-tier holding shells</td>
                       <td className="py-2.5 px-3 text-emerald-400 font-bold">Recursive sub-200ms graph traversal</td>
                     </tr>
                     <tr>
                       <td className="py-2.5 px-3 font-bold text-white">Prior Disclosure Tender (19 CFR § 162.74)</td>
-                      <td className="py-2.5 px-3 text-rose-400">Incalculable via LLM prompting</td>
+                      <td className="py-2.5 px-3 text-red-400">Incalculable via LLM prompting</td>
                       <td className="py-2.5 px-3 text-emerald-400 font-bold">Duty Loss + 19 USC 1505 Interest tender</td>
                     </tr>
                   </tbody>
@@ -608,7 +608,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
           {/* TAB 4: CANDIDATE WHITE PAPERS & RESUME */}
           {activeTab === "candidate" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-[#1A1D24] border border-[#2A2F3A]">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937]">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                   Candidate Dossier & Architecture Whitepapers
                 </h4>
@@ -622,13 +622,13 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   href="https://github.com/sssammyboyyy/trade-systems-studio/blob/main/docs/SAMUEL_EXECUTIVE_RESUME.md"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-4 rounded bg-[#161920] border border-[#2A2F3A] hover:border-sky-500 transition-all group block"
+                  className="p-4 rounded bg-[#0F172A] border border-[#1F2937] hover:border-cobalt-500 transition-all group block"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white group-hover:text-sky-400">
+                    <span className="font-bold text-white group-hover:text-cobalt-400">
                       📄 Executive Resume ($160k–$260k+)
                     </span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-sky-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-cobalt-400" />
                   </div>
                   <div className="text-[11px] text-[#94A3B8] mt-1">
                     ATS-optimized, recruiter-vetted Principal AI Systems Architect resume.
@@ -637,7 +637,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
 
                 <a
                   href={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/whitepaper`}
-                  className="p-4 rounded bg-[#161920] border border-[#2A2F3A] hover:border-cyan-500 transition-all group block"
+                  className="p-4 rounded bg-[#0F172A] border border-[#1F2937] hover:border-cyan-500 transition-all group block"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white group-hover:text-cyan-400 flex items-center gap-1.5">
@@ -655,13 +655,13 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   href="https://github.com/sssammyboyyy/trade-systems-studio/blob/main/docs/TARGET_ACCOUNTS_AND_DECISION_MAKERS.md"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-4 rounded bg-[#161920] border border-[#2A2F3A] hover:border-sky-500 transition-all group block"
+                  className="p-4 rounded bg-[#0F172A] border border-[#1F2937] hover:border-cobalt-500 transition-all group block"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white group-hover:text-sky-400">
+                    <span className="font-bold text-white group-hover:text-cobalt-400">
                       🎯 Target Accounts Dossier
                     </span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-sky-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-cobalt-400" />
                   </div>
                   <div className="text-[11px] text-[#94A3B8] mt-1">
                     Sniper protocol for Raft, Expedock, Altana AI, Flexport, and WiseTech.
@@ -672,7 +672,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   href="https://github.com/sssammyboyyy/trade-systems-studio"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-4 rounded bg-[#161920] border border-[#2A2F3A] hover:border-emerald-500 transition-all group block"
+                  className="p-4 rounded bg-[#0F172A] border border-[#1F2937] hover:border-emerald-500 transition-all group block"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white group-hover:text-emerald-400">
@@ -681,7 +681,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400" />
                   </div>
                   <div className="text-[11px] text-[#94A3B8] mt-1">
-                    FastAPI + Next.js 15 repository with 41/41 passing pytest test suites.
+                    FastAPI + Next.js 15 repository with 43/43 passing pytest tests.
                   </div>
                 </a>
               </div>
@@ -691,7 +691,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
           {/* TAB 5: INTERACTIVE API PLAYGROUND */}
           {activeTab === "playground" && (
             <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-[#1A1D24] border border-[#2A2F3A] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center gap-2">
                     <Terminal className="w-4 h-4 text-cyan-400" />
@@ -722,14 +722,14 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                       className={`px-3 py-1.5 rounded text-xs font-mono border transition-all flex items-center gap-2 ${
                         isSelected
                           ? "bg-slate-800 border-cyan-400 text-white shadow-lg shadow-cyan-950/40"
-                          : "bg-[#161920] border-[#2A2F3A] text-slate-400 hover:text-slate-200 hover:border-slate-600"
+                          : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200 hover:border-slate-600"
                       }`}
                     >
                       <span
                         className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
                           ep.method === "POST"
                             ? "bg-emerald-500/20 text-emerald-400"
-                            : "bg-sky-500/20 text-sky-400"
+                            : "bg-cobalt-500/20 text-cobalt-400"
                         }`}
                       >
                         {ep.method}
@@ -741,14 +741,14 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
               </div>
 
               {/* Active Endpoint Info Card */}
-              <div className="p-3.5 rounded bg-[#161920] border border-[#2A2F3A] space-y-1.5 font-mono text-xs">
+              <div className="p-3.5 rounded bg-[#0F172A] border border-[#1F2937] space-y-1.5 font-mono text-xs">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         selectedEndpoint.method === "POST"
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                          : "bg-cobalt-500/20 text-cobalt-400 border border-cobalt-500/30"
                       }`}
                     >
                       {selectedEndpoint.method}
@@ -767,8 +767,8 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
               {/* Request and Response Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Request Side */}
-                <div className="flex flex-col rounded bg-[#0E1015] border border-[#2A2F3A] overflow-hidden">
-                  <div className="p-2.5 bg-[#161920] border-b border-[#2A2F3A] flex items-center justify-between text-xs font-mono">
+                <div className="flex flex-col rounded bg-[#0B0F19] border border-[#1F2937] overflow-hidden">
+                  <div className="p-2.5 bg-[#0F172A] border-b border-[#1F2937] flex items-center justify-between text-xs font-mono">
                     <span className="text-slate-300 font-semibold flex items-center gap-1.5">
                       <Code className="w-3.5 h-3.5 text-cyan-400" />
                       <span>Request Payload (JSON)</span>
@@ -805,7 +805,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   </div>
 
                   {/* Execution Bar */}
-                  <div className="p-3 bg-[#161920] border-t border-[#2A2F3A] flex items-center justify-between gap-2">
+                  <div className="p-3 bg-[#0F172A] border-t border-[#1F2937] flex items-center justify-between gap-2">
                     <button
                       onClick={handleExecute}
                       disabled={isExecuting}
@@ -826,7 +826,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
 
                     <button
                       onClick={() => copyToClipboard(getCurlSnippet(), "curl")}
-                      className="px-3 py-2 rounded bg-[#1A1D24] hover:bg-slate-800 text-slate-300 font-mono text-xs border border-[#2A2F3A] hover:border-slate-500 transition-all flex items-center gap-1.5"
+                      className="px-3 py-2 rounded bg-[#0F172A] hover:bg-slate-800 text-slate-300 font-mono text-xs border border-[#1F2937] hover:border-slate-500 transition-all flex items-center gap-1.5"
                     >
                       {copiedCurl ? (
                         <>
@@ -844,8 +844,8 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </div>
 
                 {/* Response Side */}
-                <div className="flex flex-col rounded bg-[#0E1015] border border-[#2A2F3A] overflow-hidden">
-                  <div className="p-2.5 bg-[#161920] border-b border-[#2A2F3A] flex items-center justify-between text-xs font-mono">
+                <div className="flex flex-col rounded bg-[#0B0F19] border border-[#1F2937] overflow-hidden">
+                  <div className="p-2.5 bg-[#0F172A] border-b border-[#1F2937] flex items-center justify-between text-xs font-mono">
                     <div className="flex items-center gap-2">
                       <span className="text-slate-300 font-semibold">Response</span>
                       <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">
@@ -876,12 +876,12 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   </div>
 
                   <div className="p-3 flex-1 overflow-y-auto max-h-52 h-52 scrollbar-thin">
-                    <pre className="text-sky-300 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
+                    <pre className="text-cobalt-300 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
                       {activeResponse}
                     </pre>
                   </div>
 
-                  <div className="p-2.5 bg-[#161920] border-t border-[#2A2F3A] text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                  <div className="p-2.5 bg-[#0F172A] border-t border-[#1F2937] text-[10px] font-mono text-slate-400 flex items-center justify-between">
                     <span>Coordinate Space: [0, 1000) Normalized</span>
                     <span className="text-emerald-400 font-semibold">Zero Cloud OCR Overhead</span>
                   </div>
@@ -889,7 +889,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
               </div>
 
               {/* cURL Display Snippet */}
-              <div className="p-3 rounded bg-[#0A0C10] border border-[#2A2F3A] font-mono text-xs space-y-1">
+              <div className="p-3 rounded bg-[#0B0F19] border border-[#1F2937] font-mono text-xs space-y-1">
                 <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold flex items-center justify-between">
                   <span>Terminal Reproduction Command</span>
                   <span className="text-cyan-400">Ready to paste</span>
@@ -905,7 +905,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
           {activeTab === "screener" && (
             <div className="space-y-5 font-mono">
               {/* Header Card */}
-              <div className="p-4 rounded-lg bg-[#1A1D24] border border-[#2A2F3A] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -923,7 +923,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
               </div>
 
               {/* 30-Second Elevator Pitch */}
-              <div className="p-4 rounded-lg bg-[#161920] border border-[#2A2F3A] space-y-2.5">
+              <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                     <span>🎙️</span>
@@ -937,7 +937,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                       sound.playTick();
                       setTimeout(() => setCopiedPitch(false), 2000);
                     }}
-                    className="px-2.5 py-1 rounded bg-[#1A1D24] hover:bg-slate-800 text-[11px] text-slate-300 border border-[#2A2F3A] hover:border-slate-500 transition-all flex items-center gap-1"
+                    className="px-2.5 py-1 rounded bg-[#0F172A] hover:bg-slate-800 text-[11px] text-slate-300 border border-[#1F2937] hover:border-slate-500 transition-all flex items-center gap-1"
                   >
                     {copiedPitch ? (
                       <>
@@ -952,14 +952,14 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans bg-[#0E1015] p-3 rounded border border-slate-800/80">
+                <p className="text-xs text-slate-300 leading-relaxed font-sans bg-[#0B0F19] p-3 rounded border border-slate-800/80">
                   &ldquo;I am a <strong>Principal AI Systems Architect and Lead TradeTech Engineer</strong> specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected <strong>TradeTech Systems Studio</strong>: an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.&rdquo;
                 </p>
               </div>
 
               {/* Compensation Anchors */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                <div className="p-3.5 rounded bg-[#0F172A] border border-[#1F2937] space-y-1">
                   <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
                     Full-Time Principal / Lead Architect
                   </div>
@@ -971,7 +971,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                <div className="p-3.5 rounded bg-[#0F172A] border border-[#1F2937] space-y-1">
                   <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
                     Enterprise Advisory / Architecture Sprint
                   </div>
@@ -992,7 +992,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                  <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937] space-y-1">
                     <div className="text-amber-400 font-bold">
                       Q1: &ldquo;Why TradeTech and customs compliance specifically?&rdquo;
                     </div>
@@ -1001,7 +1001,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     </div>
                   </div>
 
-                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                  <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937] space-y-1">
                     <div className="text-amber-400 font-bold">
                       Q2: &ldquo;How do you use LLMs in your architecture?&rdquo;
                     </div>
@@ -1010,28 +1010,28 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     </div>
                   </div>
 
-                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                  <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937] space-y-1">
                     <div className="text-amber-400 font-bold">
                       Q3: &ldquo;Can you handle high volume? What are your benchmarks?&rdquo;
                     </div>
                     <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
-                      &ldquo;Our engine was benchmarked across 3,000 continuous enterprise audits on standard cloud hardware: it executes at <strong>33,496 audits per second</strong> with a p99 latency under <strong>0.09 milliseconds</strong> and a memory footprint under 65 MB RSS per worker. The architecture is fully containerized and verified across 41 automated pytest suites.&rdquo;
+                      &ldquo;Our engine was benchmarked across 3,000 continuous enterprise audits on standard cloud hardware: it executes at <strong>33,496 audits per second</strong> with a p99 latency under <strong>0.09 milliseconds</strong> and a memory footprint under 65 MB RSS per worker. The architecture is fully containerized and verified across 43 automated pytest tests.&rdquo;
                     </div>
                   </div>
 
-                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                  <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937] space-y-1">
                     <div className="text-amber-400 font-bold">
                       Q4: &ldquo;Where can I see your work?&rdquo;
                     </div>
                     <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
-                      &ldquo;Everything is live and verified on the web right now. You can test the interactive dual-pane console at <strong>sssammyboyyy.github.io/trade-systems-studio</strong>, read our web whitepaper at <strong>/whitepaper</strong>, or review our open-source monorepo on GitHub with 41 passing test suites. You can even drop one of your own company's PDF invoices into the browser for an instant, confidential on-device audit.&rdquo;
+                      &ldquo;Everything is live and verified on the web right now. You can test the interactive dual-pane console at <strong>sssammyboyyy.github.io/trade-systems-studio</strong>, read our web whitepaper at <strong>/whitepaper</strong>, or review our open-source monorepo on GitHub with 43 passing tests. You can even drop one of your own company's PDF invoices into the browser for an instant, confidential on-device audit.&rdquo;
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 3 Reverse Questions */}
-              <div className="p-4 rounded-lg bg-[#0E1015] border border-[#2A2F3A] space-y-2">
+              <div className="p-4 rounded-lg bg-[#0B0F19] border border-[#1F2937] space-y-2">
                 <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
                   <span>🎯</span>
                   <span>3 Killer Reverse Questions to Ask Hiring Committees</span>
@@ -1053,14 +1053,14 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-[#2A2F3A] bg-[#161920] flex items-center justify-between text-xs font-mono">
+        <div className="p-4 border-t border-[#1F2937] bg-[#0F172A] flex items-center justify-between text-xs font-mono">
           <div className="text-[#94A3B8] flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>Samuel • Available for Principal Roles &amp; Advisory Sprints</span>
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded bg-sky-500 hover:bg-sky-400 text-black font-bold uppercase tracking-wider transition-all"
+            className="px-4 py-2 rounded bg-cobalt-500 hover:bg-cobalt-400 text-black font-bold uppercase tracking-wider transition-all"
           >
             Close Blueprint
           </button>
