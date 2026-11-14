@@ -104,8 +104,12 @@ trade-systems-studio/
 │   ├── SAMUEL_EXECUTIVE_RESUME.md               # ATS-optimized Principal Architect resume
 │   ├── TRADETECH_SYSTEMS_ARCHITECTURE_WHITEPAPER.md # Technical deep dive across all 6 engines
 │   ├── PERFORMANCE_AND_SCALE_BENCHMARKS.md      # p50/p95/p99 latency benchmarks (33k audits/sec)
+│   ├── SYSTEM_DESIGN_INTERVIEW_DEFENSE.md       # Verbatim technical interview answers & proofs
 │   ├── TARGET_ACCOUNTS_AND_DECISION_MAKERS.md   # Challenger Sale outreach packs for Raft, Altana, Expedock
 │   └── RECRUITER_BRIEFING_PACK.md               # Screener defense & positioning guide
+│
+├── outreach_campaign/           # 6 Tailored Executive Outreach Packs (Altana, Zonos, Raft, etc.)
+├── scripts/                     # Automation & Outreach Dispatch Tools (sniper_dispatch.py)
 │
 ├── frontend-dashboard/          # Next.js 15 App Router "Nightmare Suite" Console
 │   ├── src/
