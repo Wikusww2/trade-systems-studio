@@ -118,14 +118,22 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none flex items-end sm:items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-[2px] animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-[2px] animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          sound.playTick();
+          onClose();
+        }
+      }}
+    >
       <motion.div
         key={currentStep.id}
         initial={{ opacity: 0, y: 16, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -16, scale: 0.98 }}
         transition={{ duration: 0.2 }}
-        className="pointer-events-auto w-full max-w-xl bg-[#14171E] text-[#E2E8F0] border-2 border-cyan-500/60 rounded-xl shadow-2xl shadow-cyan-950/50 overflow-hidden flex flex-col font-mono"
+        className="w-full max-w-xl bg-[#14171E] text-[#E2E8F0] border-2 border-cyan-500/60 rounded-xl shadow-2xl shadow-cyan-950/50 overflow-hidden flex flex-col font-mono"
       >
         {/* Tour Header */}
         <div className="p-4 bg-[#1A1D24] border-b border-[#2A2F3A] flex items-center justify-between">
@@ -202,6 +210,7 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
             {!isFirst && (
               <button
                 onClick={handlePrev}
+                data-testid="tour-prev-btn"
                 className="px-3 py-1.5 rounded bg-[#1A1D24] hover:bg-slate-800 text-slate-300 text-xs border border-[#2A2F3A] transition-all flex items-center gap-1"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -217,12 +226,14 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
                     onClose();
                     onOpenArchitectureModal();
                   }}
+                  data-testid="tour-finish-arch-btn"
                   className="px-3.5 py-1.5 rounded bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-emerald-950/40"
                 >
                   Open Architecture Proof
                 </button>
                 <button
                   onClick={onClose}
+                  data-testid="tour-finish-btn"
                   className="px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold uppercase tracking-wider transition-all"
                 >
                   Finish
@@ -231,6 +242,7 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
             ) : (
               <button
                 onClick={handleNext}
+                data-testid="tour-next-btn"
                 className="px-4 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 shadow-lg shadow-cyan-950/40"
               >
                 <span>Next</span>
