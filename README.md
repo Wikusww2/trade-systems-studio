@@ -100,6 +100,13 @@ trade-systems-studio/
 │   ├── tests/                   # 41 automated test suites (pytest -v)
 │   └── main.py
 │
+├── docs/                        # Executive Briefing & Architecture Dossiers
+│   ├── SAMUEL_EXECUTIVE_RESUME.md               # ATS-optimized Principal Architect resume
+│   ├── TRADETECH_SYSTEMS_ARCHITECTURE_WHITEPAPER.md # Technical deep dive across all 6 engines
+│   ├── PERFORMANCE_AND_SCALE_BENCHMARKS.md      # p50/p95/p99 latency benchmarks (33k audits/sec)
+│   ├── TARGET_ACCOUNTS_AND_DECISION_MAKERS.md   # Challenger Sale outreach packs for Raft, Altana, Expedock
+│   └── RECRUITER_BRIEFING_PACK.md               # Screener defense & positioning guide
+│
 ├── frontend-dashboard/          # Next.js 15 App Router "Nightmare Suite" Console
 │   ├── src/
 │   │   ├── components/
@@ -145,6 +152,11 @@ pytest -v
 # 2. Verify Frontend Production Static Export
 cd frontend-dashboard
 npm run build
+
+# 3. Run Sub-Millisecond Concurrency Benchmark (3,000 Audits in <0.1s)
+cd backend-engine
+python benchmark.py
+# Outputs p50/p95/p99 breakdown to docs/PERFORMANCE_AND_SCALE_BENCHMARKS.md
 ```
 
 ---
