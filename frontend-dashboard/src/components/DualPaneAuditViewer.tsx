@@ -1,0 +1,728 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { AuditResult, KillShotMetrics } from "@/lib/types";
+import { fetchAudit, fetchAggregateMetrics } from "@/lib/api";
+import dynamic from "next/dynamic";
+import { DiscrepancyCard } from "./DiscrepancyCard";
+import { LeadCaptureModal } from "./LeadCaptureModal";
+import { RoiCalculator } from "./RoiCalculator";
+import { ExecutiveServices } from "./ExecutiveServices";
+import { BilledVsLawfulDiff } from "./BilledVsLawfulDiff";
+import { PenaltyExposureLadder } from "./PenaltyExposureLadder";
+import { DifferentialistMatrix } from "./DifferentialistMatrix";
+import { ExecutiveDossierModal } from "./ExecutiveDossierModal";
+import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
+import { RollingNumber } from "./RollingNumber";
+import { sound } from "@/lib/audio";
+import { recordTelemetry } from "@/lib/supabase";
+import { resolveAssetPath } from "@/lib/assets";
+import {
+  Scale,
+  DollarSign,
+  FileCheck2,
+  Cpu,
+  Shield,
+  ArrowRight,
+  ExternalLink,
+  ChevronRight,
+  CheckCircle2,
+  Clock,
+  Lock,
+  Sun,
+  Moon,
+  Menu,
+  X,
+  FileText,
+  AlertOctagon,
+  Volume2,
+  VolumeX,
+  Printer,
+  Sparkles,
+  Crosshair,
+  Briefcase,
+} from "lucide-react";
+
+const PdfOverlayCanvas = dynamic(
+  () => import("./PdfOverlayCanvas").then((mod) => mod.PdfOverlayCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center h-full bg-slate-100 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#202530] text-slate-500 font-mono text-xs gap-3">
+        <div className="w-6 h-6 border-2 border-sky-600 dark:border-sky-400 border-t-transparent animate-spin rounded-full" />
+        <span>Initializing High-Precision Document Lens...</span>
+      </div>
+    ),
+  }
+);
+
+const CONCEPTS = [
+  {
+    id: "concept_1_customs",
+    name: "01 / Customs Valuation & 1592 Defense",
+    shortTag: "CUSTOMS FIREWALL",
+    icon: <Scale className="w-4 h-4" />,
+    statute: "19 U.S.C. § 1592 & 19 CFR § 152.103",
+    metricLabel: "Penalty Exposure Avoided",
+    metricColor: "text-rose-600 dark:text-rose-400",
+  },
+  {
+    id: "concept_2_freight",
+    name: "02 / Pre-Payment Freight Overbilling",
+    shortTag: "FREIGHT AUDIT",
+    icon: <DollarSign className="w-4 h-4" />,
+    statute: "FMC Docket 21-08 & OSRA 2022",
+    metricLabel: "Carrier Overbilling Caught",
+    metricColor: "text-rose-600 dark:text-rose-400",
+  },
+  {
+    id: "concept_3_drawback",
+    name: "03 / Section 1313 Duty Drawback",
+    shortTag: "DUTY DRAWBACK",
+    icon: <FileCheck2 className="w-4 h-4" />,
+    statute: "19 U.S.C. § 1313 Unused Merchandise",
+    metricLabel: "99% Cash Refund Unlocked",
+    metricColor: "text-emerald-600 dark:text-emerald-400",
+  },
+];
+
+export const DualPaneAuditViewer: React.FC = () => {
+  const [activeConceptId, setActiveConceptId] = useState<string>("concept_1_customs");
+  const [auditData, setAuditData] = useState<AuditResult | null>(null);
+  const [aggregateMetrics, setAggregateMetrics] = useState<KillShotMetrics | null>(null);
+  const [activeDiscrepancyId, setActiveDiscrepancyId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
+  const [selectedServiceTier, setSelectedServiceTier] = useState<string>("contingent_audit");
+
+  // ICP Persona Lens ('cfo' | 'counsel')
+  const [persona, setPersona] = useState<IcpPersona>("cfo");
+
+  // Audio Haptics Mute State
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
+
+  // Mobile segmented view state ('doc' | 'findings')
+  const [mobileTab, setMobileTab] = useState<"findings" | "doc">("findings");
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+
+  // Theme state: default to 'light' as requested by user, with toggle
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    // Check saved theme or default to light
+    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
+    const initialTheme = saved || "light";
+    setTheme(initialTheme);
+    if (initialTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
+    setIsAudioMuted(sound.getMuted());
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    sound.playTick();
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    Promise.all([fetchAudit(activeConceptId), fetchAggregateMetrics()]).then(
+      ([auditRes, metricsRes]) => {
+        if (!isMounted) return;
+        setAuditData(auditRes);
+        setAggregateMetrics(metricsRes);
+        setIsLoading(false);
+      }
+    );
+
+    recordTelemetry({
+      event_type: "concept_switch",
+      concept_id: activeConceptId,
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeConceptId]);
+
+  const handleCardClick = (id: string) => {
+    setActiveDiscrepancyId(id);
+    sound.playTick();
+    recordTelemetry({
+      event_type: "discrepancy_card_selected",
+      concept_id: activeConceptId,
+      metadata: { discrepancy_id: id },
+    });
+  };
+
+  const handleBboxClick = (id: string) => {
+    setActiveDiscrepancyId(id);
+    sound.playLock();
+    const cardEl = document.getElementById(`card-${id}`);
+    if (cardEl) {
+      cardEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
+  const openConsultation = (tier: string = "contingent_audit") => {
+    sound.playLock();
+    setSelectedServiceTier(tier);
+    setIsModalOpen(true);
+    setIsMobileNavOpen(false);
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0E1015] text-slate-900 dark:text-[#E2E8F0] flex flex-col font-sans transition-colors duration-200">
+      {/* 1. TOP GLOBAL NAVIGATION & IDENTITY */}
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#14171E]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#262B35] px-4 sm:px-6 lg:px-8 py-3 shadow-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          {/* Identity & Practice */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-sm bg-slate-900 dark:bg-sky-950 border border-slate-700 dark:border-sky-800 text-sky-400 flex items-center justify-center font-mono font-bold text-xs shadow-sm">
+              S
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold tracking-wider text-slate-900 dark:text-slate-100 uppercase">
+                  SAMUEL
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">•</span>
+                <span className="font-mono text-[10px] tracking-wider text-sky-700 dark:text-sky-400 uppercase font-semibold">
+                  TRADETECH SYSTEMS STUDIO
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+                Principal AI Systems Architect & Trade Compliance Lead
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Nav, Persona, Theme Toggle & Primary Conversion CTA */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <nav className="hidden xl:flex items-center gap-5 text-xs font-mono text-slate-600 dark:text-slate-400 mr-2">
+              <a href="#audit-workspace" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
+                Diagnostic Console
+              </a>
+              <a href="#roi-calculator" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
+                Value Model
+              </a>
+              <a href="#comparison-matrix" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
+                Differentialism
+              </a>
+              <a href="#services-menu" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
+                Advisory Services
+              </a>
+            </nav>
+
+            {/* Audio Micro-Haptics Toggle */}
+            <button
+              onClick={() => {
+                const nextMuted = sound.toggleMute();
+                setIsAudioMuted(nextMuted);
+                if (!nextMuted) sound.playTick();
+              }}
+              title={isAudioMuted ? "Enable Audio Haptics" : "Mute Audio Haptics"}
+              className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-[#1E2533] border border-slate-300 dark:border-[#2D3545] rounded-sm transition-all"
+            >
+              {isAudioMuted ? (
+                <VolumeX className="w-4 h-4 text-slate-400" />
+              ) : (
+                <Volume2 className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+              )}
+            </button>
+
+            {/* Theme Toggle (Light / Dark) */}
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+              className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-[#1E2533] border border-slate-300 dark:border-[#2D3545] rounded-sm transition-all"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-700" />
+              )}
+            </button>
+
+            <button
+              onClick={() => openConsultation("fractional_advisory")}
+              className="hidden sm:flex px-4 py-2 bg-sky-600 hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 text-white dark:text-slate-950 font-mono font-bold text-xs uppercase tracking-wider items-center gap-1.5 transition-all rounded-sm shadow-sm"
+            >
+              <span>Schedule Strategy Call</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+              className="lg:hidden p-2 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-sm"
+            >
+              {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Dropdown */}
+        {isMobileNavOpen && (
+          <div className="lg:hidden pt-3 pb-2 mt-2 border-t border-slate-200 dark:border-slate-800 space-y-2 font-mono text-xs">
+            <a
+              href="#audit-workspace"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+            >
+              Diagnostic Console
+            </a>
+            <a
+              href="#roi-calculator"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+            >
+              Value Model & Calculator
+            </a>
+            <a
+              href="#comparison-matrix"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+            >
+              Market Differentialism
+            </a>
+            <a
+              href="#services-menu"
+              onClick={() => setIsMobileNavOpen(false)}
+              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+            >
+              Executive Services Menu
+            </a>
+            <button
+              onClick={() => openConsultation("fractional_advisory")}
+              className="w-full mt-2 py-2 px-3 bg-sky-600 text-white font-bold text-xs uppercase tracking-wider rounded-sm text-center"
+            >
+              Schedule Strategy Call
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* 2. EXECUTIVE HERO DOSSIER (WITH DYNAMIC ICP PERSONA SWITCHER) */}
+      <section className="border-b border-slate-200 dark:border-[#262B35] bg-white dark:bg-[#11141A] py-10 lg:py-14 shadow-xs relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
+            {/* Top Row: Tag + Persona Switcher */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-sky-50 dark:bg-sky-950/70 border border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-300 text-xs font-mono rounded-sm font-semibold">
+                <Shield className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                <span>
+                  {persona === "cfo"
+                    ? "CFO Balance Sheet Defense • Pre-Payment Interception"
+                    : "General Counsel Safe Harbor • Strict Liability Defense"}
+                </span>
+              </div>
+
+              {/* Dual-Lens ICP Switcher */}
+              <IcpPersonaSwitcher persona={persona} onChange={setPersona} />
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-[1.15] mb-4">
+              {persona === "cfo" ? (
+                <>Autonomous Trade Intelligence & <span className="text-sky-600 dark:text-sky-400">EBITDA Defense</span></>
+              ) : (
+                <>Autonomous Trade Compliance & <span className="text-rose-600 dark:text-rose-400">1592 Safe Harbor</span></>
+              )}
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-normal">
+              {persona === "cfo" ? (
+                <>
+                  Architected by Samuel. Defending enterprise balance sheets against 7-figure{" "}
+                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-rose-500/60 decoration-2">
+                    19 U.S.C. § 1592 penalties
+                  </span>{" "}
+                  and intercepting{" "}
+                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-emerald-500/60 decoration-2">
+                    5%–15% in carrier overbilling
+                  </span>{" "}
+                  before cash exits your treasury with deterministic, zero-hallucination AI.
+                </>
+              ) : (
+                <>
+                  Architected by Samuel. Inoculating global importers against CBP Form 28 / 29 inquiries, valuation assist defects under{" "}
+                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-rose-500/60 decoration-2">
+                    19 CFR § 152.103
+                  </span>
+                  , and preparing voluntary safe-harbor Prior Disclosures under{" "}
+                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-sky-500/60 decoration-2">
+                    19 CFR § 162.74
+                  </span>
+                  .
+                </>
+              )}
+            </p>
+
+            {/* Proof Metrics Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-200 dark:border-[#262B35]/80">
+              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
+                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                  {persona === "cfo" ? "Avg. Penalty Defense" : "Statutory Ceiling"}
+                </div>
+                <div className="text-base sm:text-lg font-mono font-bold text-rose-600 dark:text-rose-400">
+                  $125,000+
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  {persona === "cfo" ? "Per Invoiced Entry" : "19 U.S.C. § 1592(c)"}
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
+                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                  {persona === "cfo" ? "Freight Overbill Catch" : "Tariff Dispute Rate"}
+                </div>
+                <div className="text-base sm:text-lg font-mono font-bold text-sky-700 dark:text-sky-400">
+                  5% – 15%
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  {persona === "cfo" ? "Pre-Payment Intercept" : "OSRA 2022 Enforcement"}
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
+                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                  Mathematical Engine
+                </div>
+                <div className="text-base sm:text-lg font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                  100% Decimal
+                </div>
+                <div className="text-[10px] text-slate-500">Zero LLM Arithmetic</div>
+              </div>
+
+              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
+                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                  Audit Latency
+                </div>
+                <div className="text-base sm:text-lg font-mono font-bold text-slate-800 dark:text-slate-200">
+                  &lt; 200 ms
+                </div>
+                <div className="text-[10px] text-slate-500">Zero Cloud OCR Fees</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. INTERACTIVE DIAGNOSTIC WORKSPACE HEADER */}
+      <section id="audit-workspace" className="bg-white dark:bg-[#14171E] border-b border-slate-200 dark:border-[#262B35] px-4 sm:px-6 lg:px-8 py-4 shadow-xs">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-[#262B35] text-slate-600 dark:text-slate-400 font-semibold rounded-xs">
+                Interactive Proof-of-Work
+              </span>
+              <span className="text-[10px] font-mono text-sky-700 dark:text-sky-400 font-medium">
+                Public Domain Trade Archive Ingestion
+              </span>
+            </div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <span>Live Diagnostic Engine Console</span>
+            </h2>
+          </div>
+
+          {/* Kill Shot Metrics Flash Cards (With Rolling Animation) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+            <div className="bg-slate-50 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] px-3.5 py-2 rounded-sm shadow-xs">
+              <div className="text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                1592 Exposure Avoided
+              </div>
+              <div className="text-sm sm:text-base font-mono font-bold text-rose-600 dark:text-rose-400">
+                <RollingNumber
+                  value={aggregateMetrics?.penalty_exposure_avoided || 125000}
+                />
+              </div>
+            </div>
+
+            <div className="bg-slate-50 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] px-3.5 py-2 rounded-sm shadow-xs">
+              <div className="text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                Freight Overbill Caught
+              </div>
+              <div className="text-sm sm:text-base font-mono font-bold text-rose-600 dark:text-rose-400">
+                <RollingNumber
+                  value={aggregateMetrics?.carrier_overbilling_caught || 1547.50}
+                />
+              </div>
+            </div>
+
+            <div className="bg-slate-50 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] px-3.5 py-2 rounded-sm shadow-xs">
+              <div className="text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
+                99% Drawback Unlocked
+              </div>
+              <div className="text-sm sm:text-base font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                <RollingNumber
+                  value={aggregateMetrics?.drawback_unclaimed_unlocked || 27324}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Concept Switcher Tabs */}
+        <div className="max-w-7xl mx-auto flex items-center gap-2 mt-4 pt-3 border-t border-slate-200 dark:border-[#262B35]/60 overflow-x-auto">
+          {CONCEPTS.map((concept) => {
+            const isActive = activeConceptId === concept.id;
+            return (
+              <button
+                key={concept.id}
+                onClick={() => {
+                  sound.playLock();
+                  setActiveConceptId(concept.id);
+                }}
+                className={`flex items-center gap-2 px-3.5 py-2 font-mono text-xs font-semibold tracking-wide border transition-all duration-150 whitespace-nowrap rounded-sm ${
+                  isActive
+                    ? "bg-sky-50 dark:bg-[#1E2533] border-sky-600 dark:border-sky-400 text-sky-950 dark:text-white shadow-xs"
+                    : "bg-slate-50 dark:bg-[#0E1015] border-slate-200 dark:border-[#262B35] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:border-slate-400"
+                }`}
+              >
+                {concept.icon}
+                <span>{concept.name}</span>
+                {isActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-600 dark:bg-sky-400"></span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile View Segmented Switcher (Visible only on < lg screens) */}
+        <div className="lg:hidden mt-3 pt-2 flex border-t border-slate-200 dark:border-slate-800">
+          <div className="grid grid-cols-2 w-full p-1 bg-slate-100 dark:bg-[#0B0D11] border border-slate-200 dark:border-slate-800 rounded-sm">
+            <button
+              onClick={() => {
+                sound.playTick();
+                setMobileTab("findings");
+              }}
+              className={`py-1.5 text-xs font-mono font-bold flex items-center justify-center gap-1.5 rounded-xs transition-colors ${
+                mobileTab === "findings"
+                  ? "bg-white dark:bg-[#1E2533] text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <AlertOctagon className="w-3.5 h-3.5 text-rose-500" />
+              <span>Audit Findings ({auditData?.discrepancies.length || 0})</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sound.playTick();
+                setMobileTab("doc");
+              }}
+              className={`py-1.5 text-xs font-mono font-bold flex items-center justify-center gap-1.5 rounded-xs transition-colors ${
+                mobileTab === "doc"
+                  ? "bg-white dark:bg-[#1E2533] text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5 text-sky-500" />
+              <span>Document Canvas</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. DUAL-PANE AUDIT VIEWER WORKSPACE */}
+      <section className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="h-[750px] flex flex-col lg:flex-row border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden bg-white dark:bg-[#0E1015] shadow-lg dark:shadow-2xl">
+          {/* LEFT PANE: Canvas PDF Viewer (hidden on mobile if mobileTab === 'findings') */}
+          <div
+            className={`w-full lg:w-3/5 h-full border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-[#262B35] flex-col overflow-hidden ${
+              mobileTab === "doc" ? "flex" : "hidden lg:flex"
+            }`}
+          >
+            {auditData && (
+              <PdfOverlayCanvas
+                documentUrl={auditData.document_url}
+                filename={auditData.document_filename}
+                discrepancies={auditData.discrepancies}
+                activeDiscrepancyId={activeDiscrepancyId}
+                onHoverDiscrepancy={setActiveDiscrepancyId}
+                onClickDiscrepancy={handleBboxClick}
+              />
+            )}
+          </div>
+
+          {/* RIGHT PANE: Interactive Findings (hidden on mobile if mobileTab === 'doc') */}
+          <div
+            className={`w-full lg:w-2/5 h-full flex-col bg-slate-50 dark:bg-[#11141A] overflow-hidden ${
+              mobileTab === "findings" ? "flex" : "hidden lg:flex"
+            }`}
+          >
+            {/* Header of Findings Pane */}
+            <div className="px-5 py-3.5 bg-white dark:bg-[#171B24] border-b border-slate-200 dark:border-[#262B35] flex items-center justify-between shrink-0 shadow-2xs">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-sky-700 dark:text-sky-400 font-bold uppercase">
+                    Verified Audit Findings
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-[#262B35] text-slate-600 dark:text-slate-400 font-semibold rounded-xs">
+                    {auditData ? auditData.discrepancies.length : 0} Detected
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Hover to focus coordinates • Click to inspect defense
+                </p>
+              </div>
+
+              {/* Action Buttons: Raw PDF + Printable Executive Dossier */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    sound.playLock();
+                    setIsDossierOpen(true);
+                  }}
+                  className="text-xs font-mono text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 flex items-center gap-1 border border-sky-300 dark:border-sky-800/80 bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 transition-all rounded-sm font-semibold shadow-xs"
+                >
+                  <Printer className="w-3 h-3 text-sky-600 dark:text-sky-400" />
+                  <span>Dossier</span>
+                </button>
+
+                <a
+                  href={resolveAssetPath(auditData?.document_url || `/nightmares/${auditData?.document_filename}`)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 flex items-center gap-1 border border-slate-300 dark:border-[#262B35] px-2 py-1 hover:border-slate-400 transition-colors rounded-sm"
+                >
+                  <span>PDF</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Scrollable Discrepancy Cards List with Visual Redline Diff & Penalty Ladder */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
+              {/* 1. Tactile Billed vs Lawful Visual Redline Diff */}
+              <BilledVsLawfulDiff conceptId={activeConceptId} />
+
+              {/* 2. Interactive 1592 Penalty Exposure Ladder for Concept 1 */}
+              {activeConceptId === "concept_1_customs" && (
+                <PenaltyExposureLadder
+                  dutyLossUsd={6000}
+                  domesticValueUsd={125000}
+                />
+              )}
+
+              {/* 3. Discrepancy Cards */}
+              {auditData?.discrepancies.map((disc) => (
+                <DiscrepancyCard
+                  key={disc.id}
+                  discrepancy={disc}
+                  isActive={activeDiscrepancyId === disc.id}
+                  onHover={setActiveDiscrepancyId}
+                  onClick={handleCardClick}
+                  onFocusMobileDoc={() => {
+                    setActiveDiscrepancyId(disc.id);
+                    setMobileTab("doc");
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. INTERACTIVE GENERATIVE ROI / EXPOSURE CALCULATOR */}
+      <section id="roi-calculator" className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <RoiCalculator onOpenConsultation={() => openConsultation("contingent_audit")} />
+      </section>
+
+      {/* 6. MARKET DIFFERENTIALIST COMPARISON MATRIX (WHY SAMUEL WINS) */}
+      <section id="comparison-matrix">
+        <DifferentialistMatrix onOpenConsultation={() => openConsultation("contingent_audit")} />
+      </section>
+
+      {/* 7. EXECUTIVE SERVICES & RETAINER MENU (SELLING SAMUEL) */}
+      <section id="services-menu">
+        <ExecutiveServices onSelectTier={(tier) => openConsultation(tier)} />
+      </section>
+
+      {/* 8. BOTTOM CONVERSION STRIP */}
+      <footer className="border-t border-slate-200 dark:border-[#262B35] bg-white dark:bg-[#11141A] py-10 mt-12 mb-16 lg:mb-0 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="max-w-xl text-center md:text-left">
+            <h4 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
+              Run a Blind Diagnostic Audit on 25 Historical Invoices
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              100% contingent on recovered cash. If Samuel doesn&apos;t uncover carrier overcharges or misclassified tariff exposure, you pay $0.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => openConsultation("contingent_audit")}
+              className="px-6 py-3 bg-sky-600 hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 text-white dark:text-slate-950 font-bold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all rounded-sm shadow-md"
+            >
+              <span>Claim Free 25-Invoice Audit</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-slate-200 dark:border-[#262B35]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500">
+          <div>
+            © {new Date().getFullYear()} Samuel • TradeTech Systems Studio. All rights reserved.
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <Lock className="w-3 h-3 text-slate-400" />
+              <span>Attorney-Client & NDA Protected</span>
+            </span>
+            <span>•</span>
+            <span>Zero Data Retention</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* 9. STICKY MOBILE ACTION BAR (Thumb-friendly conversion on mobile) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#14171E]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 flex items-center gap-2 shadow-xl">
+        <button
+          onClick={() => openConsultation("contingent_audit")}
+          className="flex-1 py-3 px-3 bg-sky-600 hover:bg-sky-500 text-white font-bold font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 rounded-sm shadow-sm"
+        >
+          <span>Claim 25-Doc Audit ($0)</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+
+        <button
+          onClick={() => openConsultation("fractional_advisory")}
+          className="py-3 px-3.5 bg-slate-100 dark:bg-[#202530] text-slate-800 dark:text-slate-200 font-mono text-xs font-semibold border border-slate-300 dark:border-slate-700 rounded-sm"
+        >
+          Call
+        </button>
+      </div>
+
+      {/* 10. LEAD CAPTURE & BOOKING MODAL */}
+      <LeadCaptureModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        activeConceptId={activeConceptId}
+        initialServiceTier={selectedServiceTier}
+      />
+
+      {/* 11. PRINTABLE EXECUTIVE AUDIT DOSSIER MODAL */}
+      <ExecutiveDossierModal
+        isOpen={isDossierOpen}
+        onClose={() => setIsDossierOpen(false)}
+        auditData={auditData}
+      />
+    </div>
+  );
+};
