@@ -100,6 +100,7 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
   const [isFilmOpen, setIsFilmOpen] = useState<boolean>(false);
   const [selectedServiceTier, setSelectedServiceTier] = useState<string>("contingent_audit");
+  const [isFunnelStudioOpen, setIsFunnelStudioOpen] = useState<boolean>(false);
 
   // ICP Persona Lens ('cfo' | 'counsel')
   const [persona, setPersona] = useState<IcpPersona>("cfo");
@@ -111,13 +112,13 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [mobileTab, setMobileTab] = useState<"findings" | "doc">("findings");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
-  // Theme state: default to 'light' as requested by user, with toggle
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  // Theme state: default to 'dark' for Nightmare Suite terminal aesthetic, with toggle
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
-    // Check saved theme or default to light
+    // Check saved theme or default to dark
     const saved = localStorage.getItem("theme") as "light" | "dark" | null;
-    const initialTheme = saved || "light";
+    const initialTheme = saved || "dark";
     setTheme(initialTheme);
     if (initialTheme === "dark") {
       document.documentElement.classList.add("dark");
@@ -213,7 +214,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
-                Principal AI Systems Architect & Trade Compliance Lead
+                Principal Trade Systems Architect & Compliance Lead
               </p>
             </div>
           </div>
@@ -233,7 +234,23 @@ export const DualPaneAuditViewer: React.FC = () => {
               <a href="#services-menu" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
                 Advisory Services
               </a>
+              <a href="#funnel-studio" className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors">
+                Funnel Lab
+              </a>
             </nav>
+
+            {/* 2-Variation Funnel Studio Modal Button */}
+            <button
+              onClick={() => {
+                sound.playLock();
+                setIsFunnelStudioOpen(true);
+              }}
+              title="Open 2-Variation ICP Funnel Studio"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-600 text-emerald-300 rounded-sm font-mono text-xs font-bold transition-all shadow-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">Funnel Lab</span>
+            </button>
 
             {/* Keynote Film Teaser Button */}
             <button
