@@ -20,6 +20,7 @@ import { FunnelRedesignStudio } from "./funnel-variations/FunnelRedesignStudio";
 import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
 import { HtsClassifierViewer } from "./HtsClassifierViewer";
 import { CustomsValuationViewer } from "./CustomsValuationViewer";
+import { SystemArchitectureModal } from "./SystemArchitectureModal";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
@@ -134,6 +135,7 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [isFilmOpen, setIsFilmOpen] = useState<boolean>(false);
   const [selectedServiceTier, setSelectedServiceTier] = useState<string>("contingent_audit");
   const [isFunnelStudioOpen, setIsFunnelStudioOpen] = useState<boolean>(false);
+  const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState<boolean>(false);
 
   // ICP Persona Lens ('cfo' | 'counsel')
   const [persona, setPersona] = useState<IcpPersona>("cfo");
@@ -311,6 +313,20 @@ export const DualPaneAuditViewer: React.FC = () => {
               <span>Dossier</span>
             </button>
 
+            {/* System Architecture & 40/40 Tests Button */}
+            <button
+              onClick={() => {
+                sound.playLock();
+                setIsArchitectureModalOpen(true);
+              }}
+              title="View System Architecture & 40/40 Automated Test Proof"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-sky-950/80 hover:bg-sky-900 border border-sky-500/60 text-sky-300 rounded-sm font-mono text-xs font-bold transition-all shadow-xs"
+            >
+              <Cpu className="w-3.5 h-3.5 text-sky-400" />
+              <span className="hidden xl:inline">Architecture & Tests</span>
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            </button>
+
             {/* Audio Micro-Haptics Toggle */}
             <button
               onClick={() => {
@@ -477,6 +493,17 @@ export const DualPaneAuditViewer: React.FC = () => {
               >
                 <Film className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
                 <span>Watch 30s Keynote Film</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sound.playLock();
+                  setIsArchitectureModalOpen(true);
+                }}
+                className="inline-flex items-center gap-2 px-3.5 py-2 bg-sky-950/80 hover:bg-sky-900 text-sky-200 font-mono text-xs font-bold rounded-sm border border-sky-500/60 transition-all shadow-xs group"
+              >
+                <Cpu className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+                <span>Architecture & Tests (40/40 Passing)</span>
               </button>
 
               <a
@@ -876,6 +903,12 @@ export const DualPaneAuditViewer: React.FC = () => {
         isOpen={isFilmOpen}
         onClose={() => setIsFilmOpen(false)}
         onOpenLeadModal={() => setIsModalOpen(true)}
+      />
+
+      {/* 13. SYSTEM ARCHITECTURE & 40/40 TESTS MODAL */}
+      <SystemArchitectureModal
+        isOpen={isArchitectureModalOpen}
+        onClose={() => setIsArchitectureModalOpen(false)}
       />
 
       {/* 13. FUNNEL REDESIGN STUDIO MODAL */}
