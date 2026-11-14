@@ -29,19 +29,41 @@ async function run() {
   await page.screenshot({ path: shotStep1, fullPage: false });
   console.log(`Saved Step 1 screenshot: ${shotStep1}`);
 
-  // Click Next to advance to Step 2 using explicit data-testid
+  // Step 2
   const nextBtn = await page.waitForSelector('button[data-testid="tour-next-btn"]', { timeout: 5000 });
   if (nextBtn) {
     await nextBtn.click();
-    await new Promise(r => setTimeout(r, 1200));
-
-    // Wait specifically for Step 2 badge
+    await new Promise(r => setTimeout(r, 600));
     await page.waitForSelector('span ::-p-text(02 / ZERO-BUDGET OCR)', { timeout: 5000 });
-
-    // Capture Step 2 screenshot
     const shotStep2 = path.join(ARTIFACTS_DIR, 'live_tour_step2_verified.png');
     await page.screenshot({ path: shotStep2, fullPage: false });
     console.log(`Saved Step 2 screenshot: ${shotStep2}`);
+
+    // Advance through Step 3 and Step 4 to Step 5
+    for (let i = 3; i <= 5; i++) {
+      const btn = await page.waitForSelector('button[data-testid="tour-next-btn"]', { timeout: 5000 }).catch(() => null);
+      if (btn) {
+        await btn.click();
+        await new Promise(r => setTimeout(r, 600));
+      }
+    }
+
+    // Wait for Step 5 badge
+    await page.waitForSelector('span ::-p-text(05 / PRODUCTION RIGOR)', { timeout: 5000 });
+    const shotStep5 = path.join(ARTIFACTS_DIR, 'live_tour_step5_verified.png');
+    await page.screenshot({ path: shotStep5, fullPage: false });
+    console.log(`Saved Step 5 screenshot: ${shotStep5}`);
+
+    // Click "Open Architecture Proof" to verify transition into Architecture modal
+    const archProofBtn = await page.waitForSelector('button[data-testid="tour-finish-arch-btn"]', { timeout: 5000 });
+    if (archProofBtn) {
+      await archProofBtn.click();
+      await new Promise(r => setTimeout(r, 1200));
+
+      const shotArchTransition = path.join(ARTIFACTS_DIR, 'live_tour_transition_arch_verified.png');
+      await page.screenshot({ path: shotArchTransition, fullPage: false });
+      console.log(`Saved Architecture transition screenshot: ${shotArchTransition}`);
+    }
   }
 
   await browser.close();
