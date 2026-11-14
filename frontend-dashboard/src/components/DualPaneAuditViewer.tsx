@@ -298,6 +298,19 @@ export const DualPaneAuditViewer: React.FC = () => {
               <span className="hidden md:inline">Keynote Film</span>
             </button>
 
+            {/* Executive Dossier Printable Briefing */}
+            <button
+              onClick={() => {
+                sound.playLock();
+                setIsDossierOpen(true);
+              }}
+              title="View Printable Executive Dossier & Statutory Briefing"
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 dark:bg-[#1E2533] text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-[#252E3E] border border-slate-300 dark:border-slate-600 rounded-sm font-mono text-xs font-semibold transition-all shadow-xs"
+            >
+              <Printer className="w-3.5 h-3.5 text-amber-500" />
+              <span>Dossier</span>
+            </button>
+
             {/* Audio Micro-Haptics Toggle */}
             <button
               onClick={() => {
