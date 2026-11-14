@@ -24,7 +24,7 @@ export const ExecutiveServices: React.FC<ExecutiveServicesProps> = ({ onSelectTi
             How Enterprises Retain Samuel
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            From high-velocity contingent audit recovery to bespoke on-premise AI audit pipeline deployment, choose the exact engagement model that matches your enterprise supply chain scale.
+            From high-velocity contingent audit recovery to private on-premise trade audit pipeline deployment, choose the exact engagement model that matches your enterprise supply chain scale.
           </p>
         </div>
 
@@ -104,7 +104,7 @@ export const ExecutiveServices: React.FC<ExecutiveServicesProps> = ({ onSelectTi
               </div>
 
               <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1">
-                Custom Enterprise AI Engine Deployment
+                Private On-Premise Audit Pipeline Deployment
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
                 Turnkey integration of Samuel&apos;s deterministic trade calculation and local layout parser into your ERP (SAP, CargoWise, NetSuite).
@@ -115,7 +115,7 @@ export const ExecutiveServices: React.FC<ExecutiveServicesProps> = ({ onSelectTi
                   $15,000 – $45,000
                 </div>
                 <div className="text-[11px] font-mono text-sky-700 dark:text-sky-400 mt-0.5 font-semibold">
-                  Fixed Investment • Zero Recurring Cloud OCR Fees
+                  Fixed Investment • Zero Cloud API Data Leakage
                 </div>
               </div>
 

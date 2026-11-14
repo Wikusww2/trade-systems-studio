@@ -16,6 +16,7 @@ import { AmbientMotionBackground } from "./AmbientMotionBackground";
 import { FilmTheaterModal } from "./FilmTheaterModal";
 import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
 import { RollingNumber } from "./RollingNumber";
+import { FunnelRedesignStudio } from "./funnel-variations/FunnelRedesignStudio";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";

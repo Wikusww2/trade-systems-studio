@@ -84,7 +84,7 @@ export const DifferentialistMatrix: React.FC<DifferentialistMatrixProps> = ({
                 <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-slate-100 bg-sky-50/30 dark:bg-sky-950/20 border-x border-sky-200 dark:border-sky-800/60">
                   <span className="flex items-center gap-1.5 text-sky-700 dark:text-sky-300">
                     <Check className="w-4 h-4 text-sky-500 shrink-0" />
-                    100% Python Decimal Math (Zero LLM Arithmetic)
+                    100% Python Decimal Math (Deterministic Double-Entry Proof)
                   </span>
                 </td>
               </tr>

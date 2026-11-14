@@ -42,6 +42,33 @@ class SoundEngine {
     this.playTick();
   }
 
+  // Tonal chime when audit completes or recovery is unlocked
+  public playSuccess() {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } catch {
+      // Audio policy
+    }
+  }
+
   // Soft mechanical tick (like an Apple Watch digital crown or Leica shutter)
   public playTick() {
     if (this.isMuted) return;
