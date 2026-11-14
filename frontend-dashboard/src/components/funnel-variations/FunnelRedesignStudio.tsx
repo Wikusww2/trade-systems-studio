@@ -121,3 +121,4 @@ export const FunnelRedesignStudio: React.FC<FunnelRedesignStudioProps> = ({
     </div>
   );
 };
+

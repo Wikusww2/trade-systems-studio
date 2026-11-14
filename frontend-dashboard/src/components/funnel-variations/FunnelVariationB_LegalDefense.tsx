@@ -439,3 +439,4 @@ export const FunnelVariationB_LegalDefense: React.FC<FunnelVariationBProps> = ({
     </div>
   );
 };
+

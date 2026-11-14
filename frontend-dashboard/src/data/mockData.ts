@@ -1,4 +1,4 @@
-import { AuditResult, KillShotMetrics } from "@/lib/types";
+import { AuditResult, KillShotMetrics, CorporateGraphResponse } from "@/lib/types";
 
 export const AGGREGATE_METRICS: KillShotMetrics = {
   penalty_exposure_avoided: 125000.0,
@@ -265,5 +265,217 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
       refund_rate: "99.0%",
     },
     offline_fallback_active: true,
+  },
+};
+
+export const MOCK_SANCTIONS_GRAPHS: Record<string, CorporateGraphResponse> = {
+  "bis-el-cn-0941": {
+    target_id: "bis-el-cn-0941",
+    nodes: [
+      {
+        id: "bis-el-cn-0941",
+        label: "Global Micro Electronics Ltd",
+        country: "CN",
+        is_blocked: true,
+        risk_level: "SDN_BLOCKED",
+        programs: ["BIS Entity List (15 CFR Part 744)", "EAR Military End-User"],
+        sanction_authority: "BIS",
+        notes: "Direct military end-user and prohibited semiconductor export entity.",
+      },
+      {
+        id: "node-petrov",
+        label: "Victor Petrov (SDN Oligarch)",
+        country: "RU",
+        is_blocked: true,
+        risk_level: "SDN_BLOCKED",
+        programs: ["OFAC SDN (E.O. 14024)", "EU Sanctions Reg 269/2014"],
+        sanction_authority: "OFAC",
+      },
+      {
+        id: "node-rosoboron",
+        label: "Rosoboronexport JSC",
+        country: "RU",
+        is_blocked: true,
+        risk_level: "SDN_BLOCKED",
+        programs: ["OFAC SDN", "CAATSA Section 231"],
+        sanction_authority: "OFAC",
+      },
+      {
+        id: "node-shenzhen-adv",
+        label: "Shenzhen Advanced Components Ltd",
+        country: "CN",
+        is_blocked: false,
+        risk_level: "CLEAN_COMMERCIAL",
+        programs: [],
+        sanction_authority: undefined,
+      },
+    ],
+    edges: [
+      {
+        source_id: "node-petrov",
+        target_id: "bis-el-cn-0941",
+        ownership_pct: 25.0,
+        relationship_type: "BENEFICIAL_OWNER",
+      },
+      {
+        source_id: "node-rosoboron",
+        target_id: "bis-el-cn-0941",
+        ownership_pct: 30.0,
+        relationship_type: "EQUITY_HOLDING",
+      },
+      {
+        source_id: "node-shenzhen-adv",
+        target_id: "bis-el-cn-0941",
+        ownership_pct: 45.0,
+        relationship_type: "COMMERCIAL_SHAREHOLDER",
+      },
+    ],
+    evaluation: {
+      target_entity_id: "bis-el-cn-0941",
+      target_entity_name: "Global Micro Electronics Ltd",
+      total_blocked_ownership_pct: 55.0,
+      is_blocked_by_50_percent_rule: true,
+      direct_sdn_status: true,
+      statutory_citation: "31 CFR § 501 (OFAC 50 Percent Rule)",
+      blocking_entities: [
+        {
+          owner_id: "node-petrov",
+          owner_name: "Victor Petrov (SDN Oligarch)",
+          country: "RU",
+          ownership_pct: 25.0,
+          programs: ["OFAC SDN (E.O. 14024)"],
+        },
+        {
+          owner_id: "node-rosoboron",
+          owner_name: "Rosoboronexport JSC",
+          country: "RU",
+          ownership_pct: 30.0,
+          programs: ["OFAC SDN", "CAATSA Section 231"],
+        },
+      ],
+      compliance_action: "BLOCK_AND_REPORT",
+    },
+  },
+  "ofac-sdn-ir-0382": {
+    target_id: "ofac-sdn-ir-0382",
+    nodes: [
+      {
+        id: "ofac-sdn-ir-0382",
+        label: "Apex Ocean Logistics Inc",
+        country: "PA",
+        is_blocked: true,
+        risk_level: "SDN_BLOCKED",
+        programs: ["OFAC SDN (E.O. 13846)"],
+        sanction_authority: "OFAC",
+        notes: "Covert front company operating under primary & secondary sanctions.",
+      },
+      {
+        id: "node-irisl",
+        label: "Islamic Republic of Iran Shipping Lines (IRISL)",
+        country: "IR",
+        is_blocked: true,
+        risk_level: "SDN_BLOCKED",
+        programs: ["OFAC SDN", "UNSCR 1929"],
+        sanction_authority: "OFAC",
+      },
+      {
+        id: "node-panama-trust",
+        label: "Panama Maritime Holding Trust",
+        country: "PA",
+        is_blocked: false,
+        risk_level: "HIGH_RISK_SHELL",
+        programs: [],
+        sanction_authority: undefined,
+      },
+    ],
+    edges: [
+      {
+        source_id: "node-irisl",
+        target_id: "ofac-sdn-ir-0382",
+        ownership_pct: 65.0,
+        relationship_type: "CONTROLLING_INTEREST",
+      },
+      {
+        source_id: "node-panama-trust",
+        target_id: "ofac-sdn-ir-0382",
+        ownership_pct: 35.0,
+        relationship_type: "NOMINEE_DIRECTOR",
+      },
+    ],
+    evaluation: {
+      target_entity_id: "ofac-sdn-ir-0382",
+      target_entity_name: "Apex Ocean Logistics Inc",
+      total_blocked_ownership_pct: 65.0,
+      is_blocked_by_50_percent_rule: true,
+      direct_sdn_status: true,
+      statutory_citation: "31 CFR § 501 (OFAC 50 Percent Rule)",
+      blocking_entities: [
+        {
+          owner_id: "node-irisl",
+          owner_name: "Islamic Republic of Iran Shipping Lines (IRISL)",
+          country: "IR",
+          ownership_pct: 65.0,
+          programs: ["OFAC SDN"],
+        },
+      ],
+      compliance_action: "BLOCK_AND_REPORT",
+    },
+  },
+  "pacific-apex-01": {
+    target_id: "pacific-apex-01",
+    nodes: [
+      {
+        id: "pacific-apex-01",
+        label: "Pacific Apex Computing Systems Inc",
+        country: "US",
+        is_blocked: false,
+        risk_level: "CLEAN_COMMERCIAL",
+        programs: [],
+        sanction_authority: undefined,
+        notes: "Verified domestic enterprise consignee.",
+      },
+      {
+        id: "node-us-holdings",
+        label: "Pacific Apex Holdings Corp",
+        country: "US",
+        is_blocked: false,
+        risk_level: "CLEAN_COMMERCIAL",
+        programs: [],
+        sanction_authority: undefined,
+      },
+      {
+        id: "node-us-trust",
+        label: "California Enterprise Trust",
+        country: "US",
+        is_blocked: false,
+        risk_level: "CLEAN_COMMERCIAL",
+        programs: [],
+        sanction_authority: undefined,
+      },
+    ],
+    edges: [
+      {
+        source_id: "node-us-holdings",
+        target_id: "pacific-apex-01",
+        ownership_pct: 70.0,
+        relationship_type: "PARENT_HOLDING",
+      },
+      {
+        source_id: "node-us-trust",
+        target_id: "pacific-apex-01",
+        ownership_pct: 30.0,
+        relationship_type: "BENEFICIAL_OWNER",
+      },
+    ],
+    evaluation: {
+      target_entity_id: "pacific-apex-01",
+      target_entity_name: "Pacific Apex Computing Systems Inc",
+      total_blocked_ownership_pct: 0.0,
+      is_blocked_by_50_percent_rule: false,
+      direct_sdn_status: false,
+      statutory_citation: "31 CFR § 501 (OFAC 50 Percent Rule)",
+      blocking_entities: [],
+      compliance_action: "CLEAR_TRANSACTION",
+    },
   },
 };

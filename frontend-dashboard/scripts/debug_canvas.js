@@ -36,3 +36,4 @@ const puppeteer = require("puppeteer-core");
 
   await browser.close();
 })();
+

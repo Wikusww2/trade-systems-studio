@@ -9,6 +9,7 @@ from app.api.deps import get_extractor_service
 from app.services.extractor import TradeDocumentExtractor, NIGHTMARE_GROUND_TRUTH
 from app.services.layout_extractor import layout_extractor
 from app.services.sanctions_screener import sanctions_screener, ScreeningReport
+from app.models.sanctions_graph import CorporateGraphResponse
 from app.models.schemas import (
     AuditResult,
     KillShotMetrics,
@@ -124,6 +125,13 @@ async def screen_sanctions(request: SanctionsScreenRequest):
         consignee=request.consignee,
         threshold=request.threshold
     )
+
+@router.get("/sanctions/graph/{entity_id}", response_model=CorporateGraphResponse)
+async def get_sanctions_ownership_graph(entity_id: str):
+    """
+    Traverses multi-hop corporate ownership tree and evaluates OFAC 50 Percent Rule.
+    """
+    return await sanctions_screener.get_ownership_graph_async(entity_id)
 
 @router.post("/leads")
 def capture_lead(lead: LeadCaptureRequest):

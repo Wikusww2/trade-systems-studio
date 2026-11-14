@@ -55,3 +55,45 @@ export interface TelemetryPayload {
   discrepancy_id?: string;
   metadata?: Record<string, any>;
 }
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  country: string;
+  is_blocked: boolean;
+  risk_level: "SDN_BLOCKED" | "HIGH_RISK_SHELL" | "CLEAN_COMMERCIAL" | "PEP";
+  programs: string[];
+  sanction_authority?: string;
+  notes?: string;
+}
+
+export interface GraphEdge {
+  source_id: string;
+  target_id: string;
+  ownership_pct: number;
+  relationship_type: string;
+}
+
+export interface OFAC50PercentEvaluation {
+  target_entity_id: string;
+  target_entity_name: string;
+  total_blocked_ownership_pct: number;
+  is_blocked_by_50_percent_rule: boolean;
+  direct_sdn_status: boolean;
+  statutory_citation: string;
+  blocking_entities: Array<{
+    owner_id: string;
+    owner_name: string;
+    country: string;
+    ownership_pct: number;
+    programs: string[];
+  }>;
+  compliance_action: "BLOCK_AND_REPORT" | "ENHANCED_DUE_DILIGENCE" | "CLEAR_TRANSACTION";
+}
+
+export interface CorporateGraphResponse {
+  target_id: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  evaluation: OFAC50PercentEvaluation;
+}

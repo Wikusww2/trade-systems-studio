@@ -47,3 +47,4 @@ const path = require("path");
   await browser.close();
   console.log("ALL_ADDITIONAL_CAPTURES_DONE");
 })();
+

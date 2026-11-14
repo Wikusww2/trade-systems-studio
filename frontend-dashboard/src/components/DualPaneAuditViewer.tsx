@@ -17,6 +17,7 @@ import { FilmTheaterModal } from "./FilmTheaterModal";
 import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
 import { RollingNumber } from "./RollingNumber";
 import { FunnelRedesignStudio } from "./funnel-variations/FunnelRedesignStudio";
+import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
@@ -45,6 +46,7 @@ import {
   Crosshair,
   Briefcase,
   Film,
+  Network,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -87,6 +89,15 @@ const CONCEPTS = [
     statute: "19 U.S.C. § 1313 Unused Merchandise",
     metricLabel: "99% Cash Refund Unlocked",
     metricColor: "text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    id: "concept_4_sanctions",
+    name: "04 / Sanctions & Entity Graph",
+    shortTag: "OFAC 50% GRAPH",
+    icon: <Network className="w-4 h-4" />,
+    statute: "31 CFR § 501 / OFAC 50% Rule",
+    metricLabel: "Beneficial Ownership Traversed",
+    metricColor: "text-rose-600 dark:text-rose-400",
   },
 ];
 
@@ -392,7 +403,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                   <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-emerald-500/60 decoration-2">
                     5%–15% in carrier overbilling
                   </span>{" "}
-                  before cash exits your treasury with deterministic, zero-hallucination AI.
+                  before cash exits your treasury with deterministic double-entry mathematical verification.
                 </>
               ) : (
                 <>
@@ -409,8 +420,19 @@ export const DualPaneAuditViewer: React.FC = () => {
               )}
             </p>
 
-            {/* Action Bar with Keynote Film Trigger */}
+            {/* Action Bar with Keynote Film & Funnel Lab Triggers */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
+              <button
+                onClick={() => {
+                  sound.playLock();
+                  setIsFunnelStudioOpen(true);
+                }}
+                className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded-sm border border-emerald-500 transition-all shadow-md group"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform" />
+                <span>Launch 2-Variation Funnel Studio</span>
+              </button>
+
               <button
                 onClick={() => {
                   sound.click();
@@ -426,7 +448,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                 href="#audit-workspace"
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-[#151922] hover:bg-slate-200 dark:hover:bg-[#1C222E] text-slate-700 dark:text-slate-300 font-mono text-xs font-semibold rounded-sm border border-slate-300 dark:border-slate-800 transition-colors"
               >
-                <span>Jump to Live Diagnostic Console</span>
+                <span>Live Diagnostic Console</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -464,17 +486,17 @@ export const DualPaneAuditViewer: React.FC = () => {
                 <div className="text-base sm:text-lg font-mono font-bold text-emerald-700 dark:text-emerald-400">
                   100% Decimal
                 </div>
-                <div className="text-[10px] text-slate-500">Zero LLM Arithmetic</div>
+                <div className="text-[10px] text-slate-500">Zero Floating-Point Drift</div>
               </div>
 
               <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
                 <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                  Audit Latency
+                  Pre-Payment Latency
                 </div>
                 <div className="text-base sm:text-lg font-mono font-bold text-slate-800 dark:text-slate-200">
                   &lt; 200 ms
                 </div>
-                <div className="text-[10px] text-slate-500">Zero Cloud OCR Fees</div>
+                <div className="text-[10px] text-slate-500">Private On-Premise Audit Gate</div>
               </div>
             </div>
           </div>
@@ -598,9 +620,12 @@ export const DualPaneAuditViewer: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. DUAL-PANE AUDIT VIEWER WORKSPACE */}
-      <section className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="h-[750px] flex flex-col lg:flex-row border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden bg-white dark:bg-[#0E1015] shadow-lg dark:shadow-2xl">
+      {/* 4. DUAL-PANE AUDIT VIEWER WORKSPACE / SANCTIONS GRAPH */}
+      <section id="audit-workspace" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {activeConceptId === "concept_4_sanctions" ? (
+          <SanctionsGraphViewer onOpenLeadModal={() => setIsModalOpen(true)} />
+        ) : (
+          <div className="h-[750px] flex flex-col lg:flex-row border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden bg-white dark:bg-[#0E1015] shadow-lg dark:shadow-2xl">
           {/* LEFT PANE: Canvas PDF Viewer (hidden on mobile if mobileTab === 'findings') */}
           <div
             className={`w-full lg:w-3/5 h-full border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-[#262B35] flex-col overflow-hidden ${
@@ -696,6 +721,7 @@ export const DualPaneAuditViewer: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
       </section>
 
       {/* 5. INTERACTIVE GENERATIVE ROI / EXPOSURE CALCULATOR */}
@@ -711,6 +737,24 @@ export const DualPaneAuditViewer: React.FC = () => {
       {/* 7. EXECUTIVE SERVICES & RETAINER MENU (SELLING SAMUEL) */}
       <section id="services-menu">
         <ExecutiveServices onSelectTier={(tier) => openConsultation(tier)} />
+      </section>
+
+      {/* 7.5 EMPIRICAL CONVERSION FUNNEL REDESIGN LAB (2 VARIATIONS) */}
+      <section id="funnel-studio" className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full border-t border-slate-200 dark:border-[#262B35]">
+        <div className="text-center max-w-3xl mx-auto mb-8">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-[10px] font-mono uppercase tracking-wider font-semibold rounded-xs mb-2">
+            <Sparkles className="w-3 h-3 text-emerald-400" />
+            <span>Interactive 2-Variation Funnel Studio</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+            Enterprise Conversion Funnel Architecture
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
+            Engineered from empirical trade finance transaction data. Compare the Value-First (CFO Recovery) versus Risk-First (General Counsel Defense) conversion pathways:
+          </p>
+        </div>
+
+        <FunnelRedesignStudio initialMode="variation_a" />
       </section>
 
       {/* 8. BOTTOM CONVERSION STRIP */}
@@ -790,6 +834,25 @@ export const DualPaneAuditViewer: React.FC = () => {
         onClose={() => setIsFilmOpen(false)}
         onOpenLeadModal={() => setIsModalOpen(true)}
       />
+
+      {/* 13. FUNNEL REDESIGN STUDIO MODAL */}
+      {isFunnelStudioOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-black/90 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-5xl my-8">
+            <button
+              onClick={() => setIsFunnelStudioOpen(false)}
+              className="absolute -top-3 -right-3 z-50 p-2 bg-[#1E2533] border border-slate-700 text-slate-300 hover:text-white rounded-full shadow-lg"
+              title="Close Funnel Studio"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <FunnelRedesignStudio
+              initialMode="variation_a"
+              onClose={() => setIsFunnelStudioOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

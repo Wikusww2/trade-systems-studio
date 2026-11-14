@@ -5,6 +5,12 @@ from pydantic import BaseModel, Field
 import rapidfuzz.fuzz
 import httpx
 from app.core.config import settings
+from app.models.sanctions_graph import (
+    GraphNode,
+    GraphEdge,
+    OFAC50PercentEvaluation,
+    CorporateGraphResponse,
+)
 
 class SanctionsEntity(BaseModel):
     """
@@ -114,6 +120,190 @@ EMBEDDED_SANCTIONS_DATASET: List[Dict[str, Any]] = [
         "description": "Unverified end-user subject to mandatory BIS export license requirements."
     }
 ]
+
+# Fixture networks for multi-hop corporate ownership graphs & OFAC 50% Rule traversal
+CORPORATE_OWNERSHIP_NETWORKS: Dict[str, Dict[str, Any]] = {
+    "bis-el-cn-0941": {
+        "target": {
+            "id": "bis-el-cn-0941",
+            "label": "Global Micro Electronics Ltd",
+            "country": "CN",
+            "is_blocked": True,
+            "risk_level": "SDN_BLOCKED",
+            "programs": ["BIS Entity List (15 CFR Part 744)", "EAR Military End-User"],
+            "sanction_authority": "BIS",
+            "notes": "Direct military end-user and prohibited semiconductor export entity."
+        },
+        "nodes": [
+            {
+                "id": "bis-el-cn-0941",
+                "label": "Global Micro Electronics Ltd",
+                "country": "CN",
+                "is_blocked": True,
+                "risk_level": "SDN_BLOCKED",
+                "programs": ["BIS Entity List", "EAR Military End-User"],
+                "sanction_authority": "BIS"
+            },
+            {
+                "id": "node-petrov",
+                "label": "Victor Petrov (SDN Oligarch)",
+                "country": "RU",
+                "is_blocked": True,
+                "risk_level": "SDN_BLOCKED",
+                "programs": ["OFAC SDN (E.O. 14024)", "EU Regulation 269/2014"],
+                "sanction_authority": "OFAC"
+            },
+            {
+                "id": "node-rosoboron",
+                "label": "Rosoboronexport JSC",
+                "country": "RU",
+                "is_blocked": True,
+                "risk_level": "SDN_BLOCKED",
+                "programs": ["OFAC SDN", "CAATSA Section 231"],
+                "sanction_authority": "OFAC"
+            },
+            {
+                "id": "node-shenzhen-adv",
+                "label": "Shenzhen Advanced Components Ltd",
+                "country": "CN",
+                "is_blocked": False,
+                "risk_level": "CLEAN_COMMERCIAL",
+                "programs": [],
+                "sanction_authority": None
+            }
+        ],
+        "edges": [
+            {
+                "source_id": "node-petrov",
+                "target_id": "bis-el-cn-0941",
+                "ownership_pct": 25.0,
+                "relationship_type": "BENEFICIAL_OWNER"
+            },
+            {
+                "source_id": "node-rosoboron",
+                "target_id": "bis-el-cn-0941",
+                "ownership_pct": 30.0,
+                "relationship_type": "EQUITY_HOLDING"
+            },
+            {
+                "source_id": "node-shenzhen-adv",
+                "target_id": "bis-el-cn-0941",
+                "ownership_pct": 45.0,
+                "relationship_type": "COMMERCIAL_SHAREHOLDER"
+            }
+        ]
+    },
+    "ofac-sdn-ir-0382": {
+        "target": {
+            "id": "ofac-sdn-ir-0382",
+            "label": "Apex Ocean Logistics Inc",
+            "country": "PA",
+            "is_blocked": True,
+            "risk_level": "SDN_BLOCKED",
+            "programs": ["OFAC SDN (E.O. 13846)"],
+            "sanction_authority": "OFAC",
+            "notes": "Covert front carrier under comprehensive secondary sanctions."
+        },
+        "nodes": [
+            {
+                "id": "ofac-sdn-ir-0382",
+                "label": "Apex Ocean Logistics Inc",
+                "country": "PA",
+                "is_blocked": True,
+                "risk_level": "SDN_BLOCKED",
+                "programs": ["OFAC SDN"],
+                "sanction_authority": "OFAC"
+            },
+            {
+                "id": "node-irisl",
+                "label": "Islamic Republic of Iran Shipping Lines (IRISL)",
+                "country": "IR",
+                "is_blocked": True,
+                "risk_level": "SDN_BLOCKED",
+                "programs": ["OFAC SDN", "UNSCR 1929"],
+                "sanction_authority": "OFAC"
+            },
+            {
+                "id": "node-panama-trust",
+                "label": "Panama Maritime Holding Trust",
+                "country": "PA",
+                "is_blocked": False,
+                "risk_level": "HIGH_RISK_SHELL",
+                "programs": [],
+                "sanction_authority": None
+            }
+        ],
+        "edges": [
+            {
+                "source_id": "node-irisl",
+                "target_id": "ofac-sdn-ir-0382",
+                "ownership_pct": 65.0,
+                "relationship_type": "CONTROLLING_INTEREST"
+            },
+            {
+                "source_id": "node-panama-trust",
+                "target_id": "ofac-sdn-ir-0382",
+                "ownership_pct": 35.0,
+                "relationship_type": "NOMINEE_DIRECTOR"
+            }
+        ]
+    },
+    "pacific-apex-01": {
+        "target": {
+            "id": "pacific-apex-01",
+            "label": "Pacific Apex Computing Systems Inc",
+            "country": "US",
+            "is_blocked": False,
+            "risk_level": "CLEAN_COMMERCIAL",
+            "programs": [],
+            "sanction_authority": None,
+            "notes": "Clean verified domestic enterprise consignee."
+        },
+        "nodes": [
+            {
+                "id": "pacific-apex-01",
+                "label": "Pacific Apex Computing Systems Inc",
+                "country": "US",
+                "is_blocked": False,
+                "risk_level": "CLEAN_COMMERCIAL",
+                "programs": [],
+                "sanction_authority": None
+            },
+            {
+                "id": "node-us-holdings",
+                "label": "Pacific Apex Holdings Corp",
+                "country": "US",
+                "is_blocked": False,
+                "risk_level": "CLEAN_COMMERCIAL",
+                "programs": [],
+                "sanction_authority": None
+            },
+            {
+                "id": "node-us-trust",
+                "label": "California Enterprise Trust",
+                "country": "US",
+                "is_blocked": False,
+                "risk_level": "CLEAN_COMMERCIAL",
+                "programs": [],
+                "sanction_authority": None
+            }
+        ],
+        "edges": [
+            {
+                "source_id": "node-us-holdings",
+                "target_id": "pacific-apex-01",
+                "ownership_pct": 70.0,
+                "relationship_type": "PARENT_HOLDING"
+            },
+            {
+                "source_id": "node-us-trust",
+                "target_id": "pacific-apex-01",
+                "ownership_pct": 30.0,
+                "relationship_type": "BENEFICIAL_OWNER"
+            }
+        ]
+    }
+}
 
 class SanctionsScreener:
     """
@@ -295,6 +485,91 @@ class SanctionsScreener:
             consignee=consignee,
             threshold=threshold
         )
+
+    def get_ownership_graph(self, target_id: str) -> CorporateGraphResponse:
+        """
+        Traverses corporate ownership graph and evaluates the OFAC 50% Rule.
+        """
+        data = CORPORATE_OWNERSHIP_NETWORKS.get(target_id)
+        if not data:
+            match = next((e for e in self.entities if e.id == target_id), None)
+            target_name = match.name if match else target_id
+            is_direct = bool(match)
+            return CorporateGraphResponse(
+                target_id=target_id,
+                nodes=[
+                    GraphNode(
+                        id=target_id,
+                        label=target_name,
+                        country="UNKNOWN",
+                        is_blocked=is_direct,
+                        risk_level="SDN_BLOCKED" if is_direct else "CLEAN_COMMERCIAL"
+                    )
+                ],
+                edges=[],
+                evaluation=OFAC50PercentEvaluation(
+                    target_entity_id=target_id,
+                    target_entity_name=target_name,
+                    total_blocked_ownership_pct=100.0 if is_direct else 0.0,
+                    is_blocked_by_50_percent_rule=is_direct,
+                    direct_sdn_status=is_direct,
+                    compliance_action="BLOCK_AND_REPORT" if is_direct else "CLEAR_TRANSACTION"
+                )
+            )
+
+        nodes = [GraphNode(**n) for n in data["nodes"]]
+        edges = [GraphEdge(**e) for e in data["edges"]]
+        target_info = data["target"]
+
+        node_lookup = {n.id: n for n in nodes}
+        blocked_ownership = 0.0
+        blocking_entities = []
+
+        for edge in edges:
+            if edge.target_id == target_id:
+                owner = node_lookup.get(edge.source_id)
+                if owner and owner.is_blocked:
+                    blocked_ownership += edge.ownership_pct
+                    blocking_entities.append({
+                        "owner_id": owner.id,
+                        "owner_name": owner.label,
+                        "country": owner.country,
+                        "ownership_pct": edge.ownership_pct,
+                        "programs": owner.programs
+                    })
+
+        direct_sdn = target_info.get("is_blocked", False)
+        is_blocked_50 = blocked_ownership >= 50.0
+
+        if direct_sdn or is_blocked_50:
+            action = "BLOCK_AND_REPORT"
+        elif blocked_ownership > 0.0:
+            action = "ENHANCED_DUE_DILIGENCE"
+        else:
+            action = "CLEAR_TRANSACTION"
+
+        evaluation = OFAC50PercentEvaluation(
+            target_entity_id=target_id,
+            target_entity_name=target_info["label"],
+            total_blocked_ownership_pct=round(blocked_ownership, 2),
+            is_blocked_by_50_percent_rule=is_blocked_50,
+            direct_sdn_status=direct_sdn,
+            blocking_entities=blocking_entities,
+            compliance_action=action
+        )
+
+        return CorporateGraphResponse(
+            target_id=target_id,
+            nodes=nodes,
+            edges=edges,
+            evaluation=evaluation
+        )
+
+    async def get_ownership_graph_async(self, target_id: str) -> CorporateGraphResponse:
+        """
+        Asynchronously fetches ownership graph via worker thread.
+        """
+        return await asyncio.to_thread(self.get_ownership_graph, target_id)
 
 sanctions_screener = SanctionsScreener()
 

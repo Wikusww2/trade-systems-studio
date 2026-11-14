@@ -97,3 +97,4 @@ const path = require("path");
   await browser.close();
   console.log("ALL_CAPTURES_SUCCESSFUL");
 })();
+
