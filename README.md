@@ -1,6 +1,8 @@
 # 🛡️ TradeTech Systems Studio — Autonomous Trade Intelligence & Customs Defense
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
+[![Whitepaper](https://img.shields.io/badge/Whitepaper-Interactive%20Edition-8b5cf6?style=for-the-badge&logo=googledocs&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)
+[![Scale](https://img.shields.io/badge/Benchmark-33k%20audits%2Fsec-059669?style=for-the-badge&logo=speedtest&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/blob/main/docs/PERFORMANCE_AND_SCALE_BENCHMARKS.md)
 [![CI](https://img.shields.io/badge/CI-Passing-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/Pytest-41%2F41%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
@@ -37,7 +39,7 @@ Generic LLM prompt wrappers fail in regulated international trade because flat L
 
 ---
 
-## 🎯 The Four Flagship Enterprise Pillars
+## 🎯 The Six Flagship Enterprise Pillars
 
 ### 1. Customs Compliance Firewall & 1592 Defense
 - **Statutory Authority:** 19 U.S.C. § 1592 & 19 CFR § 152.103.
