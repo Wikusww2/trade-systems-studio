@@ -41,7 +41,7 @@ export const TelemetryTracker: React.FC<TelemetryTrackerProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-300">
-              Run a blind diagnostic audit on 25 of your own historical invoices — <strong className="text-white">$0 upfront</strong>, funded purely on recovered cash.
+              Run a blind diagnostic audit on 25 of your own historical invoices: <strong className="text-white">$0 upfront</strong>, funded purely on recovered cash.
             </p>
           </div>
         </div>

@@ -34,7 +34,7 @@ const TOUR_STEPS: TourStep[] = [
     title: "Multi-Pillar Trade Intelligence",
     badge: "01 / ARCHITECTURE",
     description: "Toggle seamlessly across 6 enterprise compliance engines: Customs § 1592 Defense, Pre-Payment Freight Audit, Duty Drawback, OFAC 50% Sanctions Graph, HTS Copilot, and GAAP Assist Registers.",
-    statute: "WCO GRI 1–6 • 19 U.S.C. § 1592 • 31 CFR § 501",
+    statute: "WCO GRI 1 to 6 • 19 U.S.C. § 1592 • 31 CFR § 501",
     actionHint: "Click any tab in the top switcher to activate that diagnostic lens.",
   },
   {

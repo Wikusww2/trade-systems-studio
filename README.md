@@ -1,4 +1,4 @@
-# 🛡️ TradeTech Systems Studio - Autonomous Trade Intelligence & Customs Defense
+# 🛡️ TradeTech Systems Studio: Autonomous Trade Intelligence & Customs Defense
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
 [![Whitepaper](https://img.shields.io/badge/Whitepaper-Interactive%20Edition-8b5cf6?style=for-the-badge&logo=googledocs&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)
@@ -21,7 +21,7 @@ Mid-market enterprise importers, customs brokerages, and freight forwarders lose
 
 Generic LLM prompt wrappers fail in regulated international trade because flat LLMs hallucinate tariff codes, perform inaccurate math on currency/unit conversions, and cannot withstand formal U.S. Customs and Border Protection (CBP) or Federal Maritime Commission (FMC) audits.
 
-**TradeTech Systems Studio** solves this with an enterprise-grade, zero-budget architecture that pairs **statutory legal reasoning (WCO GRI 1–6, 19 U.S.C. § 1592, 19 CFR § 152.103, 31 CFR § 501)** with **strict mathematical determinism (Python `Decimal`)** and **local document layout parsing (`docling`)**.
+**TradeTech Systems Studio** solves this with an enterprise-grade, zero-budget architecture that pairs **statutory legal reasoning (WCO GRI 1 to 6, 19 U.S.C. § 1592, 19 CFR § 152.103, 31 CFR § 501)** with **strict mathematical determinism (Python `Decimal`)** and **local document layout parsing (`docling`)**.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -66,7 +66,7 @@ Generic LLM prompt wrappers fail in regulated international trade because flat L
 - **The Defense:** Sub-200ms recursive graph traversal calculating cumulative blocked equity across ownership chains paired with RapidFuzz token-sort string screening against OpenSanctions datasets.
 
 ### 5. Autonomous Landed Cost & HTS Classification Copilot
-- **Statutory Authority:** WCO General Rules of Interpretation (GRI 1–6) & 19 CFR § 24.23/24.
+- **Statutory Authority:** WCO General Rules of Interpretation (GRI 1 to 6) & 19 CFR § 24.23/24.
 - **The Threat:** Flat LLM prompts guess 10-digit HTS codes in one shot, bypassing Chapter/Section Notes and generating indefensible entries that fail CBP regulatory audits.
 - **The Defense:** Path-dependent hierarchical state machine evaluating candidate headings, checking Section notes, and executing element-wise confidence scoring. Low confidence ($Conf(e) < 0.85$) triggers dashed amber visual review gating for licensed customs brokers. Aggregates duty, MPF ($31.67–$614.35 caps), and HMF (0.125%) via Python `Decimal`.
 

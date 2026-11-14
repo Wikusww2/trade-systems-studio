@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""TradeTech Systems Studio — Enterprise Concurrency & Latency Benchmark.
+"""TradeTech Systems Studio  -  Enterprise Concurrency & Latency Benchmark.
 
-Architected by Samuel — Principal AI Systems Architect & Lead TradeTech Engineer.
+Architected by Samuel  -  Principal AI Systems Architect & Lead TradeTech Engineer.
 Tests throughput, p50/p95/p99 latency, and floating-point zero-drift guarantees
 across 1,000 consecutive enterprise compliance audits.
 """

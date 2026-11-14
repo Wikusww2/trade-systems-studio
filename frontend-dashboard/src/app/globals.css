@@ -3,6 +3,40 @@
 @tailwind utilities;
 
 :root {
+  /* Default: Developer-Grade Dark Mode (Linear / Modern Treasury) */
+  --background: #0b0f19;
+  --foreground: #f8fafc;
+  --surface: #1e293b;
+  --border: #1f2937;
+
+  /* Concrete Design Token Specification */
+  --bg-canvas-dark: #0b0f19;
+  --bg-terminal-slate: #0f172a;
+  --bg-card-elevated: #1e293b;
+  --border-dark-subtle: #1f2937;
+  --border-terminal: #334155;
+
+  --bg-canvas-stone: #f8fafc;
+  --bg-surface-paper: #ffffff;
+  --bg-well-muted: #f1f5f9;
+  --border-hairline: #e2e8f0;
+
+  --text-terminal-primary: #f8fafc;
+  --text-terminal-secondary: #94a3b8;
+  --text-terminal-muted: #64748b;
+
+  --text-ink-primary: #0f172a;
+  --text-ink-secondary: #475569;
+
+  --accent-cobalt: #2563eb;
+  --accent-cobalt-hover: #1d4ed8;
+
+  --status-crimson: #ef4444;
+  --status-amber: #f59e0b;
+  --status-emerald: #10b981;
+}
+
+.light {
   --background: #f8fafc;
   --foreground: #0f172a;
   --surface: #ffffff;
@@ -10,18 +44,23 @@
 }
 
 .dark {
-  --background: #0e1015;
-  --foreground: #e2e8f0;
-  --surface: #14171e;
-  --border: #262b35;
+  --background: #0b0f19;
+  --foreground: #f8fafc;
+  --surface: #1e293b;
+  --border: #1f2937;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Plus Jakarta Sans", sans-serif);
   overflow-x: hidden;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Strict Tabular Numbers for Metrics, Codes, and Currency */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Custom rectilinear scrollbar */
@@ -34,72 +73,47 @@ body {
   background: transparent;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: #0e1015;
-}
 
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 2px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #262b35;
-  border-radius: 0px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #3a4252;
-}
-
-/* Institutional grid pattern */
-.rectilinear-grid {
-  background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
-}
-
-.dark .rectilinear-grid {
-  background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, rgba(42, 47, 58, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(42, 47, 58, 0.3) 1px, transparent 1px);
-}
-
-/* Apple Keynote Laser Scanner Sweep */
-@keyframes scanBeam {
-  0% {
-    top: 0%;
-    opacity: 0;
+  .dark ::-webkit-scrollbar-track,
+  body:not(.light) ::-webkit-scrollbar-track {
+    background: #0b0f19;
   }
-  15% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    top: 100%;
-    opacity: 0;
-  }
-}
 
-.animate-scan-beam {
-  animation: scanBeam 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
 
-/* Apple-grade Specular Hairline Borders */
-.specular-border-light {
-  border: 1px solid #e2e8f0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.04);
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
 
-.specular-border-dark {
-  border: 1px solid #262b35;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 20px rgba(0, 0, 0, 0.4);
-}
+
+    /* Subtle Technical Dot Grid */
+    .technical-dot-grid {
+      background-size: 24px 24px;
+      background-image: radial-gradient(rgba(248, 250, 252, 0.05) 1px, transparent 1px);
+    }
+
+
+      .light .technical-dot-grid {
+        background-image: radial-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+      }
+
+
+        /* Concentric Border Radii */
+        .concentric-outer {
+          border-radius: 16px;
+        }
+
+          .concentric-panel {
+            border-radius: 12px;
+          }
+
+            .concentric-card {
+              border-radius: 8px;
+            }
+
+              .concentric-badge {
+                border-radius: 6px;
+              }

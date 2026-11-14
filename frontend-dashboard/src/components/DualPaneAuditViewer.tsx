@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AuditResult, KillShotMetrics } from "@/lib/types";
 import { fetchAudit, fetchAggregateMetrics } from "@/lib/api";
 import dynamic from "next/dynamic";
@@ -14,7 +14,6 @@ import { DifferentialistMatrix } from "./DifferentialistMatrix";
 import { ExecutiveDossierModal } from "./ExecutiveDossierModal";
 import { AmbientMotionBackground } from "./AmbientMotionBackground";
 import { FilmTheaterModal } from "./FilmTheaterModal";
-import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
 import { RollingNumber } from "./RollingNumber";
 import { FunnelRedesignStudio } from "./funnel-variations/FunnelRedesignStudio";
 import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
@@ -22,9 +21,15 @@ import { HtsClassifierViewer } from "./HtsClassifierViewer";
 import { CustomsValuationViewer } from "./CustomsValuationViewer";
 import { SystemArchitectureModal } from "./SystemArchitectureModal";
 import { ExecutiveTourOverlay } from "./ExecutiveTourOverlay";
+import { CargoWiseXmlViewer } from "./CargoWiseXmlViewer";
+import { DeveloperApiSandbox } from "./DeveloperApiSandbox";
+import { ScenarioSelectorBar, CORRIDOR_SCENARIOS, Scenario } from "./ScenarioSelectorBar";
+import { InlineArchitectureFlow } from "./InlineArchitectureFlow";
+import { ArchitectThesis } from "./ArchitectThesis";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
+import { auditUploadedPdf } from "@/lib/clientAuditor";
 import {
   Scale,
   DollarSign,
@@ -35,7 +40,6 @@ import {
   ExternalLink,
   ChevronRight,
   CheckCircle2,
-  Clock,
   Lock,
   Sun,
   Moon,
@@ -43,87 +47,72 @@ import {
   X,
   FileText,
   AlertOctagon,
-  Volume2,
-  VolumeX,
   Printer,
   Sparkles,
-  Crosshair,
-  Briefcase,
-  Film,
   Network,
   Binary,
   Landmark,
   Upload,
+  Code2,
+  Terminal,
+  Zap,
 } from "lucide-react";
-import { auditUploadedPdf } from "@/lib/clientAuditor";
 
 const PdfOverlayCanvas = dynamic(
   () => import("./PdfOverlayCanvas").then((mod) => mod.PdfOverlayCanvas),
   {
     ssr: false,
     loading: () => (
-      <div className="flex flex-col items-center justify-center h-full bg-slate-100 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#202530] text-slate-500 font-mono text-xs gap-3">
-        <div className="w-6 h-6 border-2 border-sky-600 dark:border-sky-400 border-t-transparent animate-spin rounded-full" />
+      <div className="flex flex-col items-center justify-center h-full bg-[#0B0F19] border border-[#1F2937] text-slate-400 font-mono text-xs gap-3">
+        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent animate-spin rounded-full" />
         <span>Initializing High-Precision Document Lens...</span>
       </div>
     ),
   }
 );
 
-const CONCEPTS = [
+const ALL_PILLARS = [
   {
     id: "concept_1_customs",
     name: "01 / Customs Valuation & 1592 Defense",
     shortTag: "CUSTOMS FIREWALL",
-    icon: <Scale className="w-4 h-4" />,
+    icon: <Scale className="w-3.5 h-3.5" />,
     statute: "19 U.S.C. § 1592 & 19 CFR § 152.103",
-    metricLabel: "Penalty Exposure Avoided",
-    metricColor: "text-rose-600 dark:text-rose-400",
   },
   {
     id: "concept_2_freight",
     name: "02 / Pre-Payment Freight Overbilling",
     shortTag: "FREIGHT AUDIT",
-    icon: <DollarSign className="w-4 h-4" />,
+    icon: <DollarSign className="w-3.5 h-3.5" />,
     statute: "FMC Docket 21-08 & OSRA 2022",
-    metricLabel: "Carrier Overbilling Caught",
-    metricColor: "text-rose-600 dark:text-rose-400",
   },
   {
     id: "concept_3_drawback",
     name: "03 / Section 1313 Duty Drawback",
     shortTag: "DUTY DRAWBACK",
-    icon: <FileCheck2 className="w-4 h-4" />,
+    icon: <FileCheck2 className="w-3.5 h-3.5" />,
     statute: "19 U.S.C. § 1313 Unused Merchandise",
-    metricLabel: "99% Cash Refund Unlocked",
-    metricColor: "text-emerald-600 dark:text-emerald-400",
   },
   {
     id: "concept_4_sanctions",
     name: "04 / Sanctions & Entity Graph",
     shortTag: "OFAC 50% GRAPH",
-    icon: <Network className="w-4 h-4" />,
+    icon: <Network className="w-3.5 h-3.5" />,
     statute: "31 CFR § 501 / OFAC 50% Rule",
-    metricLabel: "Beneficial Ownership Traversed",
-    metricColor: "text-rose-600 dark:text-rose-400",
   },
   {
     id: "concept_5_hts",
     name: "05 / HTS Classification Copilot",
     shortTag: "GRI 1-6 COPILOT",
-    icon: <Binary className="w-4 h-4" />,
-    statute: "WCO GRI 1–6 & 19 CFR § 24.23",
-    metricLabel: "Path-Dependent Reasoning",
-    metricColor: "text-cyan-600 dark:text-cyan-400",
+    icon: <Binary className="w-3.5 h-3.5" />,
+    statute: "WCO GRI 1 to 6 & 19 CFR § 24.23",
   },
   {
     id: "concept_6_valuation",
     name: "06 / CBP Assist & Valuation Register",
     shortTag: "152.103 ASSISTS",
-    icon: <Landmark className="w-4 h-4" />,
+    icon: <Landmark className="w-3.5 h-3.5" />,
     statute: "19 CFR § 152.103 & 19 CFR § 162.74",
-    metricLabel: "Prior Disclosure Mitigation",
-    metricColor: "text-emerald-600 dark:text-emerald-400",
   },
 ];
 
@@ -133,6 +122,15 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [aggregateMetrics, setAggregateMetrics] = useState<KillShotMetrics | null>(null);
   const [activeDiscrepancyId, setActiveDiscrepancyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Right-hand terminal tab state
+  const [rightTerminalTab, setRightTerminalTab] = useState<"discrepancies" | "cargowise" | "developer_api">("discrepancies");
+
+  // Disruption Mode Chaos State
+  const [disruptionMode, setDisruptionMode] = useState<boolean>(false);
+  const [disruptionVector, setDisruptionVector] = useState<"port_congestion" | "fuel_spike" | "red_sea">("port_congestion");
+
+  // Modals & Guided Experience
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
   const [isFilmOpen, setIsFilmOpen] = useState<boolean>(false);
@@ -142,19 +140,13 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
   const [isTourActive, setIsTourActive] = useState<boolean>(false);
 
-  // ICP Persona Lens ('cfo' | 'counsel')
-  const [persona, setPersona] = useState<IcpPersona>("cfo");
-
-  // Audio Haptics Mute State
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
-
   // Mobile segmented view state ('doc' | 'findings')
   const [mobileTab, setMobileTab] = useState<"findings" | "doc">("findings");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
   // Theme state: default to 'dark' for Nightmare Suite terminal aesthetic, with toggle
   const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCustomFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -202,7 +194,6 @@ export const DualPaneAuditViewer: React.FC = () => {
   };
 
   useEffect(() => {
-    // Check saved theme or default to dark
     const saved = localStorage.getItem("theme") as "light" | "dark" | null;
     const initialTheme = saved || "dark";
     setTheme(initialTheme);
@@ -212,9 +203,6 @@ export const DualPaneAuditViewer: React.FC = () => {
       document.documentElement.classList.remove("dark");
     }
 
-    setIsAudioMuted(sound.getMuted());
-
-    // Deep-linking URL hash & query routing on initial load
     if (typeof window !== "undefined") {
       const hash = window.location.hash.toLowerCase().replace("#", "");
       const params = new URLSearchParams(window.location.search);
@@ -317,174 +305,105 @@ export const DualPaneAuditViewer: React.FC = () => {
     setIsMobileNavOpen(false);
   };
 
+  // Disruption mode metrics calculation
+  const displayedExposureAvoided = disruptionMode
+    ? (aggregateMetrics?.penalty_exposure_avoided || 125000) * 1.8
+    : aggregateMetrics?.penalty_exposure_avoided || 125000;
+
+  const displayedCarrierOverbilling = disruptionMode
+    ? disruptionVector === "port_congestion"
+      ? 15797.50
+      : disruptionVector === "fuel_spike"
+      ? 8387.50
+      : 11147.50
+    : aggregateMetrics?.carrier_overbilling_caught || 1547.50;
+
+  const displayedDrawback = disruptionMode
+    ? (aggregateMetrics?.drawback_unclaimed_unlocked || 27324) * 1.25
+    : aggregateMetrics?.drawback_unclaimed_unlocked || 27324;
+
   return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0E1015] text-slate-900 dark:text-[#E2E8F0] flex flex-col font-sans transition-colors duration-200 relative">
-      {/* HyperFrames Ambient Living Background Depth Layer */}
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0B0F19] text-slate-100 flex flex-col font-sans transition-colors duration-200 relative selection:bg-blue-600 selection:text-white">
+      {/* Subtle Static Dot Grid Background */}
       <AmbientMotionBackground />
 
-      {/* 1. TOP GLOBAL NAVIGATION & IDENTITY */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#14171E]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#262B35] px-4 sm:px-6 lg:px-8 py-3 shadow-xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      {/* 1. STICKY MINIMALIST DEVELOPER HEADER (56px) */}
+      <header className="sticky top-0 z-40 bg-[#0F172A]/90 backdrop-blur-md border-b border-[#1F2937] px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full max-w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           {/* Identity & Practice */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-sm bg-slate-900 dark:bg-sky-950 border border-slate-700 dark:border-sky-800 text-sky-400 flex items-center justify-center font-mono font-bold text-xs shadow-sm">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-mono font-bold text-xs shadow-md shadow-blue-500/20 shrink-0">
               S
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold tracking-wider text-slate-900 dark:text-slate-100 uppercase">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="font-mono text-xs font-bold tracking-wider text-slate-100 uppercase truncate">
                   SAMUEL
                 </span>
-                <span className="text-[10px] font-mono text-slate-400">•</span>
-                <span className="font-mono text-[10px] tracking-wider text-sky-700 dark:text-sky-400 uppercase font-semibold">
-                  TRADETECH SYSTEMS STUDIO
+                <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">·</span>
+                <span className="font-mono text-[10px] tracking-wider text-blue-400 uppercase font-semibold truncate hidden sm:inline">
+                  TRADE SYSTEMS STUDIO
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
-                Principal Trade Systems Architect & Compliance Lead
-              </p>
+              <div className="hidden lg:flex items-center gap-1.5 mt-0.5">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] font-mono text-emerald-400">
+                  Available for Principal Systems & Forward-Deployed AI
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Quick Nav, Persona, Theme Toggle & Primary Conversion CTA */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <nav className="hidden xl:flex items-center gap-5 text-xs font-mono text-slate-600 dark:text-slate-400 mr-2">
-              <a href="#audit-workspace" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
-                Diagnostic Console
-              </a>
-              <a href="#roi-calculator" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
-                Value Model
-              </a>
-              <a href="#comparison-matrix" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
-                Differentialism
-              </a>
-              <a href="#services-menu" className="hover:text-sky-600 dark:hover:text-slate-200 transition-colors">
-                Advisory Services
-              </a>
-              <a href="#funnel-studio" className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors">
-                Funnel Lab
-              </a>
-            </nav>
-
-            {/* 2-Variation Funnel Studio Modal Button */}
-            <button
-              onClick={() => {
-                sound.playLock();
-                setIsFunnelStudioOpen(true);
-              }}
-              title="Open 2-Variation ICP Funnel Studio"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-600 text-emerald-300 rounded-sm font-mono text-xs font-bold transition-all shadow-xs"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="hidden sm:inline">Funnel Lab</span>
-            </button>
-
-            {/* 60s Executive Guided Tour Button */}
-            <button
-              onClick={() => {
-                sound.playLock();
-                setIsTourActive(true);
-              }}
-              title="Start 60-Second Guided Tour"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 rounded-sm font-mono text-xs font-bold transition-all shadow-xs"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="hidden sm:inline">60s Tour</span>
-            </button>
-
-            {/* Keynote Film Teaser Button */}
-            <button
-              onClick={() => {
-                sound.click();
-                setIsFilmOpen(true);
-              }}
-              title="Watch 30s Keynote Film"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-900 dark:bg-[#1E2533] text-white hover:bg-slate-800 dark:hover:bg-[#252E3E] border border-slate-700 dark:border-slate-600 rounded-sm font-mono text-xs font-semibold transition-all shadow-xs"
-            >
-              <Film className="w-3.5 h-3.5 text-sky-400" />
-              <span className="hidden md:inline">Keynote Film</span>
-            </button>
-
-            {/* Executive Dossier Printable Briefing */}
-            <button
-              onClick={() => {
-                sound.playLock();
-                setIsDossierOpen(true);
-              }}
-              title="View Printable Executive Dossier & Statutory Briefing"
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 dark:bg-[#1E2533] text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-[#252E3E] border border-slate-300 dark:border-slate-600 rounded-sm font-mono text-xs font-semibold transition-all shadow-xs"
-            >
-              <Printer className="w-3.5 h-3.5 text-amber-500" />
-              <span>Dossier</span>
-            </button>
-
-            {/* Interactive Technical Whitepaper Publication */}
-            <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/whitepaper/`}
-              onClick={() => sound.playTick()}
-              title="Read Interactive Systems Architecture Whitepaper"
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 dark:bg-[#1E2533] text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-[#252E3E] border border-slate-300 dark:border-slate-600 rounded-sm font-mono text-xs font-semibold transition-all shadow-xs"
-            >
-              <FileText className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Whitepaper</span>
+          {/* Clean 4-Link Navigation */}
+          <nav className="hidden xl:flex items-center gap-6 text-xs font-mono text-slate-400">
+            <a href="#workbench" className="hover:text-blue-400 transition-colors">
+              #workbench
             </a>
+            <a href="#architecture" className="hover:text-blue-400 transition-colors">
+              #architecture
+            </a>
+            <a href="#value-pack-roi" className="hover:text-blue-400 transition-colors">
+              #value-pack-roi
+            </a>
+            <a href="#architect-thesis" className="hover:text-blue-400 transition-colors">
+              #architect-thesis
+            </a>
+          </nav>
 
-            {/* System Architecture & 40/40 Tests Button */}
+          {/* Right Action Group */}
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <button
-              onClick={() => {
-                sound.playLock();
-                setIsArchitectureModalOpen(true);
-              }}
-              title="View System Architecture & 40/40 Automated Test Proof"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-sky-950/80 hover:bg-sky-900 border border-sky-500/60 text-sky-300 rounded-sm font-mono text-xs font-bold transition-all shadow-xs"
+              onClick={() => openConsultation("contingent_audit")}
+              className="hidden md:inline-flex px-3 py-1.5 text-xs font-mono text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-md transition-colors"
             >
-              <Cpu className="w-3.5 h-3.5 text-sky-400" />
-              <span className="hidden xl:inline">Architecture & Tests</span>
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </button>
-
-            {/* Audio Micro-Haptics Toggle */}
-            <button
-              onClick={() => {
-                const nextMuted = sound.toggleMute();
-                setIsAudioMuted(nextMuted);
-                if (!nextMuted) sound.playTick();
-              }}
-              title={isAudioMuted ? "Enable Audio Haptics" : "Mute Audio Haptics"}
-              className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-[#1E2533] border border-slate-300 dark:border-[#2D3545] rounded-sm transition-all"
-            >
-              {isAudioMuted ? (
-                <VolumeX className="w-4 h-4 text-slate-400" />
-              ) : (
-                <Volume2 className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              )}
-            </button>
-
-            {/* Theme Toggle (Light / Dark) */}
-            <button
-              onClick={toggleTheme}
-              title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
-              className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-[#1E2533] border border-slate-300 dark:border-[#2D3545] rounded-sm transition-all"
-            >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4 text-amber-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-slate-700" />
-              )}
+              50-Bill Audit ($0)
             </button>
 
             <button
               onClick={() => openConsultation("fractional_advisory")}
-              className="hidden sm:flex px-4 py-2 bg-sky-600 hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 text-white dark:text-slate-950 font-mono font-bold text-xs uppercase tracking-wider items-center gap-1.5 transition-all rounded-sm shadow-sm"
+              className="px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-all rounded-md shadow-md shadow-blue-500/20"
             >
-              <span>Schedule Strategy Call</span>
+              <span className="hidden sm:inline">Book Architecture Review</span>
+              <span className="sm:hidden">Review</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
-            {/* Mobile Hamburger Toggle */}
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+              className="p-1.5 text-slate-400 hover:text-white bg-[#0F172A] border border-[#1F2937] rounded-md transition-all shrink-0"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-300" />
+              )}
+            </button>
+
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-              className="lg:hidden p-2 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-sm"
+              className="xl:hidden p-1.5 text-slate-300 border border-slate-700 rounded-md shrink-0"
             >
               {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
@@ -493,651 +412,517 @@ export const DualPaneAuditViewer: React.FC = () => {
 
         {/* Mobile Navigation Dropdown */}
         {isMobileNavOpen && (
-          <div className="lg:hidden pt-3 pb-2 mt-2 border-t border-slate-200 dark:border-slate-800 space-y-2 font-mono text-xs">
+          <div className="lg:hidden pt-3 pb-2 mt-2 border-t border-[#1F2937] space-y-2 font-mono text-xs">
             <a
-              href="#audit-workspace"
+              href="#workbench"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
             >
-              Diagnostic Console
+              #workbench
             </a>
             <a
-              href="#roi-calculator"
+              href="#architecture"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
             >
-              Value Model & Calculator
+              #architecture
             </a>
             <a
-              href="#comparison-matrix"
+              href="#value-pack-roi"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
             >
-              Market Differentialism
+              #value-pack-roi
             </a>
             <a
-              href="#services-menu"
+              href="#architect-thesis"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-sm"
+              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
             >
-              Executive Services Menu
+              #architect-thesis
             </a>
             <button
               onClick={() => openConsultation("fractional_advisory")}
-              className="w-full mt-2 py-2 px-3 bg-sky-600 text-white font-bold text-xs uppercase tracking-wider rounded-sm text-center"
+              className="w-full mt-2 py-2 px-3 bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-md text-center"
             >
-              Schedule Strategy Call
+              Book Architecture Review
             </button>
           </div>
         )}
       </header>
 
-      {/* 2. EXECUTIVE HERO DOSSIER (WITH DYNAMIC ICP PERSONA SWITCHER) */}
-      <section className="border-b border-slate-200 dark:border-[#262B35] bg-white dark:bg-[#11141A] py-10 lg:py-14 shadow-xs relative overflow-hidden">
+      {/* 2. ACT 1: ABOVE-THE-FOLD SYSTEMS HERO */}
+      <section className="border-b border-[#1F2937] bg-[#0F172A]/40 py-8 lg:py-12 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">
-            {/* Top Row: Tag + Persona Switcher */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-sky-50 dark:bg-sky-950/70 border border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-300 text-xs font-mono rounded-sm font-semibold">
-                <Shield className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                <span>
-                  {persona === "cfo"
-                    ? "CFO Balance Sheet Defense • Pre-Payment Interception"
-                    : "General Counsel Safe Harbor • Strict Liability Defense"}
-                </span>
-              </div>
-
-              {/* Dual-Lens ICP Switcher */}
-              <IcpPersonaSwitcher persona={persona} onChange={setPersona} />
+            {/* Systems Badges */}
+            <div className="flex flex-wrap items-center gap-2 mb-4 font-mono text-xs">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-950/80 border border-blue-800 text-blue-300 rounded-md font-semibold">
+                <Zap className="w-3.5 h-3.5 text-blue-400" />
+                <span>Deterministic Pre-Ingest Firewall</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
+                <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                <span>CargoWise UniversalShipment XML & ACE Ready</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>43/43 Automated Tests Passing</span>
+              </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-[1.15] mb-4">
-              {persona === "cfo" ? (
-                <>Autonomous Trade Intelligence & <span className="text-sky-600 dark:text-sky-400">EBITDA Defense</span></>
-              ) : (
-                <>Autonomous Trade Compliance & <span className="text-rose-600 dark:text-rose-400">1592 Safe Harbor</span></>
-              )}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.15] mb-4">
+              Deterministic Pre-Ingest Verification for{" "}
+              <span className="text-blue-400">CargoWise & ACE</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-normal">
-              {persona === "cfo" ? (
-                <>
-                  Architected by Samuel. Defending enterprise balance sheets against 7-figure{" "}
-                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-rose-500/60 decoration-2">
-                    19 U.S.C. § 1592 penalties
-                  </span>{" "}
-                  and intercepting{" "}
-                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-emerald-500/60 decoration-2">
-                    5%–15% in carrier overbilling
-                  </span>{" "}
-                  before cash exits your treasury with deterministic double-entry mathematical verification.
-                </>
-              ) : (
-                <>
-                  Architected by Samuel. Inoculating global importers against CBP Form 28 / 29 inquiries, valuation assist defects under{" "}
-                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-rose-500/60 decoration-2">
-                    19 CFR § 152.103
-                  </span>
-                  , and preparing voluntary safe-harbor Prior Disclosures under{" "}
-                  <span className="text-slate-900 dark:text-slate-100 font-semibold underline decoration-sky-500/60 decoration-2">
-                    19 CFR § 162.74
-                  </span>
-                  .
-                </>
-              )}
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 font-normal">
+              Intercepting 19 U.S.C. § 1592 customs penalties, carrier accessorial overbilling, and GRI misclassifications before UniversalShipment XML enters your TMS. Built with sub-50ms execution, zero floating-point drift, and 100% Python Decimal precision.
             </p>
 
-            {/* Action Bar with Keynote Film & Funnel Lab Triggers */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <button
-                onClick={() => {
-                  sound.playLock();
-                  setIsFunnelStudioOpen(true);
-                }}
-                className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded-sm border border-emerald-500 transition-all shadow-md group"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform" />
-                <span>Launch 2-Variation Funnel Studio</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  sound.click();
-                  setIsFilmOpen(true);
-                }}
-                className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 dark:bg-[#1E2533] hover:bg-slate-800 dark:hover:bg-[#262F40] text-white font-mono text-xs font-bold rounded-sm border border-slate-700 transition-all shadow-xs group"
-              >
-                <Film className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
-                <span>Watch 30s Keynote Film</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  sound.playLock();
-                  setIsArchitectureModalOpen(true);
-                }}
-                className="inline-flex items-center gap-2 px-3.5 py-2 bg-sky-950/80 hover:bg-sky-900 text-sky-200 font-mono text-xs font-bold rounded-sm border border-sky-500/60 transition-all shadow-xs group"
-              >
-                <Cpu className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
-                <span>Architecture & Tests (41/41 Passing)</span>
-              </button>
-
-              <a
-                href="#audit-workspace"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-[#151922] hover:bg-slate-200 dark:hover:bg-[#1C222E] text-slate-700 dark:text-slate-300 font-mono text-xs font-semibold rounded-sm border border-slate-300 dark:border-slate-800 transition-colors"
-              >
-                <span>Live Diagnostic Console</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </a>
-            </div>
-
-            {/* Proof Metrics Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-200 dark:border-[#262B35]/80">
-              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
-                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                  {persona === "cfo" ? "Avg. Penalty Defense" : "Statutory Ceiling"}
+            {/* Systems Metrics Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#1F2937]">
+              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                  Execution Latency
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-rose-600 dark:text-rose-400">
-                  $125,000+
+                <div className="text-base sm:text-lg font-mono font-bold text-blue-400 tabular-nums">
+                  &lt; 38 ms
                 </div>
-                <div className="text-[10px] text-slate-500">
-                  {persona === "cfo" ? "Per Invoiced Entry" : "19 U.S.C. § 1592(c)"}
-                </div>
+                <div className="text-[10px] text-slate-500 font-mono">Deterministic Gateway</div>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
-                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                  {persona === "cfo" ? "Freight Overbill Catch" : "Tariff Dispute Rate"}
+              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                  Arithmetic Standard
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-sky-700 dark:text-sky-400">
-                  5% – 15%
-                </div>
-                <div className="text-[10px] text-slate-500">
-                  {persona === "cfo" ? "Pre-Payment Intercept" : "OSRA 2022 Enforcement"}
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
-                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                  Mathematical Engine
-                </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                <div className="text-base sm:text-lg font-mono font-bold text-emerald-400 tabular-nums">
                   100% Decimal
                 </div>
-                <div className="text-[10px] text-slate-500">Zero Floating-Point Drift</div>
+                <div className="text-[10px] text-slate-500 font-mono">Zero LLM Calculations</div>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-[#151922] border border-slate-200 dark:border-[#262B35] rounded-sm shadow-xs">
-                <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                  Pre-Payment Latency
+              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                  Carrier Leakage Intercept
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-slate-800 dark:text-slate-200">
-                  &lt; 200 ms
+                <div className="text-base sm:text-lg font-mono font-bold text-rose-400 tabular-nums">
+                  3% to 7.5%
                 </div>
-                <div className="text-[10px] text-slate-500">Private On-Premise Audit Gate</div>
+                <div className="text-[10px] text-slate-500 font-mono">Pre-Payment Guard</div>
+              </div>
+
+              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
+                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+                  Value Pack Rework
+                </div>
+                <div className="text-base sm:text-lg font-mono font-bold text-amber-400 tabular-nums">
+                  0 Failed Retries
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">eAdaptor Pre-Clearance</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. INTERACTIVE DIAGNOSTIC WORKSPACE HEADER */}
-      <section id="audit-workspace" className="bg-white dark:bg-[#14171E] border-b border-slate-200 dark:border-[#262B35] px-4 sm:px-6 lg:px-8 py-4 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-[#262B35] text-slate-600 dark:text-slate-400 font-semibold rounded-xs">
-                Interactive Proof-of-Work
-              </span>
-              <span className="text-[10px] font-mono text-sky-700 dark:text-sky-400 font-medium">
-                Public Domain Trade Archive Ingestion
-              </span>
-            </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <span>Live Diagnostic Engine Console</span>
-            </h2>
-          </div>
+      {/* 3. DUAL-PANE AUDIT WORKBENCH (ACT 1 CONTINUED) */}
+      <section id="workbench" className="max-w-7xl w-full max-w-full overflow-hidden mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Scenario Bar: Durban, Long Beach, Steel Drawback */}
+        <ScenarioSelectorBar
+          activeScenarioId={CORRIDOR_SCENARIOS.find((s) => s.concept_id === activeConceptId)?.id || "scenario_durban_rotterdam"}
+          onSelectScenario={(sc: Scenario) => switchConcept(sc.concept_id)}
+        />
 
-          {/* Kill Shot Metrics Flash Cards (With Rolling Animation) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-            <div className="bg-slate-50 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] px-3.5 py-2 rounded-sm shadow-xs">
-              <div className="text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                1592 Exposure Avoided
-              </div>
-              <div className="text-sm sm:text-base font-mono font-bold text-rose-600 dark:text-rose-400">
-                <RollingNumber
-                  value={aggregateMetrics?.penalty_exposure_avoided || 125000}
-                />
-              </div>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] px-3.5 py-2 rounded-sm shadow-xs">
-              <div className="text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                Freight Overbill Caught
-              </div>
-              <div className="text-sm sm:text-base font-mono font-bold text-rose-600 dark:text-rose-400">
-                <RollingNumber
-                  value={aggregateMetrics?.carrier_overbilling_caught || 1547.50}
-                />
-              </div>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-[#0B0D11] border border-slate-200 dark:border-[#262B35] px-3.5 py-2 rounded-sm shadow-xs">
-              <div className="text-[9px] font-mono uppercase text-slate-500 dark:text-slate-400 font-semibold">
-                99% Drawback Unlocked
-              </div>
-              <div className="text-sm sm:text-base font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                <RollingNumber
-                  value={aggregateMetrics?.drawback_unclaimed_unlocked || 27324}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Concept Switcher Tabs */}
-        <div className="max-w-7xl mx-auto flex items-center gap-2 mt-4 pt-3 border-t border-slate-200 dark:border-[#262B35]/60 overflow-x-auto">
-          {CONCEPTS.map((concept) => {
-            const isActive =
-              activeConceptId === concept.id ||
-              (concept.id === "concept_1_customs" &&
-                (activeConceptId === "concept_clean_fob" || activeConceptId === "client_upload_audit"));
+        {/* Pillar Switcher Ribbon: 6 Core Engineering Pillars */}
+        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#1F2937] overflow-x-auto max-w-full font-mono text-xs">
+          <span className="text-[10px] text-slate-500 uppercase font-bold shrink-0">
+            System Pillars:
+          </span>
+          {ALL_PILLARS.map((pillar) => {
+            const isActive = activeConceptId === pillar.id;
             return (
               <button
-                key={concept.id}
-                onClick={() => {
-                  switchConcept(concept.id);
-                }}
-                className={`flex items-center gap-2 px-3.5 py-2 font-mono text-xs font-semibold tracking-wide border transition-all duration-150 whitespace-nowrap rounded-sm ${
+                key={pillar.id}
+                onClick={() => switchConcept(pillar.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-sky-50 dark:bg-[#1E2533] border-sky-600 dark:border-sky-400 text-sky-950 dark:text-white shadow-xs"
-                    : "bg-slate-50 dark:bg-[#0E1015] border-slate-200 dark:border-[#262B35] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:border-slate-400"
+                    ? "bg-[#1E293B] border-blue-500 text-white shadow-sm ring-1 ring-blue-500/50"
+                    : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200"
                 }`}
               >
-                {concept.icon}
-                <span>{concept.name}</span>
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-sky-600 dark:bg-sky-400"></span>
-                )}
+                {pillar.icon}
+                <span>{pillar.shortTag}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Mobile View Segmented Switcher (Visible only on < lg screens) */}
-        <div className="lg:hidden mt-3 pt-2 flex border-t border-slate-200 dark:border-slate-800">
-          <div className="grid grid-cols-2 w-full p-1 bg-slate-100 dark:bg-[#0B0D11] border border-slate-200 dark:border-slate-800 rounded-sm">
+        {/* Disruption Mode Chaos Simulation Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#0F172A] border border-[#1F2937] rounded-xl mb-4 font-mono text-xs max-w-full overflow-hidden">
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => {
-                sound.playTick();
-                setMobileTab("findings");
+                sound.playLock();
+                setDisruptionMode(!disruptionMode);
               }}
-              className={`py-1.5 text-xs font-mono font-bold flex items-center justify-center gap-1.5 rounded-xs transition-colors ${
-                mobileTab === "findings"
-                  ? "bg-white dark:bg-[#1E2533] text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-500 hover:text-slate-800"
+              className={`px-3 py-1.5 rounded-md font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                disruptionMode
+                  ? "bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-1 ring-rose-400"
+                  : "bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700"
               }`}
             >
-              <AlertOctagon className="w-3.5 h-3.5 text-rose-500" />
-              <span>Audit Findings ({auditData?.discrepancies.length || 0})</span>
+              <AlertOctagon className="w-3.5 h-3.5" />
+              <span>{disruptionMode ? "DISRUPTION MODE: ON" : "SIMULATE SUPPLY CHAIN SHOCK"}</span>
             </button>
 
-            <button
-              onClick={() => {
-                sound.playTick();
-                setMobileTab("doc");
-              }}
-              className={`py-1.5 text-xs font-mono font-bold flex items-center justify-center gap-1.5 rounded-xs transition-colors ${
-                mobileTab === "doc"
-                  ? "bg-white dark:bg-[#1E2533] text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              <FileText className="w-3.5 h-3.5 text-sky-500" />
-              <span>Document Canvas</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. DUAL-PANE AUDIT VIEWER WORKSPACE / SANCTIONS GRAPH / HTS COPILOT / VALUATION REGISTER */}
-      <section id="audit-workspace" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Document Mode Toggle for Pillar 01 */}
-        {(activeConceptId === "concept_1_customs" ||
-          activeConceptId === "concept_clean_fob" ||
-          activeConceptId === "client_upload_audit") && (
-          <div className="mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 py-2.5 bg-white dark:bg-[#14171E] border border-slate-200 dark:border-[#262B35] rounded-sm text-xs font-mono shadow-xs">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-slate-500 font-bold uppercase text-[10px] tracking-wider">
-                Document Fixture:
-              </span>
-              <div className="inline-flex flex-wrap p-0.5 bg-slate-100 dark:bg-[#0B0D11] border border-slate-300 dark:border-[#262B35] rounded-sm">
+            {disruptionMode && (
+              <div className="inline-flex items-center gap-1 p-0.5 bg-[#0B0F19] border border-[#1F2937] rounded-lg">
                 <button
-                  onClick={() => {
-                    switchConcept("concept_1_customs");
-                  }}
-                  className={`px-3 py-1 text-[11px] font-bold rounded-xs transition-all flex items-center gap-1.5 ${
-                    activeConceptId === "concept_1_customs"
-                      ? "bg-rose-950/80 text-rose-300 border border-rose-700/60 shadow-xs"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  onClick={() => setDisruptionVector("port_congestion")}
+                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
+                    disruptionVector === "port_congestion"
+                      ? "bg-rose-950 text-rose-300 border border-rose-700/60 font-bold"
+                      : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <AlertOctagon className="w-3 h-3 text-rose-400" />
-                  <span>Corrupted Nightmare (1592 Exposure)</span>
+                  Port Congestion (+14d Demurrage)
                 </button>
                 <button
-                  onClick={() => {
-                    switchConcept("concept_clean_fob");
-                  }}
-                  className={`px-3 py-1 text-[11px] font-bold rounded-xs transition-all flex items-center gap-1.5 ${
-                    activeConceptId === "concept_clean_fob"
-                      ? "bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 shadow-xs"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  onClick={() => setDisruptionVector("fuel_spike")}
+                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
+                    disruptionVector === "fuel_spike"
+                      ? "bg-rose-950 text-rose-300 border border-rose-700/60 font-bold"
+                      : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  <span>Clean Production (100% Pre-Clearance)</span>
+                  Bunker Fuel Spike (+18% FSC)
                 </button>
                 <button
-                  onClick={() => {
-                    sound.playTick();
-                    fileInputRef.current?.click();
-                  }}
-                  className={`px-3 py-1 text-[11px] font-bold rounded-xs transition-all flex items-center gap-1.5 ${
-                    activeConceptId === "client_upload_audit"
-                      ? "bg-sky-950/80 text-sky-300 border border-sky-700/60 shadow-xs"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  onClick={() => setDisruptionVector("red_sea")}
+                  className={`px-2.5 py-1 text-[11px] rounded-md transition-colors ${
+                    disruptionVector === "red_sea"
+                      ? "bg-rose-950 text-rose-300 border border-rose-700/60 font-bold"
+                      : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <Upload className="w-3 h-3 text-sky-400" />
-                  <span>Upload Custom PDF (On-Device Audit)</span>
+                  Red Sea Diversion (+$2,400/FEU)
                 </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="application/pdf"
-                  className="hidden"
-                  onChange={handleCustomFileUpload}
-                />
               </div>
-            </div>
-            <div className="flex items-center gap-2 text-[11px]">
-              {activeConceptId === "client_upload_audit" ? (
-                <span className="text-sky-600 dark:text-sky-400 font-semibold flex items-center gap-1">
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>100% In-Browser Privacy • Zero External Bytes Transmitted</span>
-                </span>
-              ) : activeConceptId === "concept_clean_fob" ? (
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Verified FOB Terms • Zero 19 U.S.C. § 1592 Penalty Risk</span>
-                </span>
-              ) : (
-                <span className="text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
-                  <AlertOctagon className="w-3.5 h-3.5" />
-                  <span>3 Statutory Defects Embedded • $24,000 CBP Penalty Exposure</span>
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeConceptId === "concept_4_sanctions" ? (
-          <SanctionsGraphViewer onOpenLeadModal={() => setIsModalOpen(true)} />
-        ) : activeConceptId === "concept_5_hts" ? (
-          <div className="h-[750px] border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden flex flex-col shadow-lg dark:shadow-2xl">
-            <HtsClassifierViewer onLeadTrigger={() => setIsModalOpen(true)} />
-          </div>
-        ) : activeConceptId === "concept_6_valuation" ? (
-          <div className="h-[750px] border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden flex flex-col shadow-lg dark:shadow-2xl">
-            <CustomsValuationViewer onLeadTrigger={() => setIsModalOpen(true)} />
-          </div>
-        ) : (
-          <div className="h-[750px] flex flex-col lg:flex-row border border-slate-200 dark:border-[#262B35] rounded-sm overflow-hidden bg-white dark:bg-[#0E1015] shadow-lg dark:shadow-2xl">
-          {/* LEFT PANE: Canvas PDF Viewer (hidden on mobile if mobileTab === 'findings') */}
-          <div
-            className={`w-full lg:w-3/5 h-full border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-[#262B35] flex-col overflow-hidden ${
-              mobileTab === "doc" ? "flex" : "hidden lg:flex"
-            }`}
-          >
-            {auditData && (
-              <PdfOverlayCanvas
-                documentUrl={auditData.document_url}
-                filename={auditData.document_filename}
-                discrepancies={auditData.discrepancies}
-                activeDiscrepancyId={activeDiscrepancyId}
-                onHoverDiscrepancy={setActiveDiscrepancyId}
-                onClickDiscrepancy={handleBboxClick}
-              />
             )}
           </div>
 
-          {/* RIGHT PANE: Interactive Findings (hidden on mobile if mobileTab === 'doc') */}
-          <div
-            className={`w-full lg:w-2/5 h-full flex-col bg-slate-50 dark:bg-[#11141A] overflow-hidden ${
-              mobileTab === "findings" ? "flex" : "hidden lg:flex"
-            }`}
-          >
-            {/* Header of Findings Pane */}
-            <div className="px-5 py-3.5 bg-white dark:bg-[#171B24] border-b border-slate-200 dark:border-[#262B35] flex items-center justify-between shrink-0 shadow-2xs">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-sky-700 dark:text-sky-400 font-bold uppercase">
-                    Verified Audit Findings
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-[#262B35] text-slate-600 dark:text-slate-400 font-semibold rounded-xs">
-                    {auditData ? auditData.discrepancies.length : 0} Detected
-                  </span>
+          {/* Telemetry Indicator */}
+          {disruptionMode ? (
+            <div className="text-[11px] text-rose-400 flex items-center gap-1.5 font-bold animate-pulse">
+              <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
+              <span>
+                {disruptionVector === "port_congestion"
+                  ? "CHAOS ACTIVE: Unwarranted port demurrage hold detected inside tariff free time ($14,250 overbill)"
+                  : disruptionVector === "fuel_spike"
+                  ? "CHAOS ACTIVE: Retroactive BAF adjustment exceeding FMC published index rate ($6,840 overbill)"
+                  : "CHAOS ACTIVE: Unauthorized emergency war risk surcharge without 30d FMC notice ($9,600 overbill)"}
+              </span>
+            </div>
+          ) : (
+            <div className="text-[11px] text-slate-500">
+              Deterministic baseline mode · Click shock simulation to test rate card exception resilience
+            </div>
+          )}
+        </div>
+
+        {/* Dynamic Kill Shot Metrics Flash Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 font-mono">
+          <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
+            <div className="text-[9px] uppercase text-slate-400 font-semibold">
+              19 U.S.C. § 1592 Exposure Avoided
+            </div>
+            <div className="text-base sm:text-xl font-bold text-rose-400 tabular-nums">
+              <RollingNumber value={displayedExposureAvoided} />
+            </div>
+            <div className="text-[10px] text-slate-500">Statutory safe-harbor mitigation</div>
+          </div>
+
+          <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
+            <div className="text-[9px] uppercase text-slate-400 font-semibold">
+              Pre-Payment Freight Overbilling Intercepted
+            </div>
+            <div className="text-base sm:text-xl font-bold text-rose-400 tabular-nums">
+              <RollingNumber value={displayedCarrierOverbilling} />
+            </div>
+            <div className="text-[10px] text-slate-500">Withheld prior to cash disbursement</div>
+          </div>
+
+          <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
+            <div className="text-[9px] uppercase text-slate-400 font-semibold">
+              99% Duty Drawback Cash Unlocked
+            </div>
+            <div className="text-base sm:text-xl font-bold text-emerald-400 tabular-nums">
+              <RollingNumber value={displayedDrawback} />
+            </div>
+            <div className="text-[10px] text-slate-500">19 U.S.C. § 1313 direct cash refund</div>
+          </div>
+        </div>
+
+        {/* Hidden Client PDF Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          onChange={handleCustomFileUpload}
+        />
+
+        {/* MAIN WORKBENCH BODY: 6 Pillars or Dual-Pane Canvas */}
+        {activeConceptId === "concept_4_sanctions" ? (
+          <SanctionsGraphViewer onOpenLeadModal={() => setIsModalOpen(true)} />
+        ) : activeConceptId === "concept_5_hts" ? (
+          <div className="h-[750px] border border-[#1F2937] rounded-xl overflow-hidden flex flex-col shadow-2xl">
+            <HtsClassifierViewer onLeadTrigger={() => setIsModalOpen(true)} />
+          </div>
+        ) : activeConceptId === "concept_6_valuation" ? (
+          <div className="h-[750px] border border-[#1F2937] rounded-xl overflow-hidden flex flex-col shadow-2xl">
+            <CustomsValuationViewer onLeadTrigger={() => setIsModalOpen(true)} />
+          </div>
+        ) : (
+          <div className="h-[750px] flex flex-col lg:flex-row border border-[#1F2937] rounded-xl overflow-hidden bg-[#0B0F19] shadow-2xl">
+            {/* LEFT PANE: Canvas PDF Viewer */}
+            <div
+              className={`w-full lg:w-3/5 h-full border-b lg:border-b-0 lg:border-r border-[#1F2937] flex-col overflow-hidden ${
+                mobileTab === "doc" ? "flex" : "hidden lg:flex"
+              }`}
+            >
+              {auditData && (
+                <PdfOverlayCanvas
+                  documentUrl={auditData.document_url}
+                  filename={auditData.document_filename}
+                  discrepancies={auditData.discrepancies}
+                  activeDiscrepancyId={activeDiscrepancyId}
+                  onHoverDiscrepancy={setActiveDiscrepancyId}
+                  onClickDiscrepancy={handleBboxClick}
+                />
+              )}
+            </div>
+
+            {/* RIGHT PANE: Interactive Terminal Bay with 3 Sub-Tabs */}
+            <div
+              className={`w-full lg:w-2/5 h-full flex-col bg-[#0F172A] overflow-hidden ${
+                mobileTab === "findings" ? "flex" : "hidden lg:flex"
+              }`}
+            >
+              {/* Terminal Bay Header & Tabs */}
+              <div className="px-4 py-3 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-between shrink-0 font-mono text-xs">
+                <div className="inline-flex p-0.5 bg-[#0F172A] border border-[#1F2937] rounded-lg">
+                  <button
+                    onClick={() => {
+                      sound.playTick();
+                      setRightTerminalTab("discrepancies");
+                    }}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                      rightTerminalTab === "discrepancies"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    Findings ({auditData?.discrepancies.length || 0})
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sound.playLock();
+                      setRightTerminalTab("cargowise");
+                    }}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                      rightTerminalTab === "cargowise"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <Code2 className="w-3 h-3" />
+                    <span>CargoWise XML</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sound.playLock();
+                      setRightTerminalTab("developer_api");
+                    }}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1 ${
+                      rightTerminalTab === "developer_api"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <Terminal className="w-3 h-3" />
+                    <span>API Sandbox</span>
+                  </button>
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Hover to focus coordinates • Click to inspect defense
-                </p>
-              </div>
 
-              {/* Action Buttons: Raw PDF + Printable Executive Dossier */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    sound.playLock();
-                    setIsDossierOpen(true);
-                  }}
-                  className="text-xs font-mono text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 flex items-center gap-1 border border-sky-300 dark:border-sky-800/80 bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 transition-all rounded-sm font-semibold shadow-xs"
-                >
-                  <Printer className="w-3 h-3 text-sky-600 dark:text-sky-400" />
-                  <span>Dossier</span>
-                </button>
-
+                {/* PDF Link */}
                 <a
                   href={resolveAssetPath(auditData?.document_url || `/nightmares/${auditData?.document_filename}`)}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 flex items-center gap-1 border border-slate-300 dark:border-[#262B35] px-2 py-1 hover:border-slate-400 transition-colors rounded-sm"
+                  className="text-xs font-mono text-slate-400 hover:text-blue-400 flex items-center gap-1 border border-[#1F2937] px-2 py-1 rounded-md transition-colors"
                 >
                   <span>PDF</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
-            </div>
 
-            {/* Scrollable Discrepancy Cards List with Visual Redline Diff & Penalty Ladder */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
-              {/* 1. Tactile Billed vs Lawful Visual Redline Diff */}
-              <BilledVsLawfulDiff conceptId={activeConceptId} />
+              {/* Sub-Tab 1: Discrepancies Redline */}
+              {rightTerminalTab === "discrepancies" && (
+                <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
+                  <BilledVsLawfulDiff conceptId={activeConceptId} />
 
-              {/* 2. Interactive 1592 Penalty Exposure Ladder for Concept 1 */}
-              {activeConceptId === "concept_1_customs" && (
-                <PenaltyExposureLadder
-                  dutyLossUsd={6000}
-                  domesticValueUsd={125000}
-                />
+                  {activeConceptId === "concept_1_customs" && (
+                    <PenaltyExposureLadder
+                      dutyLossUsd={6000}
+                      domesticValueUsd={125000}
+                    />
+                  )}
+
+                  {activeConceptId === "concept_clean_fob" ? (
+                    <div className="p-4 bg-emerald-950/20 border border-emerald-800/60 rounded-lg font-mono space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-md bg-emerald-950 border border-emerald-600 text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                            <span>Pre-Clearance Certified</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-900/60 border border-emerald-700 text-emerald-300 rounded-sm">
+                              100% PASSED
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-slate-400 mt-0.5">
+                            Clean commercial invoice verified for automated CBP ACE transmission
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-[#0B0F19] border border-emerald-900/40 rounded-md space-y-2 text-xs">
+                        <div className="flex items-center justify-between text-slate-300 pb-1.5 border-b border-[#1F2937]">
+                          <span className="text-slate-400">19 U.S.C. § 1592 Penalty Exposure:</span>
+                          <span className="font-bold text-emerald-400">$0.00 (Zero Duty Loss)</span>
+                        </div>
+                        <div className="flex items-center justify-between text-slate-300 pb-1.5 border-b border-[#1F2937]">
+                          <span className="text-slate-400">Incoterms 2020 Allocation:</span>
+                          <span className="font-bold text-emerald-400">FOB Yantian (Non-Dutiable)</span>
+                        </div>
+                        <div className="flex items-center justify-between text-slate-300 pb-1.5 border-b border-[#1F2937]">
+                          <span className="text-slate-400">Line Extension Math (500 × $45):</span>
+                          <span className="font-bold text-emerald-400">$22,500.00 (Verified)</span>
+                        </div>
+                        <div className="flex items-center justify-between text-slate-300">
+                          <span className="text-slate-400">HTS Classification Match:</span>
+                          <span className="font-bold text-emerald-400">8542.31.0001 (Microcontrollers)</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    auditData?.discrepancies.map((disc) => (
+                      <DiscrepancyCard
+                        key={disc.id}
+                        discrepancy={disc}
+                        isActive={activeDiscrepancyId === disc.id}
+                        onHover={setActiveDiscrepancyId}
+                        onClick={handleCardClick}
+                        onFocusMobileDoc={() => {
+                          setActiveDiscrepancyId(disc.id);
+                          setMobileTab("doc");
+                        }}
+                      />
+                    ))
+                  )}
+                </div>
               )}
 
-              {/* 3. Discrepancy Cards or Clean Pre-Clearance Report */}
-              {activeConceptId === "concept_clean_fob" ? (
-                <div className="p-4 bg-emerald-950/20 border border-emerald-800/60 rounded-sm font-mono space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-sm bg-emerald-950 border border-emerald-600 text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                        <span>Pre-Clearance Certified</span>
-                        <span className="text-[10px] px-1.5 py-0.5 bg-emerald-900/60 border border-emerald-700 text-emerald-300 rounded-xs">
-                          100% PASSED
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-400 mt-0.5">
-                        Clean commercial invoice verified for automated CBP ACE transmission
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-white dark:bg-[#14171E] border border-slate-200 dark:border-emerald-900/40 rounded-xs space-y-2 text-xs">
-                    <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 pb-1.5 border-b border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-500 dark:text-slate-400">19 U.S.C. § 1592 Penalty Exposure:</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">$0.00 (Zero Duty Loss)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 pb-1.5 border-b border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-500 dark:text-slate-400">Incoterms 2020 Allocation:</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">FOB Yantian (Non-Dutiable)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 pb-1.5 border-b border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-500 dark:text-slate-400">Line Extension Math (500 × $45):</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">$22,500.00 (Verified)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 pb-1.5 border-b border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-500 dark:text-slate-400">HTS Classification Match:</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">8542.31.0001 (Microcontrollers)</span>
-                    </div>
-                    <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
-                      <span className="text-slate-500 dark:text-slate-400">19 CFR § 152.103 Assist Declared:</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">$27,750.00 (Fully Amortized)</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-emerald-950/40 border border-emerald-700/60 rounded-xs flex items-center justify-between text-[11px]">
-                    <span className="text-emerald-300 font-bold">
-                      INSPECTION RESULT: ZERO CBP 28/29 AUDIT RISK
-                    </span>
-                    <button
-                      onClick={() => openConsultation("customs_defense")}
-                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xs transition-colors"
-                    >
-                      Certify Next Shipment
-                    </button>
-                  </div>
+              {/* Sub-Tab 2: CargoWise eAdaptor XML Viewer */}
+              {rightTerminalTab === "cargowise" && (
+                <div className="flex-1 overflow-y-auto p-4">
+                  <CargoWiseXmlViewer />
                 </div>
-              ) : (
-                auditData?.discrepancies.map((disc) => (
-                  <DiscrepancyCard
-                    key={disc.id}
-                    discrepancy={disc}
-                    isActive={activeDiscrepancyId === disc.id}
-                    onHover={setActiveDiscrepancyId}
-                    onClick={handleCardClick}
-                    onFocusMobileDoc={() => {
-                      setActiveDiscrepancyId(disc.id);
-                      setMobileTab("doc");
-                    }}
-                  />
-                ))
+              )}
+
+              {/* Sub-Tab 3: Developer API Sandbox */}
+              {rightTerminalTab === "developer_api" && (
+                <div className="flex-1 overflow-y-auto p-4">
+                  <DeveloperApiSandbox />
+                </div>
               )}
             </div>
           </div>
-        </div>
         )}
       </section>
 
-      {/* 5. INTERACTIVE GENERATIVE ROI / EXPOSURE CALCULATOR */}
-      <section id="roi-calculator" className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      {/* 4. ACT 2: INLINE 5-STAGE ARCHITECTURE PIPELINE */}
+      <section id="architecture" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
+        <InlineArchitectureFlow />
+      </section>
+
+      {/* 5. ACT 3: CARGOWISE VALUE PACK ROI CALCULATOR */}
+      <section id="value-pack-roi" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
         <RoiCalculator onOpenConsultation={() => openConsultation("contingent_audit")} />
       </section>
 
-      {/* 6. MARKET DIFFERENTIALIST COMPARISON MATRIX (WHY SAMUEL WINS) */}
-      <section id="comparison-matrix">
+      {/* 6. ACT 4: PRINCIPAL ARCHITECT'S THESIS SIGNED BY SAMUEL */}
+      <section id="architect-thesis" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
+        <ArchitectThesis
+          onOpenBooking={() => openConsultation("fractional_advisory")}
+          onOpenAudit={() => openConsultation("contingent_audit")}
+        />
+      </section>
+
+      {/* 7. SUPPLEMENTARY ENTERPRISE DUE DILIGENCE: DIFFERENTIALIST MATRIX */}
+      <section id="differentialism" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
         <DifferentialistMatrix onOpenConsultation={() => openConsultation("contingent_audit")} />
       </section>
 
-      {/* 7. EXECUTIVE SERVICES & RETAINER MENU (SELLING SAMUEL) */}
-      <section id="services-menu">
+      {/* 8. ADVISORY & CONTINGENCY ENGAGEMENT TIERS */}
+      <section id="services" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
         <ExecutiveServices onSelectTier={(tier) => openConsultation(tier)} />
       </section>
 
-      {/* 7.5 EMPIRICAL CONVERSION FUNNEL REDESIGN LAB (2 VARIATIONS) */}
-      <section id="funnel-studio" className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full border-t border-slate-200 dark:border-[#262B35]">
-        <div className="text-center max-w-3xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-950/80 border border-emerald-800 text-emerald-300 text-[10px] font-mono uppercase tracking-wider font-semibold rounded-xs mb-2">
-            <Sparkles className="w-3 h-3 text-emerald-400" />
-            <span>Interactive 2-Variation Funnel Studio</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
-            Enterprise Conversion Funnel Architecture
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
-            Engineered from empirical trade finance transaction data. Compare the Value-First (CFO Recovery) versus Risk-First (General Counsel Defense) conversion pathways:
-          </p>
-        </div>
-
-        <FunnelRedesignStudio initialMode="variation_a" />
-      </section>
-
-      {/* 8. BOTTOM CONVERSION STRIP */}
-      <footer className="border-t border-slate-200 dark:border-[#262B35] bg-white dark:bg-[#11141A] py-10 mt-12 mb-16 lg:mb-0 shadow-xs">
+      {/* 9. ENTERPRISE FOOTER */}
+      <footer className="border-t border-[#1F2937] bg-[#0F172A] py-10 mt-12 font-mono text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="max-w-xl text-center md:text-left">
-            <h4 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
-              Run a Blind Diagnostic Audit on 25 Historical Invoices
+            <h4 className="text-sm font-bold text-slate-100 mb-1">
+              Run a Forensic Pre-Payment Audit on 50 Historical Bills
             </h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              100% contingent on recovered cash. If Samuel doesn&apos;t uncover carrier overcharges or misclassified tariff exposure, you pay $0.
+            <p className="text-xs text-slate-400">
+              100% contingent on recovered cash. If Samuel does not uncover carrier overcharges or misclassified tariff exposure, you pay $0.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => openConsultation("contingent_audit")}
-              className="px-6 py-3 bg-sky-600 hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400 text-white dark:text-slate-950 font-bold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all rounded-sm shadow-md"
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-all rounded-md shadow-md"
             >
-              <span>Claim Free 25-Invoice Audit</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Claim Free 50-Bill Audit ($0)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-slate-200 dark:border-[#262B35]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-[#1F2937] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            © {new Date().getFullYear()} Samuel • TradeTech Systems Studio. All rights reserved.
+            © {new Date().getFullYear()} Samuel Rencken · Trade Systems Studio. All rights reserved.
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Lock className="w-3 h-3 text-slate-400" />
               <span>Attorney-Client & NDA Protected</span>
             </span>
-            <span>•</span>
+            <span>·</span>
             <span>Zero Data Retention</span>
           </div>
         </div>
       </footer>
 
-      {/* 9. STICKY MOBILE ACTION BAR (Thumb-friendly conversion on mobile) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#14171E]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3 flex items-center gap-2 shadow-xl">
-        <button
-          onClick={() => openConsultation("contingent_audit")}
-          className="flex-1 py-3 px-3 bg-sky-600 hover:bg-sky-500 text-white font-bold font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 rounded-sm shadow-sm"
-        >
-          <span>Claim 25-Doc Audit ($0)</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-
-        <button
-          onClick={() => openConsultation("fractional_advisory")}
-          className="py-3 px-3.5 bg-slate-100 dark:bg-[#202530] text-slate-800 dark:text-slate-200 font-mono text-xs font-semibold border border-slate-300 dark:border-slate-700 rounded-sm"
-        >
-          Call
-        </button>
-      </div>
-
-      {/* 10. LEAD CAPTURE & BOOKING MODAL */}
+      {/* MODALS */}
       <LeadCaptureModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -1145,28 +930,24 @@ export const DualPaneAuditViewer: React.FC = () => {
         initialServiceTier={selectedServiceTier}
       />
 
-      {/* 11. PRINTABLE EXECUTIVE AUDIT DOSSIER MODAL */}
       <ExecutiveDossierModal
         isOpen={isDossierOpen}
         onClose={() => setIsDossierOpen(false)}
         auditData={auditData}
       />
 
-      {/* 12. HYPERFRAMES KEYNOTE FILM THEATER MODAL */}
       <FilmTheaterModal
         isOpen={isFilmOpen}
         onClose={() => setIsFilmOpen(false)}
         onOpenLeadModal={() => setIsModalOpen(true)}
       />
 
-      {/* 13. SYSTEM ARCHITECTURE & 41/41 TESTS MODAL */}
       <SystemArchitectureModal
         isOpen={isArchitectureModalOpen}
         onClose={() => setIsArchitectureModalOpen(false)}
         initialTab={architectureModalTab}
       />
 
-      {/* 14. 60-SECOND EXECUTIVE TOUR OVERLAY */}
       <ExecutiveTourOverlay
         isActive={isTourActive}
         onClose={() => setIsTourActive(false)}
@@ -1176,9 +957,8 @@ export const DualPaneAuditViewer: React.FC = () => {
         }}
       />
 
-      {/* 13. FUNNEL REDESIGN STUDIO MODAL */}
       {isFunnelStudioOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 dark:bg-black/90 backdrop-blur-md overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
           <div className="relative w-full max-w-5xl my-8">
             <button
               onClick={() => setIsFunnelStudioOpen(false)}

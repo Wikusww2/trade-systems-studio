@@ -130,7 +130,7 @@ export const ExecutiveServices: React.FC<ExecutiveServicesProps> = ({ onSelectTi
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
-                  <span>Custom WCO GRI 1–6 classification logic rulesets</span>
+                  <span>Custom WCO GRI 1 to 6 classification logic rulesets</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />

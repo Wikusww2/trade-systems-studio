@@ -35,7 +35,7 @@ jobs:
         run: |
           python -c "from app.services.fixture_generator import generate_all_nightmares; generate_all_nightmares()"
 
-      - name: Run automated pytest test suites (41 tests)
+      - name: Run automated pytest test suites (43+ tests)
         working-directory: backend-engine
         run: |
           pytest -v --cov=app --cov-report=term-missing
@@ -44,6 +44,21 @@ jobs:
         working-directory: backend-engine
         run: |
           python benchmark.py
+
+  lint-and-governance:
+    name: Anti-Slop & Zero Em-Dash Governance Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify zero em-dash violations
+        run: python scripts/check_em_dashes.py
 
   frontend-typecheck-and-build:
     name: Frontend TypeScript & Static Export (Node 22)

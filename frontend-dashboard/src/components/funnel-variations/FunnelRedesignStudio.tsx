@@ -104,7 +104,7 @@ export const FunnelRedesignStudio: React.FC<FunnelRedesignStudioProps> = ({
             <span>Why Variation A Converts the CFO & Controller:</span>
           </div>
           <p className="text-[11px] leading-relaxed text-slate-300">
-            CFOs are motivated by EBITDA protection and cash recovery. Leading with 5%–15% carrier overbilling leakage, an interactive 25-invoice audit simulator, and a $0-upfront / 15% success-only contingency fee eliminates procurement resistance. They feel dumb not to convert because doing nothing literally forfeits cash.
+            CFOs are motivated by EBITDA protection and cash recovery. Leading with 5% to 15% carrier overbilling leakage, an interactive 25-invoice audit simulator, and a $0-upfront / 15% success-only contingency fee eliminates procurement resistance. They feel dumb not to convert because doing nothing literally forfeits cash.
           </p>
         </div>
 

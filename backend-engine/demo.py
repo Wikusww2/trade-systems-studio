@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""TradeTech Systems Studio — Executive Terminal Demonstration & Benchmark Tool.
+"""TradeTech Systems Studio  -  Executive Terminal Demonstration & Benchmark Tool.
 
-Architected by Samuel — Principal AI Systems Architect & Lead TradeTech Engineer.
+Architected by Samuel  -  Principal AI Systems Architect & Lead TradeTech Engineer.
 Runs all 4 enterprise pillars with strict mathematical determinism (100% Python Decimal)
 and sub-millisecond statutory compliance evaluation.
 """
@@ -34,7 +34,7 @@ def subheader(title: str):
 def run_benchmark():
     print(f"{BOLD}{MAGENTA}")
     print("┌────────────────────────────────────────────────────────────────────────────┐")
-    print("│             TRADETECH SYSTEMS STUDIO — EXECUTIVE CLI ENGINE                │")
+    print("│             TRADETECH SYSTEMS STUDIO  -  EXECUTIVE CLI ENGINE                │")
     print("│         Autonomous Trade Intelligence, Customs Firewall & Sanctions        │")
     print("│                      Architected & Engineered by Samuel                    │")
     print("└────────────────────────────────────────────────────────────────────────────┘")

@@ -11,7 +11,7 @@ interface BilledVsLawfulDiffProps {
 export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptId }) => {
   if (conceptId === "client_upload_audit") {
     return (
-      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-sky-800/60 shadow-inner font-mono">
+      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-sky-800/60 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
           <span className="flex items-center gap-1.5 font-bold text-sky-400">
             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
@@ -21,7 +21,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="bg-sky-950/30 border border-sky-900/60 p-2.5 rounded-xs">
+          <div className="bg-sky-950/30 border border-sky-900/60 p-2.5 rounded-md">
             <div className="text-[10px] text-sky-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Security &amp; Privacy</span>
               <ShieldCheck className="w-3 h-3 text-sky-400" />
@@ -37,7 +37,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
             </div>
           </div>
 
-          <div className="bg-sky-950/50 border border-sky-700/60 p-2.5 rounded-xs">
+          <div className="bg-sky-950/50 border border-sky-700/60 p-2.5 rounded-md">
             <div className="text-[10px] text-sky-300 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Statutory Engine</span>
               <CheckCircle2 className="w-3 h-3 text-sky-400" />
@@ -56,7 +56,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-sky-600/20 border border-sky-500/50 rounded-xs flex items-center justify-between cursor-pointer hover:bg-sky-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-sky-600/20 border border-sky-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-sky-600/30 transition-colors"
         >
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-sky-300">
             <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
@@ -70,7 +70,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
   if (conceptId === "concept_clean_fob") {
     return (
-      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-emerald-800/60 shadow-inner font-mono">
+      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-emerald-800/60 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
           <span className="flex items-center gap-1.5 font-bold text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -81,7 +81,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           {/* As Billed Column */}
-          <div className="bg-emerald-950/30 border border-emerald-900/60 p-2.5 rounded-xs">
+          <div className="bg-emerald-950/30 border border-emerald-900/60 p-2.5 rounded-md">
             <div className="text-[10px] text-emerald-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Vendor Commercial Invoice</span>
               <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -98,7 +98,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
           </div>
 
           {/* Lawful Reconciled Column */}
-          <div className="bg-emerald-950/50 border border-emerald-700/60 p-2.5 rounded-xs">
+          <div className="bg-emerald-950/50 border border-emerald-700/60 p-2.5 rounded-md">
             <div className="text-[10px] text-emerald-300 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Lawful Entered Base</span>
               <ShieldCheck className="w-3 h-3 text-emerald-300" />
@@ -118,11 +118,11 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         {/* The Intercept Stamp */}
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-emerald-600/20 border border-emerald-500/50 rounded-xs flex items-center justify-between cursor-pointer hover:bg-emerald-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-emerald-600/20 border border-emerald-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-emerald-600/30 transition-colors"
         >
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-300">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>VERIFIED: 100% CLEAN COMMERCIAL DECLARATION — ZERO PENALTY RISK</span>
+            <span>VERIFIED: 100% CLEAN COMMERCIAL DECLARATION: ZERO PENALTY RISK</span>
           </div>
           <span className="text-[10px] text-emerald-400 uppercase font-semibold">Pre-Cleared</span>
         </div>
@@ -132,7 +132,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
   if (conceptId === "concept_1_customs") {
     return (
-      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-slate-700/80 shadow-inner font-mono">
+      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-slate-700/80 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
           <span className="flex items-center gap-1.5 font-bold text-sky-400">
             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
@@ -143,7 +143,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           {/* As Billed Column */}
-          <div className="bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-xs">
+          <div className="bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-md">
             <div className="text-[10px] text-rose-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>As Billed (Vendor)</span>
               <AlertTriangle className="w-3 h-3 text-rose-400" />
@@ -160,7 +160,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
           </div>
 
           {/* Lawful Reconciled Column */}
-          <div className="bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-xs">
+          <div className="bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-md">
             <div className="text-[10px] text-emerald-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Lawful Reconciled Base</span>
               <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -180,7 +180,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         {/* The Intercept Stamp */}
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-rose-600/20 border border-rose-500/50 rounded-xs flex items-center justify-between cursor-pointer hover:bg-rose-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-rose-600/20 border border-rose-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-rose-600/30 transition-colors"
         >
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-300">
             <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
@@ -194,7 +194,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
   if (conceptId === "concept_2_freight") {
     return (
-      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-slate-700/80 shadow-inner font-mono">
+      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-slate-700/80 shadow-inner font-mono">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
           <span className="flex items-center gap-1.5 font-bold text-sky-400">
             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
@@ -205,7 +205,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           {/* As Invoiced Column */}
-          <div className="bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-xs">
+          <div className="bg-rose-950/40 border border-rose-900/60 p-2.5 rounded-md">
             <div className="text-[10px] text-rose-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Carrier Invoiced Total</span>
               <AlertTriangle className="w-3 h-3 text-rose-400" />
@@ -222,7 +222,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
           </div>
 
           {/* Lawful Contract Column */}
-          <div className="bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-xs">
+          <div className="bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-md">
             <div className="text-[10px] text-emerald-400 font-bold uppercase mb-1 flex items-center justify-between">
               <span>Lawful Contractual Obligation</span>
               <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -242,7 +242,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         {/* The Intercept Stamp */}
         <div 
           onClick={() => sound.playLock()}
-          className="mt-2.5 px-3 py-1.5 bg-rose-600/20 border border-rose-500/50 rounded-xs flex items-center justify-between cursor-pointer hover:bg-rose-600/30 transition-colors"
+          className="mt-2.5 px-3 py-1.5 bg-rose-600/20 border border-rose-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-rose-600/30 transition-colors"
         >
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-300">
             <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
@@ -256,7 +256,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
   // Concept 3: Duty Drawback
   return (
-    <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-slate-700/80 shadow-inner font-mono">
+    <div className="my-3 p-3.5 bg-slate-900 text-white rounded-lg border border-slate-700/80 shadow-inner font-mono">
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
         <span className="flex items-center gap-1.5 font-bold text-emerald-400">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -267,7 +267,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
 
       <div className="grid grid-cols-2 gap-2 text-xs">
         {/* Customs Duties Paid */}
-        <div className="bg-slate-950/60 border border-slate-800 p-2.5 rounded-xs">
+        <div className="bg-slate-950/60 border border-slate-800 p-2.5 rounded-md">
           <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">
             Historical Duties Remitted
           </div>
@@ -283,7 +283,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
         </div>
 
         {/* Treasury Refund Check */}
-        <div className="bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-xs">
+        <div className="bg-emerald-950/40 border border-emerald-900/60 p-2.5 rounded-md">
           <div className="text-[10px] text-emerald-400 font-bold uppercase mb-1 flex items-center justify-between">
             <span>Treasury Direct Cash Refund</span>
             <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -303,7 +303,7 @@ export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptI
       {/* The Unlock Stamp */}
       <div 
         onClick={() => sound.playLock()}
-        className="mt-2.5 px-3 py-1.5 bg-emerald-600/20 border border-emerald-500/50 rounded-xs flex items-center justify-between cursor-pointer hover:bg-emerald-600/30 transition-colors"
+        className="mt-2.5 px-3 py-1.5 bg-emerald-600/20 border border-emerald-500/50 rounded-md flex items-center justify-between cursor-pointer hover:bg-emerald-600/30 transition-colors"
       >
         <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-300">
           <DollarSign className="w-3.5 h-3.5 text-emerald-400" />

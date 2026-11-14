@@ -12,6 +12,7 @@ from app.services.sanctions_screener import sanctions_screener, ScreeningReport
 from app.models.sanctions_graph import CorporateGraphResponse
 from app.models.hts_models import ClassificationRequest, HTSClassificationResult
 from app.services.hts_classifier import HTSClassifierEngine
+from app.services.cargowise_xml import cargowise_xml_generator, CargoWiseShipmentData
 from app.models.valuation_models import EntryValuationAudit, PriorDisclosurePackage, AssistItem
 from app.services.valuation_ledger import CustomsValuationService
 from app.models.schemas import (
@@ -193,6 +194,72 @@ class ValuationAuditRequest(BaseModel):
     marine_insurance_in_invoice: Decimal = Decimal("3200.00")
     months_elapsed: int = 9
 
+class CargoWiseExportRequest(BaseModel):
+    shipment_id: str = "S00001000"
+    declaration_id: str = "B00001000"
+    port_origin_code: str = "ZADUR"
+    port_origin_name: str = "Durban"
+    port_dest_code: str = "NLRTM"
+    port_dest_name: str = "Rotterdam"
+    invoice_number: str = "CI-2026-01"
+    incoterm: str = "CIF"
+    invoice_amount: Decimal = Decimal("148500.00")
+    insurance_amount: Decimal = Decimal("1450.00")
+
+@router.post("/export/cargowise-xml")
+async def export_cargowise_xml_endpoint(request: CargoWiseExportRequest):
+    """
+    Generates schema-compliant CargoWise One eAdaptor UniversalShipment XML payload
+    (version 1.1) with explicit DataContext and DataTarget routing.
+    """
+    from app.services.cargowise_xml import cargowise_exporter
+    from fastapi.responses import Response
+
+    xml_content = await asyncio.to_thread(
+        cargowise_exporter.generate_universal_interchange_xml,
+        shipment_id=request.shipment_id,
+        declaration_id=request.declaration_id,
+        port_origin_code=request.port_origin_code,
+        port_origin_name=request.port_origin_name,
+        port_dest_code=request.port_dest_code,
+        port_dest_name=request.port_dest_name,
+        invoice_number=request.invoice_number,
+        incoterm=request.incoterm,
+        invoice_amount=request.invoice_amount,
+        insurance_amount=request.insurance_amount,
+    )
+    return Response(content=xml_content, media_type="application/xml")
+
+@router.get("/scenarios")
+async def get_scenarios():
+    """Returns the 3 pre-loaded trade corridor scenarios."""
+    return [
+        {
+            "id": "scenario_durban_rotterdam",
+            "name": "Port of Durban to Rotterdam Electronics Shipment",
+            "corridor": "ZADUR -> NLRTM",
+            "risk_type": "CIF Marine Insurance Omission & GRI 3(b) Reclassification",
+            "statute": "19 U.S.C. § 1592 & 19 CFR § 152.103",
+            "default_exposure_usd": 36000.00,
+        },
+        {
+            "id": "scenario_long_beach_battery",
+            "name": "Trans-Pacific to Long Beach Lithium-Ion Battery Pack",
+            "corridor": "CNSZX -> USLAX",
+            "risk_type": "Section 301 Secondary Tariff & Chassis Split Surcharge",
+            "statute": "19 U.S.C. § 1592 & FMC Docket 21-08",
+            "default_exposure_usd": 48200.00,
+        },
+        {
+            "id": "scenario_steel_drawback",
+            "name": "Cross-Border Steel Assembly Duty Drawback",
+            "corridor": "KRINC -> USHOU",
+            "risk_type": "Unclaimed 99% Section 1313 Duty Drawback",
+            "statute": "19 U.S.C. § 1313",
+            "default_exposure_usd": 18400.00,
+        }
+    ]
+
 @router.get("/valuation/ledger", response_model=list[AssistItem])
 async def get_valuation_assist_ledger():
     """
@@ -238,4 +305,13 @@ async def generate_prior_disclosure_endpoint(request: ValuationAuditRequest):
         months_elapsed=request.months_elapsed,
     )
     return await asyncio.to_thread(valuation_service.generate_prior_disclosure, audit)
+
+@router.get("/cargowise/export/{concept_id}")
+async def export_cargowise_xml_endpoint(concept_id: str):
+    """
+    Exports audited trade data formatted as WiseTech CargoWise UniversalShipment XML (v1.1)
+    with pre-ingest verification tokens and diff annotations.
+    """
+    return cargowise_xml_generator.generate_diff_payload(concept_id)
+
 

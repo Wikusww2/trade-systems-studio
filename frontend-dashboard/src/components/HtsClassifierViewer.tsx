@@ -62,7 +62,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
             </h2>
           </div>
           <p className="text-xs text-[#94A3B8] mt-0.5">
-            Path-Dependent WCO GRI 1–6 Reasoning Engine with Element-Wise Confidence Gating & Decimal Landed Cost
+            Path-Dependent WCO GRI 1 to 6 Reasoning Engine with Element-Wise Confidence Gating & Decimal Landed Cost
           </p>
         </div>
 
@@ -135,7 +135,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                 {data?.requires_human_review && (
                   <div className="text-[11px] font-mono text-amber-400 flex items-center gap-1.5 mt-1 bg-amber-950/40 px-2 py-1 rounded border border-amber-800/40">
                     <span>⚠️</span>
-                    <span>Confidence &lt; 0.85 — Gated for Human Broker Review</span>
+                    <span>Confidence &lt; 0.85: Gated for Human Broker Review</span>
                   </div>
                 )}
               </div>

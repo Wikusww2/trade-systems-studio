@@ -30,7 +30,7 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
     method: "POST",
     path: "/api/v1/hts/classify",
     category: "Pillar 05 • HTS Classifier",
-    statute: "WCO GRI 1–6 • 19 CFR § 24.23 (MPF) • 19 CFR § 24.24 (HMF)",
+    statute: "WCO GRI 1 to 6 • 19 CFR § 24.23 (MPF) • 19 CFR § 24.24 (HMF)",
     description: "Evaluates WCO General Rules of Interpretation state machine with element-wise confidence scoring ($Conf(e) < 0.85$ broker escalation) and Python Decimal landed cost calculation.",
     defaultPayload: JSON.stringify(
       {
@@ -100,7 +100,7 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
           sanctions_program: "OFAC NS-CMIC / BIS Entity List",
           indirect_ownership_percentage: 52.5,
           statutory_rule: "31 CFR § 501.801 (OFAC 50% Blocking Rule)",
-          action_required: "IMMEDIATE WIRE STOP — Prohibited Transaction"
+          action_required: "IMMEDIATE WIRE STOP: Prohibited Transaction"
         }
       ],
       execution_metrics: {
@@ -156,7 +156,7 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
     path: "/api/v1/audit/concept_2_freight",
     category: "Pillar 02 • Freight Audit",
     statute: "FMC Docket 21-08 • OSRA 2022 • 46 CFR § 541",
-    description: "Inspects ocean and drayage carrier freight bills before AP wire release, catching 5%–15% billing leakage under FMC Docket 21-08 and OSRA 2022.",
+    description: "Inspects ocean and drayage carrier freight bills before AP wire release, catching 5% to 15% billing leakage under FMC Docket 21-08 and OSRA 2022.",
     mockResponse: {
       document_id: "CARRIER-INV-2024-9102",
       carrier_name: "Pacific Star Logistics Ltd",
@@ -454,7 +454,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
               <div className="p-4 rounded-lg bg-[#0E1015] border border-[#2A2F3A] font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto">
                 <pre className="text-cyan-400 text-[11px] leading-tight">
 {`┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        TRADETECH SYSTEMS STUDIO — SYSTEM ARCHITECTURE                  │
+│                        TRADETECH SYSTEMS STUDIO: SYSTEM ARCHITECTURE                  │
 └────────────────────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
@@ -470,7 +470,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
 │ 2. DETERMINISTIC STATUTORY REASONING CORE (100% Python Decimal)                        │
 │    • Pillar 01: 19 U.S.C. § 1592 Negligence & FMC Docket 21-08 Pre-Payment Audit      │
 │    • Pillar 02: 31 CFR § 501 OFAC 50% Rule Recursive Multi-Hop Corporate Graph         │
-│    • Pillar 03: WCO GRI 1–6 Path-Dependent State Machine with Confidence Gating        │
+│    • Pillar 03: WCO GRI 1 to 6 Path-Dependent State Machine with Confidence Gating        │
 │    • Pillar 04: 19 CFR § 152.103 GAAP Assist Register & 19 CFR § 162.74 Prior Package  │
 └────────────────────────────────────────────────────────────────────────────────────────┘
                                     │
@@ -796,7 +796,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     ) : (
                       <div className="h-52 flex flex-col items-center justify-center text-center p-6 text-slate-500 font-mono text-xs space-y-2">
                         <Terminal className="w-8 h-8 text-slate-600 mb-1" />
-                        <div className="text-slate-300 font-semibold">GET Request — No Body Required</div>
+                        <div className="text-slate-300 font-semibold">GET Request: No Body Required</div>
                         <div className="text-[11px] text-slate-500 max-w-xs">
                           This endpoint retrieves pre-computed audit metrics directly from memory or disk in &lt;0.05 ms.
                         </div>
@@ -931,7 +931,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   </span>
                   <button
                     onClick={() => {
-                      const pitch = `I am a Principal AI Systems Architect and Lead TradeTech Engineer specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected TradeTech Systems Studio—an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.`;
+                      const pitch = `I am a Principal AI Systems Architect and Lead TradeTech Engineer specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected TradeTech Systems Studio: an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.`;
                       navigator.clipboard.writeText(pitch);
                       setCopiedPitch(true);
                       sound.playTick();
@@ -953,7 +953,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   </button>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-sans bg-[#0E1015] p-3 rounded border border-slate-800/80">
-                  &ldquo;I am a <strong>Principal AI Systems Architect and Lead TradeTech Engineer</strong> specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected <strong>TradeTech Systems Studio</strong>—an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.&rdquo;
+                  &ldquo;I am a <strong>Principal AI Systems Architect and Lead TradeTech Engineer</strong> specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected <strong>TradeTech Systems Studio</strong>: an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.&rdquo;
                 </p>
               </div>
 
@@ -1044,7 +1044,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     &ldquo;When customs brokers or importers evaluate your product, what is the biggest compliance or data security pushback your enterprise sales team faces?&rdquo;
                   </li>
                   <li>
-                    &ldquo;What is the engineering team's biggest technical bottleneck in the unstructured document pipeline right now—is it layout extraction, classification accuracy, or integration with legacy ERP/EDI systems like CargoWise?&rdquo;
+                    &ldquo;What is the engineering team's biggest technical bottleneck in the unstructured document pipeline right now: is it layout extraction, classification accuracy, or integration with legacy ERP/EDI systems like CargoWise?&rdquo;
                   </li>
                 </ol>
               </div>

@@ -13,11 +13,11 @@
 
 Commercial trade operations and customs compliance represent an asymmetric operational surface: mid-market enterprise importers lose **5% to 15% of total freight expenditure** to carrier billing leakage and face catastrophic civil monetary penalties under **19 U.S.C. § 1592 ($100k–$2.4M+)** due to line-item arithmetic discrepancies, assist omissions, and Harmonized Tariff Schedule (HTS) misclassifications.
 
-Contemporary attempts to apply generative artificial intelligence (LLMs) to international trade document processing fail because generic language models are fundamentally non-deterministic: flat prompts hallucinate statutory citations, perform inaccurate arithmetic on floating-point currencies, and cannot navigate the path-dependent legal decision trees mandated by the World Customs Organization (WCO) General Rules of Interpretation (GRI 1–6).
+Contemporary attempts to apply generative artificial intelligence (LLMs) to international trade document processing fail because generic language models are fundamentally non-deterministic: flat prompts hallucinate statutory citations, perform inaccurate arithmetic on floating-point currencies, and cannot navigate the path-dependent legal decision trees mandated by the World Customs Organization (WCO) General Rules of Interpretation (GRI 1 to 6).
 
 This paper introduces the architecture of **TradeTech Systems Studio**, a mission-critical, zero-budget trade intelligence engine founded on three non-negotiable engineering principles:
 1. **Strict Mathematical Determinism:** Absolute ban on LLM arithmetic; 100% enforcement of Python `decimal.Decimal` with explicit `ROUND_HALF_UP` rounding.
-2. **Hierarchical Path-Dependent Classification:** A state-machine formulation of WCO GRI 1–6 with element-wise confidence gating ($Conf(e) < 0.85$).
+2. **Hierarchical Path-Dependent Classification:** A state-machine formulation of WCO GRI 1 to 6 with element-wise confidence gating ($Conf(e) < 0.85$).
 3. **Multi-Hop Corporate Ownership Graph Traversal:** Sub-200ms recursive beneficial ownership aggregation implementing the U.S. Treasury OFAC 50 Percent Rule (31 CFR § 501).
 
 ---
@@ -40,11 +40,11 @@ from decimal import Decimal, ROUND_HALF_UP
 def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decimal:
     return (dutiable_value * duty_rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 ```
-Every financial calculation in the platform—including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds—is mathematically deterministic and verified through 40 automated test suites.
+Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified through 40 automated test suites.
 
 ---
 
-## 3. Hierarchical WCO GRI 1–6 State Machine
+## 3. Hierarchical WCO GRI 1 to 6 State Machine
 
 ### 3.1 Mathematical Formulation of Select-Redirect Classification
 Standard LLM wrappers treat 10-digit HTS classification as a flat text generation task ($x \to y$). This violates international customs law because tariff classification is strictly hierarchical and path-dependent. 
@@ -72,7 +72,7 @@ graph TD
     GRI3 --> GRI6["GRI 6: Subheading & Statistical Suffix Concatenation"]
     GRI6 --> ConfCheck{"Confidence Conf(e) >= 0.85?"}
     ConfCheck -->|"Yes (>= 0.85)"| AutoFiling["Verified 10-Digit HTS Code Approved"]
-    ConfCheck -->|"No (< 0.85)"| AmberGate["⚠️ Dashed Amber Gating — Route to Licensed Customs Broker"]
+    ConfCheck -->|"No (< 0.85)"| AmberGate["⚠️ Dashed Amber Gating: Route to Licensed Customs Broker"]
 ```
 
 ### 3.2 Element-Wise Confidence Gating ($Conf(e) < 0.85$)
@@ -140,7 +140,7 @@ All modules were benchmarked using Python 3.12 on commodity hardware via `backen
 | **Pre-Payment Freight Interceptor** | FMC Docket 21-08 / OSRA 2022 | 0.08 ms | Sub-millisecond tariff match |
 | **Duty Drawback Harvester** | 19 U.S.C. § 1313 | 0.05 ms | 99% wire refund calculation |
 | **Corporate Sanctions Resolution** | 31 CFR § 501 (OFAC 50%) | 294.74 ms | Recursive multi-hop graph |
-| **Autonomous HTS Copilot** | WCO GRI 1–6 / 19 CFR § 24.23 | 5.60 ms | Element-wise confidence gating |
+| **Autonomous HTS Copilot** | WCO GRI 1 to 6 / 19 CFR § 24.23 | 5.60 ms | Element-wise confidence gating |
 | **CBP Assist Valuation Register** | 19 CFR § 152.103 / § 162.74 | 4.67 ms | Formal letter generator |
 | **TOTAL SUITE EVALUATION** | **Full Enterprise Battery** | **562.91 ms** | **Zero floating-point drift** |
 

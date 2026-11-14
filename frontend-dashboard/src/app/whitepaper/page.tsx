@@ -93,7 +93,7 @@ export default function WhitepaperPage() {
               {[
                 { id: "abstract", label: "1. Abstract", icon: FileText },
                 { id: "determinism", label: "2. Arithmetic Determinism", icon: Scale },
-                { id: "state-machine", label: "3. WCO GRI 1–6 State Machine", icon: Layers },
+                { id: "state-machine", label: "3. WCO GRI 1 to 6 State Machine", icon: Layers },
                 { id: "sanctions-graph", label: "4. OFAC 50% Rule Graph", icon: Activity },
                 { id: "valuation-ledger", label: "5. Assist Valuation & Prior Disclosure", icon: ShieldCheck },
                 { id: "benchmarks", label: "6. Empirical Benchmarks", icon: Cpu },
@@ -166,7 +166,7 @@ export default function WhitepaperPage() {
               Commercial trade operations and customs compliance represent an asymmetric operational surface: mid-market enterprise importers lose <strong className="text-amber-400">5% to 15% of total freight spend</strong> to carrier accessorial overbilling and face catastrophic civil monetary penalties under <strong className="text-rose-400">19 U.S.C. § 1592 ($100k–$2.4M+)</strong> due to line-item arithmetic discrepancies, assist omissions, and Harmonized Tariff Schedule (HTS) misclassifications.
             </p>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Contemporary attempts to apply generative artificial intelligence (LLMs) to international trade document processing fail because generic language models are fundamentally non-deterministic: flat prompts hallucinate statutory citations, perform inaccurate arithmetic on floating-point currencies, and cannot navigate the path-dependent legal decision trees mandated by the World Customs Organization (WCO) General Rules of Interpretation (GRI 1–6).
+              Contemporary attempts to apply generative artificial intelligence (LLMs) to international trade document processing fail because generic language models are fundamentally non-deterministic: flat prompts hallucinate statutory citations, perform inaccurate arithmetic on floating-point currencies, and cannot navigate the path-dependent legal decision trees mandated by the World Customs Organization (WCO) General Rules of Interpretation (GRI 1 to 6).
             </p>
 
             <div className="p-4 rounded-xl bg-[#161920] border border-[#2A2F3A] space-y-2">
@@ -180,7 +180,7 @@ export default function WhitepaperPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-cyan-400 font-bold">•</span>
-                  <span><strong>Hierarchical Path-Dependent Classification:</strong> A state-machine formulation of WCO GRI 1–6 with element-wise confidence gating (<code className="text-amber-300">Conf(e) &lt; 0.85</code>).</span>
+                  <span><strong>Hierarchical Path-Dependent Classification:</strong> A state-machine formulation of WCO GRI 1 to 6 with element-wise confidence gating (<code className="text-amber-300">Conf(e) &lt; 0.85</code>).</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-cyan-400 font-bold">•</span>
@@ -238,7 +238,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
               </div>
 
               <p>
-                Every financial calculation in the platform—including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds—is mathematically deterministic and verified across 41 automated test suites.
+                Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified across 41 automated test suites.
               </p>
             </div>
           </section>
@@ -247,7 +247,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
           <section id="state-machine" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#2A2F3A] pb-2">
               <span className="text-cyan-400">3.</span>
-              <span>Hierarchical WCO GRI 1–6 State Machine</span>
+              <span>Hierarchical WCO GRI 1 to 6 State Machine</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">

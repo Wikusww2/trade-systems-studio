@@ -94,7 +94,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
         </head>
         <body>
           <div class="header">
-            <div class="badge">CONFIDENTIAL LEGAL SUBMISSION — 19 CFR § 162.74</div>
+            <div class="badge">CONFIDENTIAL LEGAL SUBMISSION: 19 CFR § 162.74</div>
             <div class="sub">UNITED STATES CUSTOMS AND BORDER PROTECTION • FORMAL PRIOR DISCLOSURE</div>
           </div>
           <div class="meta">FILING REF: ${priorDisclosure?.filing_reference_id} | PORT: ${priorDisclosure?.port_of_entry}</div>
