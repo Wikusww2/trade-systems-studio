@@ -179,6 +179,25 @@ export const DualPaneAuditViewer: React.FC = () => {
     }
   };
 
+  const switchConcept = (conceptId: string) => {
+    sound.playLock();
+    setActiveConceptId(conceptId);
+    if (typeof window !== "undefined") {
+      const slugMap: Record<string, string> = {
+        concept_1_customs: "customs",
+        concept_2_freight: "freight",
+        concept_3_drawback: "drawback",
+        concept_4_sanctions: "sanctions",
+        concept_5_hts: "hts",
+        concept_6_valuation: "valuation",
+        concept_clean_fob: "clean_fob",
+        client_upload_audit: "upload",
+      };
+      const slug = slugMap[conceptId] || conceptId;
+      window.history.replaceState(null, "", `#${slug}`);
+    }
+  };
+
   useEffect(() => {
     // Check saved theme or default to dark
     const saved = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -191,6 +210,33 @@ export const DualPaneAuditViewer: React.FC = () => {
     }
 
     setIsAudioMuted(sound.getMuted());
+
+    // Deep-linking URL hash & query routing on initial load
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.toLowerCase().replace("#", "");
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab") || hash;
+
+      if (tabParam === "sanctions" || tabParam === "concept_4_sanctions") {
+        setActiveConceptId("concept_4_sanctions");
+      } else if (tabParam === "hts" || tabParam === "concept_5_hts") {
+        setActiveConceptId("concept_5_hts");
+      } else if (tabParam === "valuation" || tabParam === "concept_6_valuation") {
+        setActiveConceptId("concept_6_valuation");
+      } else if (tabParam === "freight" || tabParam === "concept_2_freight") {
+        setActiveConceptId("concept_2_freight");
+      } else if (tabParam === "drawback" || tabParam === "concept_3_drawback") {
+        setActiveConceptId("concept_3_drawback");
+      } else if (tabParam === "clean_fob" || tabParam === "concept_clean_fob") {
+        setActiveConceptId("concept_clean_fob");
+      } else if (tabParam === "architecture" || tabParam === "tests") {
+        setIsArchitectureModalOpen(true);
+      } else if (tabParam === "dossier") {
+        setIsDossierOpen(true);
+      } else if (tabParam === "film" || tabParam === "keynote") {
+        setIsFilmOpen(true);
+      }
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -662,8 +708,7 @@ export const DualPaneAuditViewer: React.FC = () => {
               <button
                 key={concept.id}
                 onClick={() => {
-                  sound.playLock();
-                  setActiveConceptId(concept.id);
+                  switchConcept(concept.id);
                 }}
                 className={`flex items-center gap-2 px-3.5 py-2 font-mono text-xs font-semibold tracking-wide border transition-all duration-150 whitespace-nowrap rounded-sm ${
                   isActive
@@ -731,8 +776,7 @@ export const DualPaneAuditViewer: React.FC = () => {
               <div className="inline-flex flex-wrap p-0.5 bg-slate-100 dark:bg-[#0B0D11] border border-slate-300 dark:border-[#262B35] rounded-sm">
                 <button
                   onClick={() => {
-                    sound.playTick();
-                    setActiveConceptId("concept_1_customs");
+                    switchConcept("concept_1_customs");
                   }}
                   className={`px-3 py-1 text-[11px] font-bold rounded-xs transition-all flex items-center gap-1.5 ${
                     activeConceptId === "concept_1_customs"
@@ -745,8 +789,7 @@ export const DualPaneAuditViewer: React.FC = () => {
                 </button>
                 <button
                   onClick={() => {
-                    sound.playTick();
-                    setActiveConceptId("concept_clean_fob");
+                    switchConcept("concept_clean_fob");
                   }}
                   className={`px-3 py-1 text-[11px] font-bold rounded-xs transition-all flex items-center gap-1.5 ${
                     activeConceptId === "concept_clean_fob"
