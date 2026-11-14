@@ -1,5 +1,4 @@
-import { pdfjs } from "react-pdf";
-import { AuditResult, Discrepancy } from "./types";
+import type { AuditResult, Discrepancy } from "./types";
 
 export interface ClientAuditOptions {
   file: File;
@@ -7,6 +6,9 @@ export interface ClientAuditOptions {
 }
 
 export async function auditUploadedPdf(file: File): Promise<AuditResult> {
+  // Dynamically import react-pdf on client to avoid Node.js SSR evaluation
+  const { pdfjs } = await import("react-pdf");
+
   const blobUrl = URL.createObjectURL(file);
   const arrayBuffer = await file.arrayBuffer();
 
