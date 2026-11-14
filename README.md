@@ -1,7 +1,7 @@
 # 🛡️ TradeTech Systems Studio — Autonomous Trade Intelligence & Customs Defense
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
-[![Tests](https://img.shields.io/badge/Pytest-40%2F40%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
+[![Tests](https://img.shields.io/badge/Pytest-41%2F41%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
@@ -97,7 +97,7 @@ trade-systems-studio/
 │   │   │   ├── hts_classifier.py   # Hierarchical WCO GRI 1-6 state machine
 │   │   │   └── valuation_ledger.py # GAAP assist amortization & prior disclosure generator
 │   │   └── data/nightmares/     # Ground-truth PDF fixtures with known statutory defects
-│   ├── tests/                   # 40 automated test suites (pytest -v)
+│   ├── tests/                   # 41 automated test suites (pytest -v)
 │   └── main.py
 │
 ├── frontend-dashboard/          # Next.js 15 App Router "Nightmare Suite" Console
@@ -138,7 +138,7 @@ trade-systems-studio/
 ## ⚡ Automated Verification
 
 ```bash
-# 1. Verify Backend Engine (All 40 statutory tests pass with exit code 0)
+# 1. Verify Backend Engine (All 41 statutory tests pass with exit code 0)
 cd backend-engine
 pytest -v
 

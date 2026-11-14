@@ -81,6 +81,48 @@ NIGHTMARE_GROUND_TRUTH: Dict[str, Dict[str, Any]] = {
             "export_bl": "EXP-2024-88412",
         },
     },
+    "concept_clean_fob": {
+        "title": "Clean Production Invoice: Verified FOB Terms",
+        "subtitle": "100% Pre-Clearance Certified • Zero 19 U.S.C. § 1592 Exposure",
+        "filename": "clean_01_customs_fob.pdf",
+        "payload": {
+            "incoterms": "FOB YANTIAN",
+            "insurance_charge": "0.00",
+            "freight_charge": "0.00",
+            "misclassified_value": "0.00",
+            "declared_duty_rate": "0.00",
+            "lawful_duty_rate": "0.00",
+            "items": [
+                {
+                    "line_number": 1,
+                    "item_code": "ARM-CORTEX-01",
+                    "description": "ARM Cortex-M4 Microcontroller Processors",
+                    "quantity": "500",
+                    "unit_price": "45.00",
+                    "stated_total": "22500.00",
+                    "hts_code": "8542.31.0001",
+                },
+                {
+                    "line_number": 2,
+                    "item_code": "AI-TENSOR-02",
+                    "description": "High-Performance Neural Tensor Accelerators",
+                    "quantity": "200",
+                    "unit_price": "350.00",
+                    "stated_total": "70000.00",
+                    "hts_code": "8542.31.0001",
+                },
+                {
+                    "line_number": 3,
+                    "item_code": "PSU-MOD-03",
+                    "description": "High-Efficiency Switching Power Supplies",
+                    "quantity": "1000",
+                    "unit_price": "25.00",
+                    "stated_total": "25000.00",
+                    "hts_code": "8504.40.9580",
+                },
+            ],
+        },
+    },
 }
 
 class TradeDocumentExtractor:
@@ -102,7 +144,7 @@ class TradeDocumentExtractor:
         payload = scenario["payload"]
 
         # Deterministic financial and legal calculation engine
-        if concept_id == "concept_1_customs":
+        if concept_id in ("concept_1_customs", "concept_clean_fob"):
             metrics, discrepancies = audit_customs_invoice(payload)
             # When online, enrich GRI classification justification via gemini-3.8-flash
             if ai_classifier.is_online:

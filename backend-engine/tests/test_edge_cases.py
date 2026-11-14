@@ -13,6 +13,14 @@ def test_invalid_concept_id_404():
     assert response.status_code == 404
     assert "not found" in response.json()["detail"].lower()
 
+def test_concept_clean_fob_audit_endpoint():
+    response = client.get("/api/v1/audit/concept_clean_fob")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["concept_id"] == "concept_clean_fob"
+    assert data["metrics"]["penalty_exposure_avoided"] == 0.0
+    assert len(data["discrepancies"]) == 0
+
 def test_customs_invoice_clean_no_errors():
     clean_data = {
         "incoterms": "FOB SHENZHEN", # FOB does not require seller marine insurance

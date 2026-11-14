@@ -39,7 +39,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </h3>
                 <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  <span>40/40 Tests Passing (1.70s)</span>
+                  <span>41/41 Tests Passing (1.77s)</span>
                 </span>
               </div>
               <p className="text-xs text-[#94A3B8] font-mono mt-0.5">
@@ -82,7 +82,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 : "border-transparent text-[#94A3B8] hover:text-white"
             }`}
           >
-            <span>02. Pytest Execution (40/40)</span>
+            <span>02. Pytest Execution (41/41)</span>
           </button>
 
           <button
@@ -192,11 +192,11 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     Automated Pytest Suite Execution
                   </h4>
                   <div className="text-[11px] text-[#94A3B8] font-mono mt-0.5">
-                    Ran 40 test suites in 1.70 seconds • Exit Code: 0 • Zero Failures
+                    Ran 41 test suites in 1.77 seconds • Exit Code: 0 • Zero Failures
                   </div>
                 </div>
                 <span className="px-2.5 py-1 text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/40 rounded font-bold">
-                  40 / 40 PASSED
+                  41 / 41 PASSED
                 </span>
               </div>
 
@@ -223,12 +223,13 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_assist_valuation_audit_math</span><span className="text-emerald-400 font-bold">PASSED [ 50%]</span></div>
                   <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_prior_disclosure_letter_generation</span><span className="text-emerald-400 font-bold">PASSED [ 60%]</span></div>
                   <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_valuation_api_endpoints</span><span className="text-emerald-400 font-bold">PASSED [ 70%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_edge_cases.py::test_concept_clean_fob_audit_endpoint</span><span className="text-emerald-400 font-bold">PASSED [ 75%]</span></div>
                   <div className="flex justify-between"><span>tests/test_ai_and_layout.py::test_offline_zero_key_fallback</span><span className="text-emerald-400 font-bold">PASSED [ 80%]</span></div>
                   <div className="flex justify-between"><span>tests/test_api.py::test_aggregate_metrics</span><span className="text-emerald-400 font-bold">PASSED [ 90%]</span></div>
                   <div className="flex justify-between"><span>tests/test_edge_cases.py::test_duty_drawback_untimely_5yr_window</span><span className="text-emerald-400 font-bold">PASSED [100%]</span></div>
                 </div>
                 <div className="text-emerald-400 mt-3 font-bold">
-                  ============================= 40 passed in 1.70s =============================
+                  ============================= 41 passed in 1.77s =============================
                 </div>
               </div>
             </div>
@@ -360,7 +361,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400" />
                   </div>
                   <div className="text-[11px] text-[#94A3B8] mt-1">
-                    FastAPI + Next.js 15 repository with 40/40 passing pytest test suites.
+                    FastAPI + Next.js 15 repository with 41/41 passing pytest test suites.
                   </div>
                 </a>
               </div>

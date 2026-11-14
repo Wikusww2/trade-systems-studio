@@ -274,6 +274,27 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     },
     offline_fallback_active: true,
   },
+  concept_clean_fob: {
+    concept_id: "concept_clean_fob",
+    title: "Clean Production Invoice: Verified FOB Terms",
+    subtitle: "100% Pre-Clearance Certified • Zero 19 U.S.C. § 1592 Exposure",
+    document_filename: "clean_01_customs_fob.pdf",
+    document_url: "/nightmares/clean_01_customs_fob.pdf",
+    metrics: {
+      penalty_exposure_avoided: 0,
+      carrier_overbilling_caught: 0,
+      drawback_unclaimed_unlocked: 0,
+    },
+    discrepancies: [],
+    extracted_data: {
+      incoterms: "FOB YANTIAN",
+      total_value: 145250.0,
+      compliance_status: "100% CERTIFIED",
+      assist_declared: "$27,750.00",
+      arithmetic_error: "$0.00",
+    },
+    offline_fallback_active: true,
+  },
 };
 
 export const MOCK_SANCTIONS_GRAPHS: Record<string, CorporateGraphResponse> = {
