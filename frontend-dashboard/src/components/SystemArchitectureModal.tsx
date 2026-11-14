@@ -217,13 +217,14 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
   isOpen,
   onClose,
 }) => {
-  const [activeTab, setActiveTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground">("architecture");
+  const [activeTab, setActiveTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
   const [selectedEndpointId, setSelectedEndpointId] = useState<string>("hts_classify");
   const [customPayloads, setCustomPayloads] = useState<Record<string, string>>({});
   const [simulatedResponse, setSimulatedResponse] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [copiedCurl, setCopiedCurl] = useState<boolean>(false);
   const [copiedResponse, setCopiedResponse] = useState<boolean>(false);
+  const [copiedPitch, setCopiedPitch] = useState<boolean>(false);
   const [simulatedLatency, setSimulatedLatency] = useState<number>(0.042);
 
   const selectedEndpoint = PLAYGROUND_ENDPOINTS.find((e) => e.id === selectedEndpointId) || PLAYGROUND_ENDPOINTS[0];
@@ -408,6 +409,21 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
           >
             <Terminal className="w-3.5 h-3.5 text-cyan-400" />
             <span>05. REST API Playground</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playTick();
+              setActiveTab("screener");
+            }}
+            className={`px-3 py-2 border-b-2 font-semibold transition-all flex items-center gap-1.5 ${
+              activeTab === "screener"
+                ? "border-emerald-400 text-emerald-400 bg-emerald-950/20"
+                : "border-transparent text-[#94A3B8] hover:text-white"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>06. Screener &amp; Interview Defense</span>
           </button>
         </div>
 
@@ -873,6 +889,156 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 <div className="text-slate-300 text-[11px] overflow-x-auto whitespace-pre-wrap select-all bg-black/40 p-2 rounded border border-slate-800">
                   {getCurlSnippet()}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: SCREENER & INTERVIEW DEFENSE */}
+          {activeTab === "screener" && (
+            <div className="space-y-5 font-mono">
+              {/* Header Card */}
+              <div className="p-4 rounded-lg bg-[#1A1D24] border border-[#2A2F3A] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Recruiter Screen &amp; Technical Interview Defense</span>
+                  </h4>
+                  <p className="text-xs text-[#94A3B8] mt-1 font-mono">
+                    Candidate: Samuel • Word-for-Word Talking Points &amp; Architecture Defenses
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-semibold">
+                    Anchor: $180k–$240k+ Base
+                  </span>
+                </div>
+              </div>
+
+              {/* 30-Second Elevator Pitch */}
+              <div className="p-4 rounded-lg bg-[#161920] border border-[#2A2F3A] space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎙️</span>
+                    <span>The 30-Second Elevator Pitch</span>
+                  </span>
+                  <button
+                    onClick={() => {
+                      const pitch = `I am a Principal AI Systems Architect and Lead TradeTech Engineer specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected TradeTech Systems Studio—an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.`;
+                      navigator.clipboard.writeText(pitch);
+                      setCopiedPitch(true);
+                      sound.playTick();
+                      setTimeout(() => setCopiedPitch(false), 2000);
+                    }}
+                    className="px-2.5 py-1 rounded bg-[#1A1D24] hover:bg-slate-800 text-[11px] text-slate-300 border border-[#2A2F3A] hover:border-slate-500 transition-all flex items-center gap-1"
+                  >
+                    {copiedPitch ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-400" />
+                        <span className="text-emerald-400">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Copy Pitch</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed font-sans bg-[#0E1015] p-3 rounded border border-slate-800/80">
+                  &ldquo;I am a <strong>Principal AI Systems Architect and Lead TradeTech Engineer</strong> specializing in mission-critical trade finance, customs compliance, and supply chain automation. Most recently, I architected <strong>TradeTech Systems Studio</strong>—an autonomous enterprise compliance and trade intelligence engine that intercepts 7-figure CBP penalties under 19 U.S.C. § 1592, catches 5% to 15% carrier freight overbilling before wire release, and traverses multi-tier corporate ownership graphs under the OFAC 50% Rule in sub-millisecond latency. My core architectural focus is replacing fragile, non-deterministic LLM wrappers with strict mathematical determinism, local bounding-box extraction, and hierarchical state machines that eliminate floating-point drift.&rdquo;
+                </p>
+              </div>
+
+              {/* Compensation Anchors */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                  <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                    Full-Time Principal / Lead Architect
+                  </div>
+                  <div className="text-sm font-bold text-emerald-400 font-mono">
+                    $180,000 – $240,000+ Base
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    Total target compensation: $220k–$280k+ reflecting enterprise impact and equity.
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                  <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                    Enterprise Advisory / Architecture Sprint
+                  </div>
+                  <div className="text-sm font-bold text-cyan-400 font-mono">
+                    $15,000 – $30,000 Flat Retainer
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    2-week intensive compliance engine or pre-payment audit integration sprint.
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 Hardest Technical Questions */}
+              <div className="space-y-3">
+                <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <span>⚡</span>
+                  <span>The 4 Hardest Technical Screener Questions</span>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                    <div className="text-amber-400 font-bold">
+                      Q1: &ldquo;Why TradeTech and customs compliance specifically?&rdquo;
+                    </div>
+                    <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
+                      &ldquo;Because international trade is the ultimate crucible for AI systems architecture. In consumer apps, a 1% LLM hallucination is harmless; in international trade, an arithmetic discrepancy between invoice extensions and declared totals triggers statutory negligence penalties under 19 U.S.C. § 1592. I enjoy engineering zero-drift, mathematically verifiable systems where failure is not an option.&rdquo;
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                    <div className="text-amber-400 font-bold">
+                      Q2: &ldquo;How do you use LLMs in your architecture?&rdquo;
+                    </div>
+                    <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
+                      &ldquo;We strictly enforce a separation of concerns: LLMs (specifically Gemini 3.8 Flash and 3.5 Flash-Lite) are used exclusively for semantic extraction, document classification, and drafting legal narrative justifications. We strictly forbid LLMs from performing arithmetic, currency conversion, or tariff rate math. All financial sums and penalty exposure calculations are routed to a deterministic Python engine utilizing <code className="text-emerald-400 font-mono">decimal.Decimal</code> with explicit <code className="text-emerald-400 font-mono">ROUND_HALF_UP</code> quantization.&rdquo;
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                    <div className="text-amber-400 font-bold">
+                      Q3: &ldquo;Can you handle high volume? What are your benchmarks?&rdquo;
+                    </div>
+                    <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
+                      &ldquo;Our engine was benchmarked across 3,000 continuous enterprise audits on standard cloud hardware: it executes at <strong>33,496 audits per second</strong> with a p99 latency under <strong>0.09 milliseconds</strong> and a memory footprint under 65 MB RSS per worker. The architecture is fully containerized and verified across 41 automated pytest suites.&rdquo;
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded bg-[#161920] border border-[#2A2F3A] space-y-1">
+                    <div className="text-amber-400 font-bold">
+                      Q4: &ldquo;Where can I see your work?&rdquo;
+                    </div>
+                    <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
+                      &ldquo;Everything is live and verified on the web right now. You can test the interactive dual-pane console at <strong>sssammyboyyy.github.io/trade-systems-studio</strong>, read our web whitepaper at <strong>/whitepaper</strong>, or review our open-source monorepo on GitHub with 41 passing test suites. You can even drop one of your own company's PDF invoices into the browser for an instant, confidential on-device audit.&rdquo;
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3 Reverse Questions */}
+              <div className="p-4 rounded-lg bg-[#0E1015] border border-[#2A2F3A] space-y-2">
+                <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+                  <span>🎯</span>
+                  <span>3 Killer Reverse Questions to Ask Hiring Committees</span>
+                </div>
+                <ol className="space-y-1.5 text-[11px] text-slate-300 font-sans list-decimal list-inside leading-relaxed">
+                  <li>
+                    &ldquo;At your current shipment volume, what percentage of your automated invoice extractions trigger manual exception handling due to line-item arithmetic drift or accessorial tariff mismatches?&rdquo;
+                  </li>
+                  <li>
+                    &ldquo;When customs brokers or importers evaluate your product, what is the biggest compliance or data security pushback your enterprise sales team faces?&rdquo;
+                  </li>
+                  <li>
+                    &ldquo;What is the engineering team's biggest technical bottleneck in the unstructured document pipeline right now—is it layout extraction, classification accuracy, or integration with legacy ERP/EDI systems like CargoWise?&rdquo;
+                  </li>
+                </ol>
               </div>
             </div>
           )}
