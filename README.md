@@ -1,4 +1,4 @@
-# 🛡️ TradeTech Systems Studio — Autonomous Trade Intelligence & Customs Defense
+# 🛡️ TradeTech Systems Studio - Autonomous Trade Intelligence & Customs Defense
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
 [![Whitepaper](https://img.shields.io/badge/Whitepaper-Interactive%20Edition-8b5cf6?style=for-the-badge&logo=googledocs&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)
