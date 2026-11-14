@@ -21,6 +21,7 @@ import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
 import { HtsClassifierViewer } from "./HtsClassifierViewer";
 import { CustomsValuationViewer } from "./CustomsValuationViewer";
 import { SystemArchitectureModal } from "./SystemArchitectureModal";
+import { ExecutiveTourOverlay } from "./ExecutiveTourOverlay";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
@@ -139,6 +140,7 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [isFunnelStudioOpen, setIsFunnelStudioOpen] = useState<boolean>(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState<boolean>(false);
   const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
+  const [isTourActive, setIsTourActive] = useState<boolean>(false);
 
   // ICP Persona Lens ('cfo' | 'counsel')
   const [persona, setPersona] = useState<IcpPersona>("cfo");
@@ -245,6 +247,8 @@ export const DualPaneAuditViewer: React.FC = () => {
         setIsDossierOpen(true);
       } else if (tabParam === "film" || tabParam === "keynote") {
         setIsFilmOpen(true);
+      } else if (tabParam === "tour" || tabParam === "walkthrough") {
+        setIsTourActive(true);
       }
     }
   }, []);
@@ -373,6 +377,19 @@ export const DualPaneAuditViewer: React.FC = () => {
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
               <span className="hidden sm:inline">Funnel Lab</span>
+            </button>
+
+            {/* 60s Executive Guided Tour Button */}
+            <button
+              onClick={() => {
+                sound.playLock();
+                setIsTourActive(true);
+              }}
+              title="Start 60-Second Guided Tour"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 rounded-sm font-mono text-xs font-bold transition-all shadow-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline">60s Tour</span>
             </button>
 
             {/* Keynote Film Teaser Button */}
@@ -1147,6 +1164,16 @@ export const DualPaneAuditViewer: React.FC = () => {
         isOpen={isArchitectureModalOpen}
         onClose={() => setIsArchitectureModalOpen(false)}
         initialTab={architectureModalTab}
+      />
+
+      {/* 14. 60-SECOND EXECUTIVE TOUR OVERLAY */}
+      <ExecutiveTourOverlay
+        isActive={isTourActive}
+        onClose={() => setIsTourActive(false)}
+        onOpenArchitectureModal={() => {
+          setArchitectureModalTab("architecture");
+          setIsArchitectureModalOpen(true);
+        }}
       />
 
       {/* 13. FUNNEL REDESIGN STUDIO MODAL */}
