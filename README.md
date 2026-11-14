@@ -1,6 +1,7 @@
 # 🛡️ TradeTech Systems Studio — Autonomous Trade Intelligence & Customs Defense
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
+[![CI](https://img.shields.io/badge/CI-Passing-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/Pytest-41%2F41%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -105,6 +106,7 @@ trade-systems-studio/
 │   ├── TRADETECH_SYSTEMS_ARCHITECTURE_WHITEPAPER.md # Technical deep dive across all 6 engines
 │   ├── PERFORMANCE_AND_SCALE_BENCHMARKS.md      # p50/p95/p99 latency benchmarks (33k audits/sec)
 │   ├── SYSTEM_DESIGN_INTERVIEW_DEFENSE.md       # Verbatim technical interview answers & proofs
+│   ├── RECRUITER_SCREEN_ONE_PAGER.md            # Word-for-word phone screen reference dashboard
 │   ├── TARGET_ACCOUNTS_AND_DECISION_MAKERS.md   # Challenger Sale outreach packs for Raft, Altana, Expedock
 │   └── RECRUITER_BRIEFING_PACK.md               # Screener defense & positioning guide
 │

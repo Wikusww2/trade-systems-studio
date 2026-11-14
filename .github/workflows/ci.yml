@@ -1,0 +1,75 @@
+name: Enterprise CI Pipeline & Test Verification
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  backend-test-matrix:
+    name: Backend Test Suite (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        working-directory: backend-engine
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-cov
+
+      - name: Generate synthetic test fixtures
+        working-directory: backend-engine
+        run: |
+          python -c "from app.services.fixture_generator import generate_all_nightmares; generate_all_nightmares()"
+
+      - name: Run automated pytest test suites (41 tests)
+        working-directory: backend-engine
+        run: |
+          pytest -v --cov=app --cov-report=term-missing
+
+      - name: Execute sub-millisecond concurrency benchmark
+        working-directory: backend-engine
+        run: |
+          python benchmark.py
+
+  frontend-typecheck-and-build:
+    name: Frontend TypeScript & Static Export (Node 22)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend-dashboard/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend-dashboard
+        run: npm ci
+
+      - name: Run TypeScript typecheck (strict mode)
+        working-directory: frontend-dashboard
+        run: npx tsc --noEmit
+
+      - name: Run Next.js production static export build
+        working-directory: frontend-dashboard
+        env:
+          NEXT_PUBLIC_BASE_PATH: /trade-systems-studio
+        run: npm run build
