@@ -767,11 +767,11 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                       <textarea
                         value={currentPayload}
                         onChange={(e) => handlePayloadChange(e.target.value)}
-                        className="w-full h-64 bg-transparent text-emerald-300 font-mono text-[11px] leading-relaxed resize-none focus:outline-none border-none p-0 scrollbar-thin"
+                        className="w-full h-52 bg-transparent text-emerald-300 font-mono text-[11px] leading-relaxed resize-none focus:outline-none border-none p-0 scrollbar-thin"
                         spellCheck={false}
                       />
                     ) : (
-                      <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-slate-500 font-mono text-xs space-y-2">
+                      <div className="h-52 flex flex-col items-center justify-center text-center p-6 text-slate-500 font-mono text-xs space-y-2">
                         <Terminal className="w-8 h-8 text-slate-600 mb-1" />
                         <div className="text-slate-300 font-semibold">GET Request — No Body Required</div>
                         <div className="text-[11px] text-slate-500 max-w-xs">
@@ -852,7 +852,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     </button>
                   </div>
 
-                  <div className="p-3 flex-1 overflow-y-auto max-h-64 scrollbar-thin">
+                  <div className="p-3 flex-1 overflow-y-auto max-h-52 h-52 scrollbar-thin">
                     <pre className="text-sky-300 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
                       {activeResponse}
                     </pre>
