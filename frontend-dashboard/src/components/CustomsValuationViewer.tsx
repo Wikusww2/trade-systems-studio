@@ -14,6 +14,7 @@ import {
   generatePriorDisclosurePackage,
 } from "@/lib/api";
 import { soundEngine } from "@/lib/audio";
+import { Printer } from "lucide-react";
 
 interface CustomsValuationViewerProps {
   onLeadTrigger?: () => void;
@@ -66,6 +67,49 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
+  };
+
+  const handlePrintLetter = () => {
+    soundEngine.click();
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    const tenderFormatted = Number(audit?.prior_disclosure_tender_amount || 0).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+    });
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>19 CFR § 162.74 Formal Prior Disclosure - ${priorDisclosure?.filing_reference_id || "FILING"}</title>
+          <style>
+            body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; padding: 48px; color: #111; max-width: 800px; margin: 0 auto; }
+            .header { text-align: center; font-weight: bold; margin-bottom: 24px; border-bottom: 2px solid #000; padding-bottom: 12px; }
+            .badge { font-size: 13pt; letter-spacing: 1px; }
+            .sub { font-size: 9pt; font-weight: normal; margin-top: 4px; }
+            .meta { font-family: monospace; font-size: 9pt; margin-bottom: 20px; color: #333; }
+            pre { font-family: 'Times New Roman', Times, serif; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+            .signature { margin-top: 40px; border-top: 1px solid #666; padding-top: 12px; font-size: 10pt; }
+            @media print { body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="badge">CONFIDENTIAL LEGAL SUBMISSION — 19 CFR § 162.74</div>
+            <div class="sub">UNITED STATES CUSTOMS AND BORDER PROTECTION • FORMAL PRIOR DISCLOSURE</div>
+          </div>
+          <div class="meta">FILING REF: ${priorDisclosure?.filing_reference_id} | PORT: ${priorDisclosure?.port_of_entry}</div>
+          <pre>${priorDisclosure?.letter_text}</pre>
+          <div class="signature">
+            <strong>Importer of Record / Broker Authorization</strong><br/>
+            Certified Statutory Tender Enclosed: \$${tenderFormatted} (19 U.S.C. § 1505 Lawful Duty Loss + Statutory Interest)
+          </div>
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   return (
@@ -387,12 +431,20 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                   <span>✓</span>
                   <span>Mitigates 19 U.S.C. § 1592 penalties from up to 4.0x down to $0 penalty</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     onClick={handleCopyLetter}
-                    className="px-4 py-2 rounded border border-[#2A2F3A] bg-[#1A1D24] text-xs font-mono font-medium hover:border-slate-500 text-white transition-all flex items-center gap-1.5"
+                    className="px-3 sm:px-4 py-2 rounded border border-[#2A2F3A] bg-[#1A1D24] text-xs font-mono font-medium hover:border-slate-500 text-white transition-all flex items-center gap-1.5"
                   >
-                    <span>{copied ? "✓ Copied!" : "📋 Copy Letter"}</span>
+                    <span>{copied ? "✓ Copied!" : "📋 Copy"}</span>
+                  </button>
+                  <button
+                    onClick={handlePrintLetter}
+                    className="px-3 sm:px-4 py-2 rounded border border-emerald-500/50 bg-emerald-950/30 text-xs font-mono font-medium hover:bg-emerald-950/60 text-emerald-300 transition-all flex items-center gap-1.5"
+                    title="Print or Save as Official PDF Letterhead"
+                  >
+                    <Printer className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Print / PDF</span>
                   </button>
                   <button
                     onClick={() => {
