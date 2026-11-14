@@ -612,19 +612,18 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </a>
 
                 <a
-                  href="https://github.com/sssammyboyyy/trade-systems-studio/blob/main/docs/TRADETECH_SYSTEMS_ARCHITECTURE_WHITEPAPER.md"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 rounded bg-[#161920] border border-[#2A2F3A] hover:border-sky-500 transition-all group block"
+                  href={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/whitepaper`}
+                  className="p-4 rounded bg-[#161920] border border-[#2A2F3A] hover:border-cyan-500 transition-all group block"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-white group-hover:text-sky-400">
-                      📑 Architecture Whitepaper
+                    <span className="font-bold text-white group-hover:text-cyan-400 flex items-center gap-1.5">
+                      <span>📑 Interactive Architecture Whitepaper</span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-400 font-bold uppercase">Web Edition</span>
                     </span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-sky-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400" />
                   </div>
                   <div className="text-[11px] text-[#94A3B8] mt-1">
-                    Technical deep-dive on GRI state machines, OFAC graphs, and Decimal math.
+                    Full academic &amp; systems design publication on GRI state machines, OFAC graphs, and Decimal math.
                   </div>
                 </a>
 
