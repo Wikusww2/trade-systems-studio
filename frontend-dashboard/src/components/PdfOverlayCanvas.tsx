@@ -55,20 +55,24 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
   // Determine source URL with fallback logic (favor same-origin static fixture for instant load)
   const [resolvedUrl, setResolvedUrl] = useState<string>(() => {
+    if (documentUrl && documentUrl.startsWith("blob:")) return documentUrl;
     return resolveAssetPath(`/nightmares/${filename}`);
   });
 
   useEffect(() => {
     setIsLoading(true);
     setHasError(false);
-    // Prioritize direct static path to prevent Web Worker cross-origin sandbox latency
-    setResolvedUrl(resolveAssetPath(`/nightmares/${filename}`));
+    if (documentUrl && documentUrl.startsWith("blob:")) {
+      setResolvedUrl(documentUrl);
+    } else {
+      setResolvedUrl(resolveAssetPath(`/nightmares/${filename}`));
+    }
     
     // Trigger cybernetic scanner sweep on document change
     setIsScanning(true);
     const scanTimer = setTimeout(() => setIsScanning(false), 2000);
     return () => clearTimeout(scanTimer);
-  }, [filename]);
+  }, [filename, documentUrl]);
 
   const triggerManualScan = () => {
     setIsScanning(false);

@@ -9,6 +9,65 @@ interface BilledVsLawfulDiffProps {
 }
 
 export const BilledVsLawfulDiff: React.FC<BilledVsLawfulDiffProps> = ({ conceptId }) => {
+  if (conceptId === "client_upload_audit") {
+    return (
+      <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-sky-800/60 shadow-inner font-mono">
+        <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[10px] tracking-wider uppercase text-slate-400">
+          <span className="flex items-center gap-1.5 font-bold text-sky-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+            Client-Side Confidential Document Audit
+          </span>
+          <span className="text-sky-400 font-semibold">100% On-Device Sandbox</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="bg-sky-950/30 border border-sky-900/60 p-2.5 rounded-xs">
+            <div className="text-[10px] text-sky-400 font-bold uppercase mb-1 flex items-center justify-between">
+              <span>Security &amp; Privacy</span>
+              <ShieldCheck className="w-3 h-3 text-sky-400" />
+            </div>
+            <div className="text-slate-300 text-[11px] leading-tight mb-1">
+              Zero External Cloud Calls
+            </div>
+            <div className="text-sky-300 font-bold text-sm">
+              Local Web Worker
+            </div>
+            <div className="text-[10px] text-sky-200/70 mt-1">
+              Parsed in browser memory
+            </div>
+          </div>
+
+          <div className="bg-sky-950/50 border border-sky-700/60 p-2.5 rounded-xs">
+            <div className="text-[10px] text-sky-300 font-bold uppercase mb-1 flex items-center justify-between">
+              <span>Statutory Engine</span>
+              <CheckCircle2 className="w-3 h-3 text-sky-400" />
+            </div>
+            <div className="text-slate-300 text-[11px] leading-tight mb-1">
+              19 U.S.C. § 1592 &amp; Incoterms
+            </div>
+            <div className="text-emerald-400 font-bold text-sm">
+              Active Defense Gate
+            </div>
+            <div className="text-[10px] text-emerald-200/80 mt-1">
+              Deterministic verification
+            </div>
+          </div>
+        </div>
+
+        <div 
+          onClick={() => sound.playLock()}
+          className="mt-2.5 px-3 py-1.5 bg-sky-600/20 border border-sky-500/50 rounded-xs flex items-center justify-between cursor-pointer hover:bg-sky-600/30 transition-colors"
+        >
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-sky-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
+            <span>CONFIDENTIAL AUDIT COMPLETE: READY FOR ENTERPRISE INTEGRATION</span>
+          </div>
+          <span className="text-[10px] text-sky-400 uppercase font-semibold">Protected</span>
+        </div>
+      </div>
+    );
+  }
+
   if (conceptId === "concept_clean_fob") {
     return (
       <div className="my-3 p-3.5 bg-slate-900 text-white rounded-sm border border-emerald-800/60 shadow-inner font-mono">
