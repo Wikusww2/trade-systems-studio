@@ -8,6 +8,7 @@ import { sound } from "@/lib/audio";
 interface SystemArchitectureModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTab?: "architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener";
 }
 
 interface EndpointDef {
@@ -216,8 +217,15 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
 export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = ({
   isOpen,
   onClose,
+  initialTab = "architecture",
 }) => {
-  const [activeTab, setActiveTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
+  const [activeTab, setActiveTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">(initialTab);
+
+  React.useEffect(() => {
+    if (initialTab && isOpen) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab, isOpen]);
   const [selectedEndpointId, setSelectedEndpointId] = useState<string>("hts_classify");
   const [customPayloads, setCustomPayloads] = useState<Record<string, string>>({});
   const [simulatedResponse, setSimulatedResponse] = useState<string | null>(null);

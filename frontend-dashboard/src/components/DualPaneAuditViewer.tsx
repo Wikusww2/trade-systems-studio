@@ -138,6 +138,7 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [selectedServiceTier, setSelectedServiceTier] = useState<string>("contingent_audit");
   const [isFunnelStudioOpen, setIsFunnelStudioOpen] = useState<boolean>(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState<boolean>(false);
+  const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
 
   // ICP Persona Lens ('cfo' | 'counsel')
   const [persona, setPersona] = useState<IcpPersona>("cfo");
@@ -229,7 +230,16 @@ export const DualPaneAuditViewer: React.FC = () => {
         setActiveConceptId("concept_3_drawback");
       } else if (tabParam === "clean_fob" || tabParam === "concept_clean_fob") {
         setActiveConceptId("concept_clean_fob");
-      } else if (tabParam === "architecture" || tabParam === "tests") {
+      } else if (tabParam === "architecture" || tabParam === "tests" || tabParam === "screener" || tabParam === "pitch" || tabParam === "playground" || tabParam === "api") {
+        if (tabParam === "tests") {
+          setArchitectureModalTab("tests");
+        } else if (tabParam === "screener" || tabParam === "pitch") {
+          setArchitectureModalTab("screener");
+        } else if (tabParam === "playground" || tabParam === "api") {
+          setArchitectureModalTab("playground");
+        } else {
+          setArchitectureModalTab("architecture");
+        }
         setIsArchitectureModalOpen(true);
       } else if (tabParam === "dossier") {
         setIsDossierOpen(true);
@@ -1132,10 +1142,11 @@ export const DualPaneAuditViewer: React.FC = () => {
         onOpenLeadModal={() => setIsModalOpen(true)}
       />
 
-      {/* 13. SYSTEM ARCHITECTURE & 40/40 TESTS MODAL */}
+      {/* 13. SYSTEM ARCHITECTURE & 41/41 TESTS MODAL */}
       <SystemArchitectureModal
         isOpen={isArchitectureModalOpen}
         onClose={() => setIsArchitectureModalOpen(false)}
+        initialTab={architectureModalTab}
       />
 
       {/* 13. FUNNEL REDESIGN STUDIO MODAL */}
