@@ -2,11 +2,17 @@ import type { NextConfig } from "next";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+// Keep the dev server's build cache out of the production output directory.
+// Without this, `npm run build` wipes the running dev server's chunks and
+// every page request 404s until the dev server restarts.
+const distDir = process.env.NODE_ENV === "development" ? ".next-dev" : ".next";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "export",
   basePath: basePath || undefined,
   trailingSlash: true,
+  distDir,
   images: {
     unoptimized: true,
   },
