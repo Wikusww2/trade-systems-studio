@@ -21,7 +21,7 @@ def generate_nightmare_01(output_path: str):
     2. Arithmetic multiplication error (500 units @ $45.00 listed as $25,500.00)
     3. HTS Misclassification (8471.30.0100 at 0% vs 8542.31.0000 at 25% Section 301)
     """
-    c = canvas.Canvas(output_path, pagesize=letter)
+    c = canvas.Canvas(output_path, pagesize=letter, invariant=1)
     width, height = letter # 612 x 792
 
     # Top Institutional Header
@@ -160,7 +160,7 @@ def generate_nightmare_02(output_path: str):
     2. Inflated Fuel Surcharge Index (FSC billed at 28.5% vs published DOE/EIA 22.1%)
     3. Unwarranted Demurrage/Detention billed inside free-time window ($880.00)
     """
-    c = canvas.Canvas(output_path, pagesize=letter)
+    c = canvas.Canvas(output_path, pagesize=letter, invariant=1)
     width, height = letter
 
     # Ocean Line Brand Header
@@ -288,7 +288,7 @@ def generate_nightmare_03(output_path: str):
     Modeled under 19 U.S.C. § 1313(j)(1) Unused Merchandise Drawback.
     Unlocks statutory 99% customs duty refund on exported imported goods.
     """
-    c = canvas.Canvas(output_path, pagesize=letter)
+    c = canvas.Canvas(output_path, pagesize=letter, invariant=1)
     width, height = letter
 
     # Header
@@ -391,7 +391,7 @@ def generate_clean_01(output_path: str):
     Production Clean Commercial Invoice with verified FOB terms and GAAP assist disclosures.
     Zero statutory defects; certified 100% compliant entry summary.
     """
-    c = canvas.Canvas(output_path, pagesize=letter)
+    c = canvas.Canvas(output_path, pagesize=letter, invariant=1)
     width, height = letter
 
     # Header
