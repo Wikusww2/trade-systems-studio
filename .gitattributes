@@ -1,0 +1,13 @@
+# Git attributes for trade-systems-studio
+# Ensure consistent LF line endings and treat binary files properly across platforms
+
+* text=auto eol=lf
+
+# Binary files - never normalize or convert newlines
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.svg binary
+*.zip binary

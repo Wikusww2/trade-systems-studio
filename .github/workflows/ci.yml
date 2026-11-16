@@ -60,6 +60,10 @@ jobs:
       - name: Verify zero em-dash violations
         run: python scripts/check_em_dashes.py
 
+      - name: Install fixture dependencies
+        working-directory: backend-engine
+        run: pip install -r requirements.txt
+
       - name: Verify nightmare fixtures are byte-deterministic
         working-directory: backend-engine
         run: |
