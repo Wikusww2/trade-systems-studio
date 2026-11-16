@@ -365,34 +365,37 @@ export const Var2TriageQueue: React.FC = () => {
 
       {/* 3. VIRTUALIZED 500-ROW TRIAGE TABLE */}
       <div className="rounded-xl border border-[#1F2937] bg-[#0F172A] overflow-hidden shadow-2xl">
-        {/* Table Header */}
-        <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-[#0B0F19] border-b border-[#1F2937] text-[10px] font-mono text-slate-400 uppercase font-semibold">
-          <div className="col-span-1">#</div>
-          <div className="col-span-2">Entry & Carrier</div>
-          <div className="col-span-2">Corridor</div>
-          <div className="col-span-3">Statutory Finding</div>
-          <div className="col-span-1 text-right">Exposure</div>
-          <div className="col-span-1 text-center">Confidence</div>
-          <div className="col-span-2 text-center">Status & Action</div>
-        </div>
-
-        {/* Virtual List Container */}
-        <div
-          ref={parentRef}
-          className="h-[580px] overflow-y-auto divide-y divide-[#1F2937]/60 scrollbar-thin font-mono text-xs"
-        >
-          {filteredRows.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-xs">
-              <span>No invoices matched the active query.</span>
+        <div className="overflow-x-auto">
+          <div className="min-w-[1020px]">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-[#0B0F19] border-b border-[#1F2937] text-[10px] font-mono text-slate-400 uppercase font-semibold">
+              <div className="col-span-1">#</div>
+              <div className="col-span-2">Entry & Carrier</div>
+              <div className="col-span-2">Corridor</div>
+              <div className="col-span-3">Statutory Finding</div>
+              <div className="col-span-1 text-right">Exposure</div>
+              <div className="col-span-1 text-center">Confidence</div>
+              <div className="col-span-2 text-center">Status & Action</div>
             </div>
-          ) : (
+
+            {/* Virtual List Container */}
             <div
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-                width: "100%",
-                position: "relative",
-              }}
+              ref={parentRef}
+              className="h-[580px] overflow-y-auto divide-y divide-[#1F2937]/60 scrollbar-thin font-mono text-xs"
             >
+              {filteredRows.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-xs">
+                  <span>No invoices matched the active query.</span>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: "100%",
+                    minWidth: "1020px",
+                    position: "relative",
+                  }}
+                >
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const row = filteredRows[virtualRow.index];
                 const isSelected = selectedIndex === virtualRow.index;
@@ -496,6 +499,8 @@ export const Var2TriageQueue: React.FC = () => {
               })}
             </div>
           )}
+        </div>
+          </div>
         </div>
       </div>
 

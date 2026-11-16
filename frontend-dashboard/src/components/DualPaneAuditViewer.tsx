@@ -31,9 +31,6 @@ import { auditUploadedPdf } from "@/lib/clientAuditor";
 import { ParadigmSwitcher, ParadigmId } from "./ParadigmSwitcher";
 import { Var1Workbench } from "./variations/Var1Workbench";
 import { Var2TriageQueue } from "./variations/Var2TriageQueue";
-import { Var3KineticNarrative } from "./variations/Var3KineticNarrative";
-import { Var4ArchitectureWiretap } from "./variations/Var4ArchitectureWiretap";
-import { Var5MasterSynthesis } from "./variations/Var5MasterSynthesis";
 import { ThreeWayResolutionBar } from "./ThreeWayResolutionBar";
 import { FirewallProvider, usePreIngestFirewall, playPseudoHaptic } from "@/lib/firewall-core";
 import {
@@ -202,8 +199,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
   const handleParadigmChange = (p: ParadigmId) => {
     setActiveParadigm(p);
     if (typeof window !== "undefined") {
-      const slug = p === "var-4" ? "arc" : p;
-      window.history.replaceState(null, "", `#${slug}`);
+      window.history.replaceState(null, "", `#${p}`);
     }
   };
 
@@ -213,14 +209,11 @@ const DualPaneAuditViewerInner: React.FC = () => {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get("tab") || hash;
 
-      if (hash === "arc" || hash === "var-4" || hash === "wiretap") {
-        setActiveParadigm("var-4");
+      if (hash === "arc" || hash === "wiretap") {
+        setArchitectureModalTab("architecture");
+        setIsArchitectureModalOpen(true);
       } else if (hash === "var-2" || hash === "triage") {
         setActiveParadigm("var-2");
-      } else if (hash === "var-3" || hash === "kinetic") {
-        setActiveParadigm("var-3");
-      } else if (hash === "synthesis" || hash === "var-5") {
-        setActiveParadigm("synthesis");
       } else if (hash === "var-1" || hash === "workbench" || hash === "customs") {
         setActiveParadigm("var-1");
         setActiveConceptId("concept_1_customs");
@@ -259,14 +252,11 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
       const handleHashChange = () => {
         const h = window.location.hash.toLowerCase().replace("#", "");
-        if (h === "arc" || h === "var-4" || h === "wiretap") {
-          setActiveParadigm("var-4");
+        if (h === "arc" || h === "wiretap") {
+          setArchitectureModalTab("architecture");
+          setIsArchitectureModalOpen(true);
         } else if (h === "var-2" || h === "triage") {
           setActiveParadigm("var-2");
-        } else if (h === "var-3" || h === "kinetic") {
-          setActiveParadigm("var-3");
-        } else if (h === "synthesis" || h === "var-5") {
-          setActiveParadigm("synthesis");
         } else if (h === "var-1" || h === "workbench" || h === "customs") {
           setActiveParadigm("var-1");
           setActiveConceptId("concept_1_customs");
@@ -346,6 +336,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
   const handleCardClick = (id: string) => {
     setActiveDiscrepancyId(id);
+    playPseudoHaptic();
     sound.playTick();
     recordTelemetry({
       event_type: "discrepancy_card_selected",
@@ -356,6 +347,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
   const handleBboxClick = (id: string) => {
     setActiveDiscrepancyId(id);
+    playPseudoHaptic();
     sound.playLock();
     // On mobile and tablet, seamlessly navigate to the forensic report
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
@@ -414,29 +406,29 @@ const DualPaneAuditViewerInner: React.FC = () => {
             </div>
           </div>
 
-          {/* Paradigm Switcher (⌘1-⌘5) */}
-          <div className="hidden lg:flex items-center">
+          {/* 2-Way Paradigm Switcher (⌘1-⌘2) */}
+          <div className="hidden sm:flex items-center">
             <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
           </div>
 
-          {/* Clean 3-Link Navigation */}
-          <nav className="hidden 2xl:flex items-center gap-6 text-xs font-mono text-slate-400">
-            <a href="#workbench" onClick={() => handleParadigmChange("var-1")} className="hover:text-blue-400 transition-colors">
-              #workbench
-            </a>
-            <a href="#architecture" onClick={() => handleParadigmChange("var-4")} className="hover:text-blue-400 transition-colors">
-              #architecture
-            </a>
-            <a href="#architect-thesis" onClick={() => handleParadigmChange("var-3")} className="hover:text-blue-400 transition-colors">
-              #architect-thesis
-            </a>
-          </nav>
-
           {/* Right Action Group */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <button
+              onClick={() => {
+                sound.playTick();
+                setArchitectureModalTab("architecture");
+                setIsArchitectureModalOpen(true);
+              }}
+              className="px-2.5 sm:px-3 py-1.5 border border-slate-700/80 hover:border-slate-500 bg-[#1E293B]/40 hover:bg-[#1E293B] text-slate-300 hover:text-white font-mono text-xs rounded-md transition-colors flex items-center gap-1.5"
+              title="Open Architecture & Executive Dossier"
+            >
+              <Terminal className="w-3.5 h-3.5 text-blue-400" />
+              <span className="hidden md:inline">Architecture & Dossier</span>
+            </button>
+
             <button
               onClick={openReview}
-              className="px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-colors rounded-md"
+              className="px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-colors rounded-md shadow-sm"
             >
               <span className="hidden sm:inline">Schedule Architecture Review</span>
               <span className="sm:hidden">Review</span>
@@ -447,7 +439,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <button
               onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
               aria-label="Toggle navigation"
-              className="xl:hidden p-1.5 text-slate-300 border border-slate-700 rounded-md shrink-0"
+              className="sm:hidden p-1.5 text-slate-300 border border-slate-700 rounded-md shrink-0"
             >
               {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
@@ -456,7 +448,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
         {/* Mobile Navigation Dropdown */}
         {isMobileNavOpen && (
-          <div className="lg:hidden pt-3 pb-2 mt-2 border-t border-[#1F2937] space-y-2 font-mono text-xs">
+          <div className="sm:hidden pt-3 pb-2 mt-2 border-t border-[#1F2937] space-y-2 font-mono text-xs">
+            <div className="pb-2 flex justify-center">
+              <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
+            </div>
             <a
               href="#workbench"
               onClick={() => setIsMobileNavOpen(false)}
@@ -489,21 +484,15 @@ const DualPaneAuditViewerInner: React.FC = () => {
       </header>
 
       <main>
-        {/* Mobile Paradigm Switcher Bar */}
-        <div className="lg:hidden px-3 py-2 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-center overflow-x-auto">
-          <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
-        </div>
+        {/* Mobile Paradigm Switcher Bar (only when menu is closed) */}
+        {!isMobileNavOpen && (
+          <div className="sm:hidden px-3 py-2 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-center">
+            <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
+          </div>
+        )}
 
         {activeParadigm === "var-2" ? (
           <Var2TriageQueue />
-        ) : activeParadigm === "var-3" ? (
-          <Var3KineticNarrative onOpenReview={openReview} />
-        ) : activeParadigm === "var-4" ? (
-          <div id="arc">
-            <Var4ArchitectureWiretap />
-          </div>
-        ) : activeParadigm === "synthesis" ? (
-          <Var5MasterSynthesis onSelectParadigm={handleParadigmChange} />
         ) : (
           <>
       {/* 2. ACT 1: ABOVE-THE-FOLD SYSTEMS HERO */}
@@ -865,13 +854,6 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
                   <BilledVsLawfulDiff conceptId={activeConceptId} />
 
-                  {activeConceptId === "concept_1_customs" && (
-                    <PenaltyExposureLadder
-                      dutyLossUsd={6000}
-                      domesticValueUsd={125000}
-                    />
-                  )}
-
                   {activeConceptId === "concept_clean_fob" ? (
                     <div className="p-4 bg-emerald-950/20 border border-emerald-800/60 rounded-lg font-mono space-y-4">
                       <div className="flex items-center gap-3">
@@ -960,6 +942,25 @@ const DualPaneAuditViewerInner: React.FC = () => {
       {/* 4. ACT 2: INLINE 5-STAGE ARCHITECTURE PIPELINE */}
       <section id="architecture" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
         <InlineArchitectureFlow />
+      </section>
+
+      {/* 5. STATUTORY CULPABILITY & PENALTY LADDER (19 U.S.C. § 1592) */}
+      <section id="penalty-ladder" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
+        <div className="mb-4">
+          <div className="flex items-center gap-2 font-mono text-xs text-blue-400 font-semibold uppercase tracking-wider">
+            <Scale className="w-4 h-4 text-blue-400" />
+            <span>Statutory Culpability & Prior Disclosure Modeling Engine</span>
+          </div>
+          <p className="text-xs font-mono text-slate-400 mt-1">
+            Independent statutory exposure calculator for Customs Counsel. Models maximum civil penalty exposure across 19 U.S.C. § 1592 culpability tiers and computes prior disclosure mitigation per 19 CFR § 162.74.
+          </p>
+        </div>
+        <div className="bg-[#0F172A] border border-[#1F2937] rounded-xl p-5 shadow-2xl">
+          <PenaltyExposureLadder
+            dutyLossUsd={6000}
+            domesticValueUsd={125000}
+          />
+        </div>
       </section>
 
       {/* 6. ACT 4: PRINCIPAL ARCHITECT'S THESIS SIGNED BY SAMUEL */}

@@ -226,7 +226,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
 
             {/* Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-mono">
+              <table className="w-full min-w-[720px] text-left text-xs font-mono">
                 <thead className="bg-[#0B0F19] text-[#94A3B8] uppercase text-[10px] tracking-wider border-b border-[#1F2937]">
                   <tr>
                     <th className="py-2.5 px-3">Assist ID / Description</th>
