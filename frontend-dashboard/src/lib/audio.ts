@@ -98,6 +98,7 @@ class SoundEngine {
 
   // Rich positive confirmation click (when toggling concepts or locking coordinates)
   public playLock() {
+    this.playPseudoHaptic();
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -120,6 +121,93 @@ class SoundEngine {
       osc.stop(ctx.currentTime + 0.05);
     } catch {
       // Audio autoplay policy fallback
+    }
+  }
+
+  // 18ms dual-stage physical pseudo-haptic recoil engine
+  // Simulates Leica mechanical shutter recoil / Sony camera dial tactile pulse
+  public playPseudoHaptic() {
+    // Real mobile device haptic vibration if supported
+    if (typeof window !== "undefined" && typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      try {
+        navigator.vibrate([16, 32, 16]);
+      } catch {
+        // Ignore vibration permission denials
+      }
+    }
+
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    try {
+      const t = ctx.currentTime;
+
+      // 1. Low sub-bass physical thump (90Hz -> 45Hz) for perceived mass
+      const oscLow = ctx.createOscillator();
+      const gainLow = ctx.createGain();
+      oscLow.type = "sine";
+      oscLow.frequency.setValueAtTime(90, t);
+      oscLow.frequency.exponentialRampToValueAtTime(45, t + 0.024);
+      gainLow.gain.setValueAtTime(0.08, t);
+      gainLow.gain.exponentialRampToValueAtTime(0.001, t + 0.025);
+      oscLow.connect(gainLow);
+      gainLow.connect(ctx.destination);
+      oscLow.start(t);
+      oscLow.stop(t + 0.026);
+
+      // 2. High mechanical transient snap (780Hz -> 320Hz)
+      const oscHigh = ctx.createOscillator();
+      const gainHigh = ctx.createGain();
+      oscHigh.type = "triangle";
+      oscHigh.frequency.setValueAtTime(780, t);
+      oscHigh.frequency.exponentialRampToValueAtTime(320, t + 0.018);
+      gainHigh.gain.setValueAtTime(0.05, t);
+      gainHigh.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+      oscHigh.connect(gainHigh);
+      gainHigh.connect(ctx.destination);
+      oscHigh.start(t);
+      oscHigh.stop(t + 0.022);
+    } catch {
+      // Audio policy
+    }
+  }
+
+  // Heavy mechanical reticle lock-on (for locating discrepancies or selecting bounding boxes)
+  public playReticleLock() {
+    this.playPseudoHaptic();
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    try {
+      const t = ctx.currentTime;
+      // Dual harmonic radar lock: 340Hz fundamental + 1020Hz third harmonic
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(340, t);
+      osc1.frequency.exponentialRampToValueAtTime(510, t + 0.08);
+      gain1.gain.setValueAtTime(0.05, t);
+      gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(t);
+      osc1.stop(t + 0.12);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = "triangle";
+      osc2.frequency.setValueAtTime(680, t + 0.015);
+      osc2.frequency.exponentialRampToValueAtTime(1020, t + 0.09);
+      gain2.gain.setValueAtTime(0.03, t + 0.015);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(t + 0.015);
+      osc2.stop(t + 0.1);
+    } catch {
+      // Audio policy
     }
   }
 

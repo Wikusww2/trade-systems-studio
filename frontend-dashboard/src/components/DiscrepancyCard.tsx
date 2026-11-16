@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Discrepancy } from "@/lib/types";
+import { sound } from "@/lib/audio";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -73,9 +74,9 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
       onMouseEnter={() => onHover(discrepancy.id)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onClick(discrepancy.id)}
-      className={`p-4 transition-colors duration-200 cursor-pointer border rounded-lg ${
+      className={`p-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.985] cursor-pointer border rounded-lg ${
         isActive
-          ? "bg-[#1E293B] border-blue-500 ring-1 ring-blue-500 shadow-lg"
+          ? "bg-[#1E293B] border-blue-500 ring-1 ring-blue-500 shadow-xl shadow-blue-500/10"
           : isUncertain
           ? "bg-[#0F172A] border-dashed border-amber-500/70 hover:border-amber-400"
           : `bg-[#0F172A] border-[#1F2937] ${style.highlightBg}`
@@ -175,7 +176,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
         )}
       </div>
 
-      {/* Mobile & Tablet Locate on PDF Button */}
+      {/* Mobile & Tablet Locate on PDF Button with Pseudo-Haptic Recoil */}
       {onFocusMobileDoc && (
         <button
           type="button"
@@ -183,7 +184,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
             e.stopPropagation();
             onFocusMobileDoc();
           }}
-          className="lg:hidden mt-2.5 w-full py-2 px-3 bg-blue-950/80 hover:bg-blue-900/80 text-blue-300 border border-blue-700/60 hover:border-blue-500 text-xs font-mono font-semibold flex items-center justify-center gap-2 rounded-md transition-all shadow-xs"
+          className="lg:hidden mt-2.5 w-full py-2 px-3 bg-blue-950/80 hover:bg-blue-900/80 active:scale-[0.98] text-blue-300 border border-blue-700/60 hover:border-blue-500 text-xs font-mono font-semibold flex items-center justify-center gap-2 rounded-md transition-all shadow-xs"
         >
           <Crosshair className="w-3.5 h-3.5 text-blue-400" />
           <span>Locate on Source PDF</span>

@@ -120,12 +120,12 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
   const handleBlockClick = (id: string) => {
     setBeaconDismissed(true);
     setAnalyzingBlockId(id);
-    sound.playLock();
-    // Fast laser analysis pulse before triggering view transition
+    sound.playReticleLock();
+    // A whisper slower: 420ms weighted laser lock-on trajectory before triggering view transition
     setTimeout(() => {
       setAnalyzingBlockId(null);
       onClickDiscrepancy(id);
-    }, 280);
+    }, 420);
   };
 
   // Auto-scroll to active bounding box when hovered or selected
@@ -344,16 +344,22 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                       height: `${height}px`,
                       position: "absolute",
                     }}
-                    className={`cursor-pointer transition-all duration-150 border-2 ${borderColor} ${bgColor} ${
+                    className={`cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] border-2 ${borderColor} ${bgColor} ${
                       isUncertain ? "border-dashed" : "border-solid"
                     } ${
                       isAnalyzing
-                        ? "ring-4 ring-cyan-400 bg-cyan-500/30 shadow-[0_0_20px_#22d3ee] z-40 scale-[1.03]"
+                        ? "ring-4 ring-cyan-400 bg-cyan-500/30 shadow-[0_0_28px_rgba(56,189,248,0.5)] z-40 scale-[1.03]"
                         : isSelected
-                        ? "ring-2 ring-cobalt-500 dark:ring-cobalt-400 z-30 scale-[1.01]"
-                        : "z-20 hover:scale-[1.005]"
+                        ? "ring-2 ring-cobalt-500 dark:ring-cobalt-400 z-30 scale-[1.018] shadow-[0_0_20px_rgba(59,130,246,0.35)]"
+                        : "z-20 hover:scale-[1.008] hover:shadow-md"
                     }`}
                   >
+                    {/* Precision Mechanical Reticle Corners */}
+                    <span className="absolute -top-[3px] -left-[3px] w-2 h-2 border-t-2 border-l-2 border-current pointer-events-none opacity-80" />
+                    <span className="absolute -top-[3px] -right-[3px] w-2 h-2 border-t-2 border-r-2 border-current pointer-events-none opacity-80" />
+                    <span className="absolute -bottom-[3px] -left-[3px] w-2 h-2 border-b-2 border-l-2 border-current pointer-events-none opacity-80" />
+                    <span className="absolute -bottom-[3px] -right-[3px] w-2 h-2 border-b-2 border-r-2 border-current pointer-events-none opacity-80" />
+
                     {/* Auto-Pulse Radar Beacon for First-Time Visitor Guidance */}
                     {index === 0 && !beaconDismissed && (
                       <div className="absolute -top-7 -right-2 z-40 pointer-events-none flex items-center gap-1.5">

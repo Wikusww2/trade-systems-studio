@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { usePreIngestFirewall } from "@/lib/firewall-core";
 import { ThreeWayResolutionBar } from "../ThreeWayResolutionBar";
 import { DiscrepancyCard } from "../DiscrepancyCard";
+import { MobileBottomNavPill } from "../MobileBottomNavPill";
 import { CargoWiseXmlViewer } from "../CargoWiseXmlViewer";
 import { DeveloperApiSandbox } from "../DeveloperApiSandbox";
 import { SanctionsGraphViewer } from "../SanctionsGraphViewer";
@@ -115,6 +116,40 @@ export const Var1Workbench: React.FC<Var1WorkbenchProps> = ({ onOpenLeadModal })
   const [rightTerminalTab, setRightTerminalTab] = useState<"discrepancies" | "cargowise" | "developer_api">("discrepancies");
   const [mobileTab, setMobileTab] = useState<"findings" | "doc">("doc");
   const [desktopViewMode, setDesktopViewMode] = useState<"split" | "doc_focus" | "report_focus">("split");
+  const [isPillInViewport, setIsPillInViewport] = useState<boolean>(false);
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(false);
+  const workbenchContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleResize = () => {
+      setIsMobileViewport(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const el = workbenchContainerRef.current;
+    if (!el || typeof window === "undefined" || !("IntersectionObserver" in window)) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPillInViewport(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.08,
+        rootMargin: "0px 0px -40px 0px",
+      }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [activeConceptId]);
 
   const handleCardClick = (id: string) => {
     selectDiscrepancy(id);
@@ -262,7 +297,11 @@ export const Var1Workbench: React.FC<Var1WorkbenchProps> = ({ onOpenLeadModal })
           <CustomsValuationViewer onLeadTrigger={onOpenLeadModal} />
         </div>
       ) : (
-        <div className="h-[750px] flex flex-col lg:flex-row border border-[#1F2937] rounded-xl overflow-hidden bg-[#0B0F19] shadow-2xl">
+        <div
+          ref={workbenchContainerRef}
+          id="workbench-viewport"
+          className="h-[750px] flex flex-col lg:flex-row border border-[#1F2937] rounded-xl overflow-hidden bg-[#0B0F19] shadow-2xl"
+        >
           {/* LEFT PANE: Canvas PDF Viewer */}
           <div
             className={`h-full border-b lg:border-b-0 lg:border-r border-[#1F2937] flex-col overflow-hidden transition-all duration-200 ${
@@ -426,6 +465,23 @@ export const Var1Workbench: React.FC<Var1WorkbenchProps> = ({ onOpenLeadModal })
           </div>
         </div>
       )}
+
+      {/* Contextual Floating Navigation Dock */}
+      <MobileBottomNavPill
+        activeTab={mobileTab}
+        discrepancyCount={auditData?.discrepancies.length || 0}
+        isVisible={
+          isPillInViewport &&
+          !["concept_4_sanctions", "concept_5_hts", "concept_6_valuation"].includes(activeConceptId) &&
+          (isMobileViewport || desktopViewMode !== "split")
+        }
+        onSelectTab={(tab) => {
+          setMobileTab(tab);
+          if (!isMobileViewport) {
+            setDesktopViewMode(tab === "doc" ? "doc_focus" : "report_focus");
+          }
+        }}
+      />
     </div>
   );
 };

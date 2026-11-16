@@ -149,7 +149,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
   // Desktop layout view mode ('split' | 'doc_focus' | 'report_focus')
   const [desktopViewMode, setDesktopViewMode] = useState<"split" | "doc_focus" | "report_focus">("split");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+  const [isPillInViewport, setIsPillInViewport] = useState<boolean>(false);
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const workbenchContainerRef = useRef<HTMLDivElement>(null);
 
   const handleCustomFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -274,6 +277,46 @@ const DualPaneAuditViewerInner: React.FC = () => {
       return () => window.removeEventListener("hashchange", handleHashChange);
     }
   }, []);
+
+  // Track responsive viewport width for contextual floating pill
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleResize = () => {
+      setIsMobileViewport(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Contextual scroll intersection: floating pill only shows when workbench is actively in view
+  useEffect(() => {
+    const el = workbenchContainerRef.current;
+    if (!el || typeof window === "undefined" || !("IntersectionObserver" in window)) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPillInViewport(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.08,
+        rootMargin: "0px 0px -40px 0px",
+      }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [activeConceptId, activeParadigm]);
+
+  // Keep single-pane desktop focus modes synchronized with active tab
+  useEffect(() => {
+    if (!isMobileViewport && (desktopViewMode === "doc_focus" || desktopViewMode === "report_focus")) {
+      setDesktopViewMode(mobileTab === "doc" ? "doc_focus" : "report_focus");
+    }
+  }, [mobileTab, isMobileViewport, desktopViewMode]);
 
   useEffect(() => {
     let isMounted = true;
@@ -714,7 +757,11 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <CustomsValuationViewer onLeadTrigger={() => setIsModalOpen(true)} />
           </div>
         ) : (
-          <div className="h-[750px] flex flex-col lg:flex-row border border-[#1F2937] rounded-xl overflow-hidden bg-[#0B0F19] shadow-2xl">
+          <div
+            ref={workbenchContainerRef}
+            id="workbench-viewport"
+            className="h-[750px] flex flex-col lg:flex-row border border-[#1F2937] rounded-xl overflow-hidden bg-[#0B0F19] shadow-2xl"
+          >
             {/* LEFT PANE: Canvas PDF Viewer */}
             <div
               className={`h-full border-b lg:border-b-0 lg:border-r border-[#1F2937] flex-col overflow-hidden transition-all duration-200 ${
@@ -995,10 +1042,16 @@ const DualPaneAuditViewerInner: React.FC = () => {
         }}
       />
 
-      {/* Mobile Floating Bottom Navigation Dock */}
+      {/* Contextual Floating Navigation Dock */}
       <MobileBottomNavPill
         activeTab={mobileTab}
         discrepancyCount={auditData?.discrepancies.length || 0}
+        isVisible={
+          isPillInViewport &&
+          activeParadigm === "var-1" &&
+          !["concept_4_sanctions", "concept_5_hts", "concept_6_valuation"].includes(activeConceptId) &&
+          (isMobileViewport || desktopViewMode !== "split")
+        }
         onSelectTab={(tab) => {
           sound.playTick();
           setMobileTab(tab);
