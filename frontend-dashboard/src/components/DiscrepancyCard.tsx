@@ -14,6 +14,7 @@ import {
   Scale,
   Zap,
   Eye,
+  Crosshair,
 } from "lucide-react";
 
 interface DiscrepancyCardProps {
@@ -174,7 +175,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
         )}
       </div>
 
-      {/* Mobile Focus Button */}
+      {/* Mobile & Tablet Locate on PDF Button */}
       {onFocusMobileDoc && (
         <button
           type="button"
@@ -182,10 +183,10 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
             e.stopPropagation();
             onFocusMobileDoc();
           }}
-          className="lg:hidden mt-2 w-full py-1.5 px-3 bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-mono flex items-center justify-center gap-1.5 rounded-md"
+          className="lg:hidden mt-2.5 w-full py-2 px-3 bg-blue-950/80 hover:bg-blue-900/80 text-blue-300 border border-blue-700/60 hover:border-blue-500 text-xs font-mono font-semibold flex items-center justify-center gap-2 rounded-md transition-all shadow-xs"
         >
-          <Eye className="w-3.5 h-3.5 text-blue-400" />
-          <span>Inspect Document Coordinates</span>
+          <Crosshair className="w-3.5 h-3.5 text-blue-400" />
+          <span>Locate on Source PDF</span>
         </button>
       )}
     </div>

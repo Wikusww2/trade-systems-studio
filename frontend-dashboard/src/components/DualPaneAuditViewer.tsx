@@ -23,6 +23,7 @@ import { InlineArchitectureFlow } from "./InlineArchitectureFlow";
 import { ArchitectThesis } from "./ArchitectThesis";
 import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
 import { ProvenanceCockpit, ProvenanceMetadataBar } from "./ProvenanceCockpit";
+import { MobileBottomNavPill } from "./MobileBottomNavPill";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
@@ -48,6 +49,9 @@ import {
   Code2,
   Terminal,
   Zap,
+  Columns2,
+  Maximize2,
+  LayoutList,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -129,8 +133,10 @@ export const DualPaneAuditViewer: React.FC = () => {
   const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
   const [isTourActive, setIsTourActive] = useState<boolean>(false);
 
-  // Mobile segmented view state ('doc' | 'findings')
-  const [mobileTab, setMobileTab] = useState<"findings" | "doc">("findings");
+  // Mobile segmented view state ('doc' | 'findings') - Default to 'doc' so source document is visible first
+  const [mobileTab, setMobileTab] = useState<"findings" | "doc">("doc");
+  // Desktop layout view mode ('split' | 'doc_focus' | 'report_focus')
+  const [desktopViewMode, setDesktopViewMode] = useState<"split" | "doc_focus" | "report_focus">("split");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -257,6 +263,12 @@ export const DualPaneAuditViewer: React.FC = () => {
   const handleBboxClick = (id: string) => {
     setActiveDiscrepancyId(id);
     sound.playLock();
+    // On mobile and tablet, seamlessly navigate to the forensic report
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setMobileTab("findings");
+    } else if (desktopViewMode === "doc_focus") {
+      setDesktopViewMode("split");
+    }
     const cardEl = document.getElementById(`card-${id}`);
     if (cardEl) {
       cardEl.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -485,28 +497,82 @@ export const DualPaneAuditViewer: React.FC = () => {
           onSelectScenario={(sc: Scenario) => switchConcept(sc.concept_id)}
         />
 
-        {/* Workspace Tab Bar: the six engineering surfaces */}
-        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#1F2937] overflow-x-auto max-w-full font-mono text-xs">
-          <span className="text-[10px] text-slate-500 uppercase font-bold shrink-0">
-            Workspace:
-          </span>
-          {ALL_PILLARS.map((pillar) => {
-            const isActive = activeConceptId === pillar.id;
-            return (
-              <button
-                key={pillar.id}
-                onClick={() => switchConcept(pillar.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-colors ${
-                  isActive
-                    ? "bg-[#1E293B] border-blue-500 text-white shadow-sm ring-1 ring-blue-500/50"
-                    : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {pillar.icon}
-                <span>{pillar.shortTag}</span>
-              </button>
-            );
-          })}
+        {/* Workspace Tab Bar: the six engineering surfaces + Desktop Layout Mode */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-2 border-b border-[#1F2937] font-mono text-xs">
+          <div className="flex items-center gap-2 overflow-x-auto max-w-full">
+            <span className="text-[10px] text-slate-500 uppercase font-bold shrink-0">
+              Workspace:
+            </span>
+            {ALL_PILLARS.map((pillar) => {
+              const isActive = activeConceptId === pillar.id;
+              return (
+                <button
+                  key={pillar.id}
+                  onClick={() => switchConcept(pillar.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-colors ${
+                    isActive
+                      ? "bg-[#1E293B] border-blue-500 text-white shadow-sm ring-1 ring-blue-500/50"
+                      : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {pillar.icon}
+                  <span>{pillar.shortTag}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Desktop 3-Way Layout Mode Switcher */}
+          <div className="hidden lg:flex items-center gap-1 p-0.5 bg-[#0F172A] border border-[#1F2937] rounded-lg shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                sound.playTick();
+                setDesktopViewMode("split");
+              }}
+              title="Split View (60/40)"
+              className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-colors ${
+                desktopViewMode === "split"
+                  ? "bg-blue-600 text-white font-semibold shadow-xs"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <Columns2 className="w-3 h-3" />
+              <span>Split View</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                sound.playTick();
+                setDesktopViewMode("doc_focus");
+              }}
+              title="Focus on Document"
+              className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-colors ${
+                desktopViewMode === "doc_focus"
+                  ? "bg-blue-600 text-white font-semibold shadow-xs"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <FileText className="w-3 h-3" />
+              <span>Document Only</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                sound.playTick();
+                setDesktopViewMode("report_focus");
+              }}
+              title="Focus on Forensic Report"
+              className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-colors ${
+                desktopViewMode === "report_focus"
+                  ? "bg-blue-600 text-white font-semibold shadow-xs"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <LayoutList className="w-3 h-3" />
+              <span>Report Only</span>
+            </button>
+          </div>
         </div>
 
         {/* Dynamic Kill Shot Metrics Flash Cards */}
@@ -569,8 +635,14 @@ export const DualPaneAuditViewer: React.FC = () => {
           <div className="h-[750px] flex flex-col lg:flex-row border border-[#1F2937] rounded-xl overflow-hidden bg-[#0B0F19] shadow-2xl">
             {/* LEFT PANE: Canvas PDF Viewer */}
             <div
-              className={`w-full lg:w-3/5 h-full border-b lg:border-b-0 lg:border-r border-[#1F2937] flex-col overflow-hidden ${
-                mobileTab === "doc" ? "flex" : "hidden lg:flex"
+              className={`h-full border-b lg:border-b-0 lg:border-r border-[#1F2937] flex-col overflow-hidden transition-all duration-200 ${
+                mobileTab === "doc" ? "flex w-full" : "hidden lg:flex"
+              } ${
+                desktopViewMode === "doc_focus"
+                  ? "lg:w-full lg:flex"
+                  : desktopViewMode === "report_focus"
+                  ? "lg:hidden"
+                  : "lg:w-3/5"
               }`}
             >
               {auditData && (
@@ -587,8 +659,14 @@ export const DualPaneAuditViewer: React.FC = () => {
 
             {/* RIGHT PANE: Interactive Terminal Bay with 3 Sub-Tabs */}
             <div
-              className={`w-full lg:w-2/5 h-full flex-col bg-[#0F172A] overflow-hidden ${
-                mobileTab === "findings" ? "flex" : "hidden lg:flex"
+              className={`h-full flex-col bg-[#0F172A] overflow-hidden transition-all duration-200 ${
+                mobileTab === "findings" ? "flex w-full" : "hidden lg:flex"
+              } ${
+                desktopViewMode === "report_focus"
+                  ? "lg:w-full lg:flex"
+                  : desktopViewMode === "doc_focus"
+                  ? "lg:hidden"
+                  : "lg:w-2/5"
               }`}
             >
               {/* Terminal Bay Header & Tabs */}
@@ -819,6 +897,16 @@ export const DualPaneAuditViewer: React.FC = () => {
         onOpenArchitectureModal={() => {
           setArchitectureModalTab("architecture");
           setIsArchitectureModalOpen(true);
+        }}
+      />
+
+      {/* Mobile Floating Bottom Navigation Dock */}
+      <MobileBottomNavPill
+        activeTab={mobileTab}
+        discrepancyCount={auditData?.discrepancies.length || 0}
+        onSelectTab={(tab) => {
+          sound.playTick();
+          setMobileTab(tab);
         }}
       />
     </div>

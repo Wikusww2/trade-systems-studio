@@ -48,6 +48,8 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [analyzingBlockId, setAnalyzingBlockId] = useState<string | null>(null);
+  const [beaconDismissed, setBeaconDismissed] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Base canvas dimensions in pixels (matches 612 x 792 letter aspect ratio)
@@ -113,6 +115,17 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
     } else {
       setScale(1.0);
     }
+  };
+
+  const handleBlockClick = (id: string) => {
+    setBeaconDismissed(true);
+    setAnalyzingBlockId(id);
+    sound.playLock();
+    // Fast laser analysis pulse before triggering view transition
+    setTimeout(() => {
+      setAnalyzingBlockId(null);
+      onClickDiscrepancy(id);
+    }, 280);
   };
 
   // Auto-scroll to active bounding box when hovered or selected
@@ -204,6 +217,23 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
         </div>
       </div>
 
+      {/* Interactive Document Lens Guidance Strip */}
+      <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 bg-[#0B0F19] border-b border-[#1F2937] text-[11px] font-mono shrink-0">
+        <div className="flex items-center gap-1.5 text-slate-300">
+          <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-semibold text-slate-200">Interactive Document Lens:</span>
+          <span className="text-slate-400 hidden sm:inline">
+            Click any highlighted block to trigger legal analysis and open statutory findings.
+          </span>
+          <span className="text-slate-400 sm:hidden">
+            Tap any box to reveal statutory findings.
+          </span>
+        </div>
+        <div className="text-[10px] text-slate-400 font-bold shrink-0">
+          {discrepancies.length} VIOLATIONS FLAGGED
+        </div>
+      </div>
+
       {/* Viewport Scroll Canvas */}
       <div
         ref={containerRef}
@@ -270,7 +300,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
             {/* Dynamic Viewport Bounding-Box Overlay Layer */}
             <div className="absolute inset-0 pointer-events-auto">
-              {discrepancies.map((disc) => {
+              {discrepancies.map((disc, index) => {
                 const bbox = disc.bounding_box;
                 // Normalized coordinates [0, 1000) mapped dynamically to viewport pixels
                 const left = (bbox.x / 1000) * renderedWidth;
@@ -279,6 +309,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                 const height = (bbox.height / 1000) * renderedHeight;
 
                 const isSelected = activeDiscrepancyId === disc.id;
+                const isAnalyzing = analyzingBlockId === disc.id;
                 const isUncertain = disc.confidence < 0.85;
 
                 // Color schemes based on severity for Light & Dark
@@ -305,10 +336,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                       onHoverDiscrepancy(disc.id);
                     }}
                     onMouseLeave={() => onHoverDiscrepancy(null)}
-                    onClick={() => {
-                      sound.playLock();
-                      onClickDiscrepancy(disc.id);
-                    }}
+                    onClick={() => handleBlockClick(disc.id)}
                     style={{
                       left: `${left}px`,
                       top: `${top}px`,
@@ -319,11 +347,33 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                     className={`cursor-pointer transition-all duration-150 border-2 ${borderColor} ${bgColor} ${
                       isUncertain ? "border-dashed" : "border-solid"
                     } ${
-                      isSelected
+                      isAnalyzing
+                        ? "ring-4 ring-cyan-400 bg-cyan-500/30 shadow-[0_0_20px_#22d3ee] z-40 scale-[1.03]"
+                        : isSelected
                         ? "ring-2 ring-cobalt-500 dark:ring-cobalt-400 z-30 scale-[1.01]"
                         : "z-20 hover:scale-[1.005]"
                     }`}
                   >
+                    {/* Auto-Pulse Radar Beacon for First-Time Visitor Guidance */}
+                    {index === 0 && !beaconDismissed && (
+                      <div className="absolute -top-7 -right-2 z-40 pointer-events-none flex items-center gap-1.5">
+                        <span className="relative flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500 shadow-sm shadow-cyan-500/50"></span>
+                        </span>
+                        <span className="px-2 py-0.5 bg-cyan-950/90 text-cyan-300 border border-cyan-400/80 rounded-full font-mono text-[9px] font-bold tracking-wider shadow-lg animate-pulse whitespace-nowrap">
+                          TAP TO INSPECT
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Active Laser Analysis Sweep Flare inside Block on Click */}
+                    {isAnalyzing && (
+                      <div className="absolute inset-0 bg-cyan-400/20 overflow-hidden pointer-events-none z-30 flex items-center">
+                        <div className="w-full h-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_12px_#38bdf8] animate-pulse" />
+                      </div>
+                    )}
+
                     {/* Pin Badge on top left of bounding box */}
                     <div
                       style={{
