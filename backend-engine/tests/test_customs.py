@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from app.services.customs_audit import audit_customs_invoice, calculate_1592_penalties
+
 
 def test_1592_penalties_calculation():
     # Lawful duty loss of $31,250.00

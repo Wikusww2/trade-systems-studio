@@ -1,12 +1,12 @@
-import pytest
 from decimal import Decimal
-from app.services.sanctions_screener import (
-    SanctionsScreener,
-    EMBEDDED_SANCTIONS_DATASET,
-    sanctions_screener,
-)
+
 from app.services.customs_audit import audit_customs_invoice
 from app.services.drawback_audit import audit_duty_drawback
+from app.services.sanctions_screener import (
+    SanctionsScreener,
+    sanctions_screener,
+)
+
 
 def test_sanctions_screener_rapidfuzz_matching():
     screener = SanctionsScreener()

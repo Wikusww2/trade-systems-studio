@@ -6,7 +6,8 @@ and 19 CFR § 162.74 Prior Disclosure penalty mitigation calculations.
 
 from decimal import Decimal
 from enum import Enum
-from typing import List, Optional
+from typing import List
+
 from pydantic import BaseModel, Field
 
 

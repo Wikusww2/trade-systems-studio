@@ -1,5 +1,7 @@
-from typing import Optional, List, Dict, Any, Type, TypeVar
+from typing import List, Optional, TypeVar
+
 from pydantic import BaseModel, Field
+
 from app.core.config import settings
 
 T = TypeVar("T", bound=BaseModel)
@@ -58,7 +60,7 @@ class TradeAIClassifier:
             # Check instructor integration first if available
             if self.instructor_client is not None:
                 try:
-                    return self.instructor_client.chat.completions.create(
+                    routed_doc: DocumentRoute = self.instructor_client.chat.completions.create(
                         model="gemini-3.5-flash-lite",
                         response_model=DocumentRoute,
                         messages=[
@@ -72,6 +74,7 @@ class TradeAIClassifier:
                         ],
                         temperature=0.0,
                     )
+                    return routed_doc
                 except Exception:
                     pass  # Fall through to native client
 
@@ -107,7 +110,7 @@ class TradeAIClassifier:
         try:
             if self.instructor_client is not None:
                 try:
-                    return self.instructor_client.chat.completions.create(
+                    gri_result: GRIReasoningResult = self.instructor_client.chat.completions.create(
                         model="gemini-3.8-flash",
                         response_model=GRIReasoningResult,
                         messages=[
@@ -122,6 +125,7 @@ class TradeAIClassifier:
                         ],
                         temperature=0.0,
                     )
+                    return gri_result
                 except Exception:
                     pass
 

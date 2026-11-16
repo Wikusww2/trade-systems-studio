@@ -1,6 +1,8 @@
 import os
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List
+
 from app.models.schemas import BoundingBox
+
 
 class DocumentLayoutExtractor:
     """
@@ -19,7 +21,7 @@ class DocumentLayoutExtractor:
 
     @property
     def has_docling(self) -> bool:
-        return self._docling_available
+        return bool(self._docling_available)
 
     def extract_bounding_boxes(self, pdf_path: str) -> List[Dict[str, Any]]:
         """
@@ -63,8 +65,8 @@ class DocumentLayoutExtractor:
             import pypdf
             reader = pypdf.PdfReader(pdf_path)
             for page_idx, page in enumerate(reader.pages):
-                page_width = float(page.mediabox.width)
-                page_height = float(page.mediabox.height)
+                _page_width = float(page.mediabox.width)
+                _page_height = float(page.mediabox.height)
                 text = page.extract_text() or ""
                 # Normalize page boundaries to [0, 1000)
                 boxes.append({

@@ -1,9 +1,9 @@
 import os
-from decimal import Decimal
-from reportlab.lib.pagesizes import letter
+
 from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from reportlab.platypus import Table, TableStyle
+
 
 def get_nightmares_dir() -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))

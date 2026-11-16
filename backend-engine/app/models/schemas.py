@@ -1,6 +1,8 @@
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field, field_validator, field_serializer, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
+
 
 class BoundingBox(BaseModel):
     """

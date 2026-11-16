@@ -1,5 +1,6 @@
 import os
 
+
 class Settings:
     PROJECT_NAME: str = "TradeTech Systems Studio Engine"
     VERSION: str = "1.0.0"

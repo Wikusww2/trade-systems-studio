@@ -6,6 +6,7 @@ for hierarchical WCO General Rules of Interpretation (GRI 1-6) reasoning.
 
 from decimal import Decimal
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 

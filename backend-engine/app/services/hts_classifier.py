@@ -5,10 +5,9 @@ as a path-dependent hierarchical state machine with element-wise confidence scor
 strict Python Decimal fee aggregation.
 """
 
-from decimal import Decimal, ROUND_HALF_UP
 import os
-import re
-from typing import Dict, List, Optional
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Dict
 
 from app.models.hts_models import (
     ClassificationRequest,

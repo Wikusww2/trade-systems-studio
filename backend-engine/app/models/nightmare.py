@@ -1,6 +1,8 @@
 from decimal import Decimal
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
+
 
 class CommercialInvoiceLineItem(BaseModel):
     line_number: int

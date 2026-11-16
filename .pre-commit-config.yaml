@@ -1,0 +1,40 @@
+# Pre-Commit Configuration for TradeTech Systems Studio
+# Enforces sub-second linting, strict typing, tests, and anti-slop copy rules
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.5
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend-engine/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+        files: ^backend-engine/app/
+        additional_dependencies: [pydantic>=2.0]
+
+  - repo: local
+    hooks:
+      - id: check-em-dashes
+        name: Check Zero Em-Dashes
+        entry: python scripts/check_em_dashes.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: sync-metrics
+        name: Sync Metrics and Verify Glossary
+        entry: python scripts/sync_metrics.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: backend-pytest
+        name: Backend Deterministic Test Suite
+        entry: powershell -Command "cd backend-engine; ./.venv/Scripts/python -m pytest -q"
+        language: system
+        pass_filenames: false
+        always_run: true

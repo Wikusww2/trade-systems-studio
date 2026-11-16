@@ -1,16 +1,18 @@
-import os
 import asyncio
-from typing import List, Dict, Any, Optional
-from pydantic import BaseModel, Field
-import rapidfuzz.fuzz
+from typing import Any, Dict, List, Optional
+
 import httpx
+import rapidfuzz.fuzz
+from pydantic import BaseModel, Field
+
 from app.core.config import settings
 from app.models.sanctions_graph import (
-    GraphNode,
-    GraphEdge,
-    OFAC50PercentEvaluation,
     CorporateGraphResponse,
+    GraphEdge,
+    GraphNode,
+    OFAC50PercentEvaluation,
 )
+
 
 class SanctionsEntity(BaseModel):
     """

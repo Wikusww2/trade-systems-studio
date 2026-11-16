@@ -1,27 +1,29 @@
-import os
 import asyncio
-from typing import Optional
+import os
 from decimal import Decimal
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
+
 from app.api.deps import get_extractor_service
-from app.services.extractor import TradeDocumentExtractor, NIGHTMARE_GROUND_TRUTH
-from app.services.layout_extractor import layout_extractor
-from app.services.sanctions_screener import sanctions_screener, ScreeningReport
-from app.models.sanctions_graph import CorporateGraphResponse
+from app.core.config import settings
 from app.models.hts_models import ClassificationRequest, HTSClassificationResult
-from app.services.hts_classifier import HTSClassifierEngine
-from app.services.cargowise_xml import cargowise_xml_generator, CargoWiseShipmentData
-from app.models.valuation_models import EntryValuationAudit, PriorDisclosurePackage, AssistItem
-from app.services.valuation_ledger import CustomsValuationService
+from app.models.sanctions_graph import CorporateGraphResponse
 from app.models.schemas import (
     AuditResult,
     KillShotMetrics,
     LeadCaptureRequest,
     TelemetryEvent,
 )
-from app.core.config import settings
+from app.models.valuation_models import AssistItem, EntryValuationAudit, PriorDisclosurePackage
+from app.services.cargowise_xml import cargowise_xml_generator
+from app.services.extractor import NIGHTMARE_GROUND_TRUTH, TradeDocumentExtractor
+from app.services.hts_classifier import HTSClassifierEngine
+from app.services.layout_extractor import layout_extractor
+from app.services.sanctions_screener import ScreeningReport, sanctions_screener
+from app.services.valuation_ledger import CustomsValuationService
 
 router = APIRouter()
 
@@ -212,8 +214,9 @@ async def export_cargowise_xml_endpoint(request: CargoWiseExportRequest):
     Generates schema-compliant CargoWise One eAdaptor UniversalShipment XML payload
     (version 1.1) with explicit DataContext and DataTarget routing.
     """
-    from app.services.cargowise_xml import cargowise_exporter
     from fastapi.responses import Response
+
+    from app.services.cargowise_xml import cargowise_exporter
 
     xml_content = await asyncio.to_thread(
         cargowise_exporter.generate_universal_interchange_xml,
@@ -307,7 +310,7 @@ async def generate_prior_disclosure_endpoint(request: ValuationAuditRequest):
     return await asyncio.to_thread(valuation_service.generate_prior_disclosure, audit)
 
 @router.get("/cargowise/export/{concept_id}")
-async def export_cargowise_xml_endpoint(concept_id: str):
+async def export_cargowise_xml_by_concept_endpoint(concept_id: str):
     """
     Exports audited trade data formatted as WiseTech CargoWise UniversalShipment XML (v1.1)
     with pre-ingest verification tokens and diff annotations.

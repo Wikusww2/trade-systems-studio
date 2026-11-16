@@ -1,8 +1,10 @@
 import os
 from unittest.mock import MagicMock
-from app.services.ai_classifier import TradeAIClassifier, DocumentRoute, GRIReasoningResult
-from app.services.layout_extractor import DocumentLayoutExtractor
+
 from app.core.config import settings
+from app.services.ai_classifier import DocumentRoute, GRIReasoningResult, TradeAIClassifier
+from app.services.layout_extractor import DocumentLayoutExtractor
+
 
 def test_offline_zero_key_fallback():
     classifier = TradeAIClassifier()

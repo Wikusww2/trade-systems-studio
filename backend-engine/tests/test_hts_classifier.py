@@ -1,11 +1,11 @@
 """Test suite for Autonomous HTS Classification Copilot & Landed Cost Engine."""
 
 from decimal import Decimal
-import pytest
+
 from fastapi.testclient import TestClient
 
-from app.services.hts_classifier import calculate_landed_cost, HTSClassifierEngine
 from app.models.hts_models import ClassificationRequest
+from app.services.hts_classifier import HTSClassifierEngine, calculate_landed_cost
 from main import app
 
 client = TestClient(app)

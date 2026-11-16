@@ -1,6 +1,8 @@
-from decimal import Decimal, ROUND_HALF_UP
-from typing import List, Dict, Any, Tuple
-from app.models.schemas import Discrepancy, BoundingBox, KillShotMetrics
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Any, Dict, List, Tuple
+
+from app.models.schemas import BoundingBox, Discrepancy, KillShotMetrics
+
 
 def quantize_currency(amount: Decimal) -> Decimal:
     return amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)

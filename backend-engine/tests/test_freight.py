@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from app.services.freight_audit import audit_freight_bill
+
 
 def test_freight_bill_audit():
     test_data = {

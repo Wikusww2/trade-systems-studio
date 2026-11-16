@@ -1,6 +1,8 @@
-from decimal import Decimal, ROUND_HALF_UP
-from typing import List, Dict, Any, Tuple
-from app.models.schemas import Discrepancy, BoundingBox, KillShotMetrics
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Any, Dict, List, Tuple
+
+from app.models.schemas import BoundingBox, Discrepancy, KillShotMetrics
+
 
 def quantize_currency(amount: Decimal) -> Decimal:
     return amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
@@ -22,7 +24,7 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
     """
     discrepancies: List[Discrepancy] = []
     
-    dutiable_value = safe_decimal(data.get("dutiable_value"), "240000.00")
+    _dutiable_value = safe_decimal(data.get("dutiable_value"), "240000.00")
     duties_paid = safe_decimal(data.get("duties_paid"), "27600.00")
     drawback_pct = safe_decimal(data.get("drawback_percentage"), "0.99")  # 99%
     is_timely = bool(data.get("is_timely_5yr_window", True))

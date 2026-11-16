@@ -1,15 +1,13 @@
-import os
 import hashlib
 from datetime import datetime, timezone
-from decimal import Decimal
-from typing import Dict, Any, Tuple
+from typing import Any, Dict
+
 from app.core.config import settings
-from app.models.schemas import AuditResult, KillShotMetrics, Discrepancy
-from app.services.customs_audit import audit_customs_invoice
-from app.services.freight_audit import audit_freight_bill
-from app.services.drawback_audit import audit_duty_drawback
+from app.models.schemas import AuditResult
 from app.services.ai_classifier import ai_classifier
-from app.services.layout_extractor import layout_extractor
+from app.services.customs_audit import audit_customs_invoice
+from app.services.drawback_audit import audit_duty_drawback
+from app.services.freight_audit import audit_freight_bill
 
 # Ground-truth nightmare test scenarios for deterministic offline mode
 NIGHTMARE_GROUND_TRUTH: Dict[str, Dict[str, Any]] = {

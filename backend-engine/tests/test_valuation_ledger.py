@@ -1,11 +1,10 @@
 """Test suite for CBP Assist & Valuation Register (19 CFR § 152.103 & 19 U.S.C. § 1401a)."""
 
 from decimal import Decimal
-import pytest
+
 from fastapi.testclient import TestClient
 
 from app.services.valuation_ledger import CustomsValuationService
-from app.models.valuation_models import AssistCategory, AssistItem, AmortizationMethod
 from main import app
 
 client = TestClient(app)

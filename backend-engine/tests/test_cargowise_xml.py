@@ -1,7 +1,8 @@
-import pytest
-from decimal import Decimal
 import xml.etree.ElementTree as ET
+from decimal import Decimal
+
 from app.services.cargowise_xml import cargowise_exporter
+
 
 def test_cargowise_universal_interchange_schema():
     xml_output = cargowise_exporter.generate_universal_interchange_xml(

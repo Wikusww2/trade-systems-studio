@@ -1,13 +1,13 @@
 import os
-import pytest
-from decimal import Decimal
+
+from app.core.config import settings
+from app.services.layout_extractor import DocumentLayoutExtractor
 from app.services.sanctions_screener import (
+    EMBEDDED_SANCTIONS_DATASET,
     SanctionsEntity,
     SanctionsScreener,
-    EMBEDDED_SANCTIONS_DATASET,
 )
-from app.services.layout_extractor import DocumentLayoutExtractor
-from app.core.config import settings
+
 
 def test_yente_entity_schema_contract():
     """

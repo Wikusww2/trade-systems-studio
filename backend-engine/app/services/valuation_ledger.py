@@ -6,8 +6,8 @@ penalty mitigation filings using strict Python Decimal.
 """
 
 from datetime import datetime, timezone
-from decimal import Decimal, ROUND_HALF_UP
-from typing import List, Optional, Tuple
+from decimal import ROUND_HALF_UP, Decimal
+from typing import List, Optional
 
 from app.models.valuation_models import (
     AmortizationMethod,
