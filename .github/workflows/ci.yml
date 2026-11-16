@@ -60,6 +60,12 @@ jobs:
       - name: Verify zero em-dash violations
         run: python scripts/check_em_dashes.py
 
+      - name: Verify nightmare fixtures are byte-deterministic
+        working-directory: backend-engine
+        run: |
+          python -c "from app.services.fixture_generator import generate_all_nightmares; generate_all_nightmares()"
+          git diff --exit-code -- app/data/nightmares/
+
   frontend-typecheck-and-build:
     name: Frontend TypeScript & Static Export (Node 22)
     runs-on: ubuntu-latest
