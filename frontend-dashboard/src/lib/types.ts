@@ -29,6 +29,26 @@ export interface KillShotMetrics {
   drawback_unclaimed_unlocked: number;
 }
 
+export interface EngagementPolicy {
+  policy_id: string;
+  auto_hold_threshold_usd: number;
+  commercial_freight_tolerance_usd: number;
+  statutory_floor_enforced: boolean;
+  fmc_free_time_days: number;
+  assist_amortization_method: string;
+}
+
+export type ResolutionActionType = "approve_clean" | "request_paperwork" | "escalate_broker";
+
+export interface ResolutionRecord {
+  discrepancy_id: string;
+  action: ResolutionActionType;
+  reason_code: string;
+  notes?: string;
+  timestamp: string;
+  resolved_by: string;
+}
+
 export interface AuditResult {
   concept_id: string;
   title: string;
@@ -39,6 +59,11 @@ export interface AuditResult {
   discrepancies: Discrepancy[];
   extracted_data: Record<string, any>;
   offline_fallback_active?: boolean;
+  audit_run_id?: string;
+  calc_version?: string;
+  executed_at?: string;
+  quarantine_status?: "QUARANTINED" | "RELEASED" | "ESCALATED";
+  engagement_policy?: EngagementPolicy | Record<string, any>;
 }
 
 export interface LeadCapturePayload {

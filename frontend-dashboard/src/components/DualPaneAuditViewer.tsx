@@ -28,6 +28,14 @@ import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
 import { auditUploadedPdf } from "@/lib/clientAuditor";
+import { ParadigmSwitcher, ParadigmId } from "./ParadigmSwitcher";
+import { Var1Workbench } from "./variations/Var1Workbench";
+import { Var2TriageQueue } from "./variations/Var2TriageQueue";
+import { Var3KineticNarrative } from "./variations/Var3KineticNarrative";
+import { Var4ArchitectureWiretap } from "./variations/Var4ArchitectureWiretap";
+import { Var5MasterSynthesis } from "./variations/Var5MasterSynthesis";
+import { ThreeWayResolutionBar } from "./ThreeWayResolutionBar";
+import { FirewallProvider, usePreIngestFirewall, playPseudoHaptic } from "@/lib/firewall-core";
 import {
   Scale,
   DollarSign,
@@ -52,6 +60,7 @@ import {
   Columns2,
   Maximize2,
   LayoutList,
+  Download,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -112,7 +121,9 @@ const ALL_PILLARS = [
   },
 ];
 
-export const DualPaneAuditViewer: React.FC = () => {
+const DualPaneAuditViewerInner: React.FC = () => {
+  const { exportAuditPacket } = usePreIngestFirewall();
+  const [activeParadigm, setActiveParadigm] = useState<ParadigmId>("var-1");
   const [activeConceptId, setActiveConceptId] = useState<string>("concept_1_customs");
   const [auditData, setAuditData] = useState<AuditResult | null>(null);
   const [aggregateMetrics, setAggregateMetrics] = useState<KillShotMetrics | null>(null);
@@ -185,11 +196,32 @@ export const DualPaneAuditViewer: React.FC = () => {
     }
   };
 
+  const handleParadigmChange = (p: ParadigmId) => {
+    setActiveParadigm(p);
+    if (typeof window !== "undefined") {
+      const slug = p === "var-4" ? "arc" : p;
+      window.history.replaceState(null, "", `#${slug}`);
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const hash = window.location.hash.toLowerCase().replace("#", "");
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get("tab") || hash;
+
+      if (hash === "arc" || hash === "var-4" || hash === "wiretap") {
+        setActiveParadigm("var-4");
+      } else if (hash === "var-2" || hash === "triage") {
+        setActiveParadigm("var-2");
+      } else if (hash === "var-3" || hash === "kinetic") {
+        setActiveParadigm("var-3");
+      } else if (hash === "synthesis" || hash === "var-5") {
+        setActiveParadigm("synthesis");
+      } else if (hash === "var-1" || hash === "workbench" || hash === "customs") {
+        setActiveParadigm("var-1");
+        setActiveConceptId("concept_1_customs");
+      }
 
       if (tabParam === "sanctions" || tabParam === "concept_4_sanctions") {
         setActiveConceptId("concept_4_sanctions");
@@ -221,6 +253,25 @@ export const DualPaneAuditViewer: React.FC = () => {
       } else if (tabParam === "tour" || tabParam === "walkthrough") {
         setIsTourActive(true);
       }
+
+      const handleHashChange = () => {
+        const h = window.location.hash.toLowerCase().replace("#", "");
+        if (h === "arc" || h === "var-4" || h === "wiretap") {
+          setActiveParadigm("var-4");
+        } else if (h === "var-2" || h === "triage") {
+          setActiveParadigm("var-2");
+        } else if (h === "var-3" || h === "kinetic") {
+          setActiveParadigm("var-3");
+        } else if (h === "synthesis" || h === "var-5") {
+          setActiveParadigm("synthesis");
+        } else if (h === "var-1" || h === "workbench" || h === "customs") {
+          setActiveParadigm("var-1");
+          setActiveConceptId("concept_1_customs");
+        }
+      };
+
+      window.addEventListener("hashchange", handleHashChange);
+      return () => window.removeEventListener("hashchange", handleHashChange);
     }
   }, []);
 
@@ -320,15 +371,20 @@ export const DualPaneAuditViewer: React.FC = () => {
             </div>
           </div>
 
+          {/* Paradigm Switcher (⌘1-⌘5) */}
+          <div className="hidden lg:flex items-center">
+            <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
+          </div>
+
           {/* Clean 3-Link Navigation */}
-          <nav className="hidden xl:flex items-center gap-6 text-xs font-mono text-slate-400">
-            <a href="#workbench" className="hover:text-blue-400 transition-colors">
+          <nav className="hidden 2xl:flex items-center gap-6 text-xs font-mono text-slate-400">
+            <a href="#workbench" onClick={() => handleParadigmChange("var-1")} className="hover:text-blue-400 transition-colors">
               #workbench
             </a>
-            <a href="#architecture" className="hover:text-blue-400 transition-colors">
+            <a href="#architecture" onClick={() => handleParadigmChange("var-4")} className="hover:text-blue-400 transition-colors">
               #architecture
             </a>
-            <a href="#architect-thesis" className="hover:text-blue-400 transition-colors">
+            <a href="#architect-thesis" onClick={() => handleParadigmChange("var-3")} className="hover:text-blue-400 transition-colors">
               #architect-thesis
             </a>
           </nav>
@@ -390,6 +446,23 @@ export const DualPaneAuditViewer: React.FC = () => {
       </header>
 
       <main>
+        {/* Mobile Paradigm Switcher Bar */}
+        <div className="lg:hidden px-3 py-2 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-center overflow-x-auto">
+          <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
+        </div>
+
+        {activeParadigm === "var-2" ? (
+          <Var2TriageQueue />
+        ) : activeParadigm === "var-3" ? (
+          <Var3KineticNarrative onOpenReview={openReview} />
+        ) : activeParadigm === "var-4" ? (
+          <div id="arc">
+            <Var4ArchitectureWiretap />
+          </div>
+        ) : activeParadigm === "synthesis" ? (
+          <Var5MasterSynthesis onSelectParadigm={handleParadigmChange} />
+        ) : (
+          <>
       {/* 2. ACT 1: ABOVE-THE-FOLD SYSTEMS HERO */}
       <section className="border-b border-[#1F2937] bg-[#0F172A]/40 py-8 lg:py-12 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -522,8 +595,16 @@ export const DualPaneAuditViewer: React.FC = () => {
             })}
           </div>
 
-          {/* Desktop 3-Way Layout Mode Switcher */}
-          <div className="hidden lg:flex items-center gap-1 p-0.5 bg-[#0F172A] border border-[#1F2937] rounded-lg shrink-0">
+          {/* Export Board & Counsel Audit Packet + Desktop 3-Way Layout Mode Switcher */}
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => exportAuditPacket()}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Board & Counsel Audit Packet</span>
+            </button>
+            <div className="flex items-center gap-1 p-0.5 bg-[#0F172A] border border-[#1F2937] rounded-lg shrink-0">
             <button
               type="button"
               onClick={() => {
@@ -574,6 +655,7 @@ export const DualPaneAuditViewer: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
 
         {/* Dynamic Kill Shot Metrics Flash Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 font-mono">
@@ -783,17 +865,28 @@ export const DualPaneAuditViewer: React.FC = () => {
                     </div>
                   ) : (
                     auditData?.discrepancies.map((disc) => (
-                      <DiscrepancyCard
-                        key={disc.id}
-                        discrepancy={disc}
-                        isActive={activeDiscrepancyId === disc.id}
-                        onHover={setActiveDiscrepancyId}
-                        onClick={handleCardClick}
-                        onFocusMobileDoc={() => {
-                          setActiveDiscrepancyId(disc.id);
-                          setMobileTab("doc");
-                        }}
-                      />
+                      <div key={disc.id} className="space-y-2">
+                        <DiscrepancyCard
+                          key={disc.id}
+                          discrepancy={disc}
+                          isActive={activeDiscrepancyId === disc.id}
+                          onHover={setActiveDiscrepancyId}
+                          onClick={handleCardClick}
+                          onFocusMobileDoc={() => {
+                            setActiveDiscrepancyId(disc.id);
+                            setMobileTab("doc");
+                          }}
+                        />
+                        {(disc.confidence < 0.85 || disc.severity === "critical") && (
+                          <div className="pl-2 border-l-2 border-amber-500/60">
+                            <ThreeWayResolutionBar
+                              discrepancyId={disc.id}
+                              confidence={disc.confidence}
+                              statutoryCode={disc.statutory_code}
+                            />
+                          </div>
+                        )}
+                      </div>
                     ))
                   )}
                 </div>
@@ -826,6 +919,8 @@ export const DualPaneAuditViewer: React.FC = () => {
       <section id="architect-thesis" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#1F2937]">
         <ArchitectThesis onOpenReview={openReview} />
       </section>
+          </>
+        )}
       </main>
 
       {/* 9. ENTERPRISE FOOTER */}
@@ -910,5 +1005,13 @@ export const DualPaneAuditViewer: React.FC = () => {
         }}
       />
     </div>
+  );
+};
+
+export const DualPaneAuditViewer: React.FC = () => {
+  return (
+    <FirewallProvider>
+      <DualPaneAuditViewerInner />
+    </FirewallProvider>
   );
 };

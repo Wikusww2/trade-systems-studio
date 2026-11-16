@@ -65,7 +65,8 @@ class KillShotMetrics(BaseModel):
 
 class AuditResult(BaseModel):
     """
-    Complete audit result payload for a specific concept.
+    Complete audit result payload for a specific concept, with immutable provenance
+    and multi-tenant engagement policy snapshot per ADR-001 and ADR-004.
     """
     model_config = ConfigDict(from_attributes=True)
 
@@ -78,6 +79,21 @@ class AuditResult(BaseModel):
     discrepancies: List[Discrepancy]
     extracted_data: Dict[str, Any]
     offline_fallback_active: bool = False
+    audit_run_id: str = Field(default="RUN-2026-USC1592-PROV", description="Content-addressed deterministic audit identifier")
+    calc_version: str = Field(default="2026.1.0", description="Semantic statutory kernel calculation version")
+    executed_at: Optional[str] = Field(default=None, description="ISO 8601 UTC execution timestamp")
+    quarantine_status: Optional[str] = Field(default=None, description="QUARANTINED | RELEASED | ESCALATED")
+    engagement_policy: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "policy_id": "DEFAULT-FORWARDER-TIER-1",
+            "auto_hold_threshold_usd": 10000.0,
+            "commercial_freight_tolerance_usd": 25.0,
+            "statutory_floor_enforced": True,
+            "fmc_free_time_days": 4,
+            "assist_amortization_method": "first_entry_lump_sum"
+        },
+        description="Active tenant policy tolerances (strictly bounded by statutory floor)"
+    )
 
 class LeadCaptureRequest(BaseModel):
     email: str

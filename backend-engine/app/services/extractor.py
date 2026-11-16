@@ -1,4 +1,6 @@
 import os
+import hashlib
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Dict, Any, Tuple
 from app.core.config import settings
@@ -165,6 +167,17 @@ class TradeDocumentExtractor:
         else:  # concept_3_drawback
             metrics, discrepancies = audit_duty_drawback(payload)
 
+        # Content-addressed deterministic audit_run_id (ADR-001 & ADR-004)
+        calc_version = "2026.1.0"
+        has_quarantine_trigger = any(
+            d.confidence < 0.85 or d.severity == "critical" for d in discrepancies
+        )
+        quarantine_status = "QUARANTINED" if has_quarantine_trigger else "RELEASED"
+        
+        raw_hash_seed = f"{concept_id}:{calc_version}:{scenario['filename']}:{len(discrepancies)}"
+        content_hash = hashlib.sha256(raw_hash_seed.encode("utf-8")).hexdigest()[:12]
+        audit_run_id = f"RUN-2026-{concept_id.upper()}-{content_hash}"
+
         return AuditResult(
             concept_id=concept_id,
             title=scenario["title"],
@@ -175,6 +188,10 @@ class TradeDocumentExtractor:
             discrepancies=discrepancies,
             extracted_data=payload,
             offline_fallback_active=not ai_classifier.is_online,
+            audit_run_id=audit_run_id,
+            calc_version=calc_version,
+            executed_at=datetime.now(timezone.utc).isoformat(),
+            quarantine_status=quarantine_status,
         )
 
 extractor_service = TradeDocumentExtractor()

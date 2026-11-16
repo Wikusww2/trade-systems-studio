@@ -1,0 +1,17 @@
+# GLOSSARY.md: Canonical Ubiquitous Language
+
+Every recurring domain concept in `trade-systems-studio` maps to a single canonical identifier used identically across Python Pydantic schemas, TypeScript interfaces, UI labels, and technical dossiers.
+
+| Canonical Term | Replaces (Banned or Verbose) | Domain Definition and System Invariant |
+| :--- | :--- | :--- |
+| **PreIngestFirewall** | "OCR tool", "PDF parser", "AI extractor", "invoice reader" | Upstream deterministic gatekeeper intercepting raw commercial documents and carrier invoices before CargoWise eAdaptor ingestion. |
+| **ValuePackLeakage** | "CargoWise billing fees", "ERP rework charges" | Per-transaction CargoWise Value Pack fees ($19.95 FCL import with domestic legs; $9.95 standalone customs entry, effective Dec 1, 2025) triggered prematurely by dirty UniversalShipment XML. |
+| **DualStackBoundary** | "XML/API connector", "eAdaptor integration" | Protocol-agnostic ingress filter validating legacy SOAP UniversalShipment XML and eAdaptor Next REST/OAuth 2.0/JWT payloads via strict XPath criteria (`//UniversalShipment/Shipment/DataContext/DataTargetCollection/DataTarget/Type`) before emitting a UniversalInterchange envelope. |
+| **StatutoryKernel** | "AI compliance checker", "LLM rules" | Stateless Python rules engine executing 100% `decimal.Decimal` (`ROUND_HALF_UP`) math across 19 U.S.C. Section 1592, 19 CFR Section 152.103, 19 U.S.C. Section 1313, 31 CFR Section 501, FMC Docket 21-08, and WCO GRI 1 to 6 with zero LLM arithmetic. |
+| **ConfidenceGate** | "Low-confidence highlight", "AI warning" | Element-wise threshold (`Conf(e) < 0.85`) rendered with `border-dashed border-amber-500` that halts autonomous XML emission and forces Human-on-the-Loop (HOTL) resolution under EU AI Act Art. 26 and 19 CFR Section 163. |
+| **ThreeWayResolutionBar** | "Review buttons", "approval modal" | HAX Guideline 9 inline correction bar attached to every ConfidenceGate: (1) Approve and Push Clean XML, (2) Request Missing Shipper Paperwork, or (3) Escalate to Licensed Broker or Denied-Party Desk, requiring a structured override reason code. |
+| **AuditRunProvenance** | "Audit log ID", "tracking hash" | Immutable decision anchor combining content-addressed composite `audit_run_id`, `calc_version`, active `engagement_policy` JSONB snapshot, and normalized `[0, 1000)` Docling bounding-box coordinates (`coord * scale`). |
+| **NightmareFixture** | "Test PDF", "mock invoice", "sample data" | Adversarial synthetic commercial payload (45-degree skews, transposed HTS codes, omitted CIF insurance, unapportioned tooling assists, 3-tier circular OFAC 50% ownership) proving zero-key offline circuit-breaking. |
+| **OwnerRoutedQueue** | "Error list", "alerts table" | Exception-first operational queue partitioning holds by resolver team (Broker Desk, AP Carrier Dispute, Shipper Outreach) anchored to a live carrier cutoff countdown (14:00). |
+| **SwissHybridSurface** | "Dark theme", "dashboard UI" | Perceptual Tailwind v4 `oklch()` split surface pairing a Deep Obsidian terminal (`oklch(15% 0.01 250)`) with a Crisp Stone Paper document lens (`oklch(0.98 0.01 240)`), APCA Lc 75/60 contrast floors, and 1px inset borders. |
+| **DefenseMap** | "Code links", "technical docs" | Interactive registry inside `#arc` mapping every UI claim and statutory verdict directly to its backend Python file path, line range, Big-O complexity, and passing `pytest` test. |
