@@ -17,9 +17,20 @@ import {
   MOCK_PRIOR_DISCLOSURE,
 } from "@/data/mockData";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// In browser environments on public hosts (e.g. GitHub Pages demo), avoid attempting
+// loopback fetches to http://localhost:8000 which are blocked by CORS Private Network Access.
+const isBrowser = typeof window !== "undefined";
+const isPublicHost =
+  isBrowser &&
+  window.location.hostname !== "localhost" &&
+  window.location.hostname !== "127.0.0.1";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || (isPublicHost ? "" : "http://localhost:8000");
 
 export async function fetchAudit(conceptId: string): Promise<AuditResult> {
+  if (!API_BASE) {
+    return MOCK_AUDIT_DATA[conceptId] || MOCK_AUDIT_DATA["concept_1_customs"];
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/audit/${conceptId}`, {
       cache: "no-store",
@@ -38,6 +49,9 @@ export async function fetchAudit(conceptId: string): Promise<AuditResult> {
 }
 
 export async function fetchAggregateMetrics(): Promise<KillShotMetrics> {
+  if (!API_BASE) {
+    return AGGREGATE_METRICS;
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/metrics`, {
       cache: "no-store",
@@ -54,6 +68,12 @@ export async function fetchAggregateMetrics(): Promise<KillShotMetrics> {
 export async function fetchSanctionsGraph(
   entityId: string
 ): Promise<CorporateGraphResponse> {
+  if (!API_BASE) {
+    return (
+      MOCK_SANCTIONS_GRAPHS[entityId] ||
+      MOCK_SANCTIONS_GRAPHS["bis-el-cn-0941"]
+    );
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/sanctions/graph/${entityId}`, {
       cache: "no-store",
@@ -77,6 +97,9 @@ export async function fetchHtsPreset(
   presetId: string,
   enteredValue: number = 45000
 ): Promise<HTSClassificationResult> {
+  if (!API_BASE) {
+    return MOCK_HTS_PRESETS[presetId] || MOCK_HTS_PRESETS["drone_motor"];
+  }
   try {
     const res = await fetch(
       `${API_BASE}/api/v1/hts/preset/${presetId}?entered_value=${enteredValue}`,
@@ -99,6 +122,13 @@ export async function classifyHtsProduct(
     freight_and_insurance?: number;
   }
 ): Promise<HTSClassificationResult> {
+  if (!API_BASE) {
+    const title = payload.product_title.toLowerCase();
+    if (title.includes("motor") || title.includes("drone")) return MOCK_HTS_PRESETS["drone_motor"];
+    if (title.includes("accelerator") || title.includes("tensor") || title.includes("pcie")) return MOCK_HTS_PRESETS["server_accelerator"];
+    if (title.includes("battery") || title.includes("lifepo4")) return MOCK_HTS_PRESETS["ev_battery_pack"];
+    return MOCK_HTS_PRESETS["smart_apparel_watch"];
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/hts/classify`, {
       method: "POST",
@@ -121,6 +151,9 @@ export async function classifyHtsProduct(
 // Pillar 4: CBP Assist & Valuation Register API
 // -------------------------------------------------------------
 export async function fetchValuationLedger(): Promise<AssistItem[]> {
+  if (!API_BASE) {
+    return MOCK_ASSIST_ITEMS;
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/valuation/ledger`, {
       cache: "no-store",
@@ -133,6 +166,9 @@ export async function fetchValuationLedger(): Promise<AssistItem[]> {
 }
 
 export async function fetchValuationAudit(): Promise<EntryValuationAudit> {
+  if (!API_BASE) {
+    return MOCK_VALUATION_AUDIT;
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/valuation/audit-entry`, {
       method: "POST",
@@ -157,6 +193,9 @@ export async function fetchValuationAudit(): Promise<EntryValuationAudit> {
 }
 
 export async function generatePriorDisclosurePackage(): Promise<PriorDisclosurePackage> {
+  if (!API_BASE) {
+    return MOCK_PRIOR_DISCLOSURE;
+  }
   try {
     const res = await fetch(`${API_BASE}/api/v1/valuation/prior-disclosure`, {
       method: "POST",
