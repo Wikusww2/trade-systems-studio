@@ -9,6 +9,7 @@ export type ParadigmId = "var-1" | "var-2";
 interface ParadigmSwitcherProps {
   activeParadigm: ParadigmId;
   onChange: (paradigm: ParadigmId) => void;
+  showLabel?: boolean;
 }
 
 const PARADIGMS: { id: ParadigmId; label: string; shortcut: string; icon: React.ReactNode }[] = [
@@ -19,6 +20,7 @@ const PARADIGMS: { id: ParadigmId; label: string; shortcut: string; icon: React.
 export const ParadigmSwitcher: React.FC<ParadigmSwitcherProps> = ({
   activeParadigm,
   onChange,
+  showLabel = true,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -41,9 +43,11 @@ export const ParadigmSwitcher: React.FC<ParadigmSwitcherProps> = ({
 
   return (
     <div className="flex items-center gap-1 p-1 rounded-xl bg-[#0F172A]/90 border border-[#1F2937] backdrop-blur-md shadow-2xl">
-      <span className="text-[10px] font-mono text-slate-400 px-2 uppercase tracking-widest hidden md:inline-block">
-        PARADIGM:
-      </span>
+      {showLabel && (
+        <span className="text-[10px] font-mono text-slate-400 px-2 uppercase tracking-widest hidden md:inline-block">
+          PARADIGM:
+        </span>
+      )}
       {PARADIGMS.map((p) => {
         const isActive = activeParadigm === p.id;
         return (

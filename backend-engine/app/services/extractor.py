@@ -123,6 +123,17 @@ NIGHTMARE_GROUND_TRUTH: Dict[str, Dict[str, Any]] = {
             ],
         },
     },
+    "concept_4_sanctions": {
+        "title": "Concept 4: OFAC 50% Rule & Entity Resolution",
+        "subtitle": "31 CFR § 501 Blocked Entity Aggregation & EAR Defense Watchlist",
+        "filename": "nightmare_04_ofac_registry.pdf",
+        "payload": {
+            "entity_id": "bis-el-cn-0941",
+            "name": "Global Micro Electronics Ltd",
+            "aggregate_blocked_pct": "55.0",
+            "action": "BLOCK_AND_REPORT",
+        },
+    },
 }
 
 class TradeDocumentExtractor:
@@ -162,6 +173,40 @@ class TradeDocumentExtractor:
                     pass
         elif concept_id == "concept_2_freight":
             metrics, discrepancies = audit_freight_bill(payload)
+        elif concept_id == "concept_4_sanctions":
+            from decimal import Decimal
+
+            from app.models.schemas import BoundingBox, Discrepancy, KillShotMetrics
+            metrics = KillShotMetrics(
+                penalty_exposure_avoided=Decimal("350000.00"),
+                carrier_overbilling_caught=Decimal("0.00"),
+                drawback_unclaimed_unlocked=Decimal("0.00"),
+            )
+            discrepancies = [
+                Discrepancy(
+                    id="disc-c4-01",
+                    concept_id="concept_4_sanctions",
+                    title="31 CFR Section 501 Aggregate Blocked Ownership Violation (55%)",
+                    description="Target entity bis-el-cn-0941 is owned 25% by Victor Petrov (SDN) and 30% by Rosoboronexport JSC (SDN). Aggregate blocked ownership is 55%, rendering the entity blocked by operation of law under the OFAC 50% Rule.",
+                    severity="critical",
+                    confidence=0.99,
+                    bounding_box=BoundingBox(
+                        x=42.0,
+                        y=620.0,
+                        width=535.0,
+                        height=100.0,
+                        page_number=1,
+                        confidence=0.99,
+                    ),
+                    statutory_code="31 CFR Section 501",
+                    exposure_amount=Decimal("350000.00"),
+                    statutory_defense="OFAC 50 Percent Rule",
+                    metadata={
+                        "blocked_ownership_pct": "55.0%",
+                        "compliance_action": "BLOCK_AND_REPORT",
+                    },
+                )
+            ]
         else:  # concept_3_drawback
             metrics, discrepancies = audit_duty_drawback(payload)
 

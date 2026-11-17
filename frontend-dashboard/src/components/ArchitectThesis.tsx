@@ -24,7 +24,10 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
                 <span className="font-bold text-slate-100 text-sm">SAMUEL RENCKEN</span>
                 <span className="text-[11px] text-emerald-400 font-semibold">Principal Trade Systems Architect</span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-blue-400 font-mono mt-0.5 font-medium">
+                Bachelor of Commerce in Economic Sciences (International Trade) | University of Pretoria
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">
                 Specializing in Autonomous Document Pipelines, Customs Compliance, and CargoWise eAdaptor Infrastructure
               </p>
             </div>
@@ -46,10 +49,10 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
             When I started auditing cross-border commercial invoices and carrier freight bills, I noticed a dangerous pattern: logistics teams were plugging raw LLM wrappers directly into customs workflows.
           </p>
           <p>
-            Raw language models guess. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic 19 U.S.C. § 1592 civil penalties up to 4.0x lawful duty loss.
+            Holding a Bachelor of Commerce in Economic Sciences (International Trade) from the University of Pretoria, I approached this problem from statutory first principles: international trade compliance and customs valuation are strictly deterministic state machines, not probabilistic text completions. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic 19 U.S.C. § 1592 civil penalties up to 4.0x lawful duty loss.
           </p>
           <p>
-            I built Trade Systems Studio to prove a deterministic alternative: use spatial document vision (Docling) strictly to extract bounding box coordinates, and use deterministic Python rules engines to enforce 19 CFR valuation math, WCO GRI 1 to 6 classification hierarchies, and CargoWise UniversalShipment XML schemas.
+            I built Trade Systems Studio to prove a deterministic alternative: use spatial document vision (Docling) strictly to extract bounding box coordinates, and use deterministic Python rules engines with Python Decimal to enforce 19 CFR valuation math, WCO GRI 1 to 6 classification hierarchies, and CargoWise UniversalShipment XML schemas with zero float drift.
           </p>
           <p className="text-slate-400 font-mono text-[11px]">
             Whether you want to deploy this pre-audit firewall in front of your CargoWise instance, or bring me in to architect autonomous trade systems for your engineering scale-up, you can test the exact production code right on this page.

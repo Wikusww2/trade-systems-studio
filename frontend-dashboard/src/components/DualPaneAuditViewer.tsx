@@ -28,8 +28,9 @@ import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
 import { auditUploadedPdf } from "@/lib/clientAuditor";
+import { INITIAL_CUSTOMS_NIGHTMARE_FIXTURE } from "@/data/mockData";
+import { VERIFIED_PYTEST_COUNT } from "@/lib/metrics";
 import { ParadigmSwitcher, ParadigmId } from "./ParadigmSwitcher";
-import { Var1Workbench } from "./variations/Var1Workbench";
 import { Var2TriageQueue } from "./variations/Var2TriageQueue";
 import { ThreeWayResolutionBar } from "./ThreeWayResolutionBar";
 import { FirewallProvider, usePreIngestFirewall, playPseudoHaptic } from "@/lib/firewall-core";
@@ -122,7 +123,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
   const { exportAuditPacket } = usePreIngestFirewall();
   const [activeParadigm, setActiveParadigm] = useState<ParadigmId>("var-1");
   const [activeConceptId, setActiveConceptId] = useState<string>("concept_1_customs");
-  const [auditData, setAuditData] = useState<AuditResult | null>(null);
+  const [auditData, setAuditData] = useState<AuditResult>(INITIAL_CUSTOMS_NIGHTMARE_FIXTURE);
   const [aggregateMetrics, setAggregateMetrics] = useState<KillShotMetrics | null>(null);
   const [activeDiscrepancyId, setActiveDiscrepancyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -450,7 +451,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
         {isMobileNavOpen && (
           <div className="sm:hidden pt-3 pb-2 mt-2 border-t border-[#1F2937] space-y-2 font-mono text-xs">
             <div className="pb-2 flex justify-center">
-              <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
+              <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} showLabel={false} />
             </div>
             <a
               href="#workbench"
@@ -487,7 +488,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
         {/* Mobile Paradigm Switcher Bar (only when menu is closed) */}
         {!isMobileNavOpen && (
           <div className="sm:hidden px-3 py-2 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-center">
-            <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
+            <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} showLabel={false} />
           </div>
         )}
 
@@ -512,7 +513,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>43/43 Automated Tests Passing</span>
+                  <span>{`${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Automated Tests Passing`}</span>
                 </span>
               </div>
 
@@ -542,7 +543,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                   ? "Cash leaks at the carrier invoice and the duty payment. Both are intercepted here before the wire releases: 5% to 15% of freight spend is recoverable billing error, not cost of doing business."
                   : persona === "counsel"
                   ? "Every finding cites its statute and carries a contestable provenance record. 19 U.S.C. § 1592 negligence exposure runs 0.25x to 4.0x lawful duty loss (quantified from the entry, not estimated)."
-                  : "No external API in the critical path. Deterministic fallback keeps the engine live offline, 43/43 pytest tests verify the kernel, and Python Decimal eliminates floating-point drift in every statutory figure."}
+                  : `No external API in the critical path. Deterministic fallback keeps the engine live offline, ${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} pytest tests verify the kernel, and Python Decimal eliminates floating-point drift in every statutory figure.`}
               </p>
             </div>
 
@@ -836,15 +837,20 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 </div>
 
                 {/* PDF Link */}
-                <a
-                  href={resolveAssetPath(auditData?.document_url || `/nightmares/${auditData?.document_filename}`)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-mono text-slate-400 hover:text-blue-400 flex items-center gap-1 border border-[#1F2937] px-2 py-1 rounded-md transition-colors"
-                >
-                  <span>PDF</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                {(() => {
+                  const safePdfPath = auditData?.document_url || (auditData?.document_filename ? `/nightmares/${auditData.document_filename}` : "/nightmares/nightmare_01_customs_ci.pdf");
+                  return (
+                    <a
+                      href={resolveAssetPath(safePdfPath)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-mono text-slate-400 hover:text-blue-400 flex items-center gap-1 border border-[#1F2937] px-2 py-1 rounded-md transition-colors"
+                    >
+                      <span>PDF</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  );
+                })()}
               </div>
 
               {/* Sub-Tab 1: Discrepancies Redline */}

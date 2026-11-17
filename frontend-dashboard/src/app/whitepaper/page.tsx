@@ -124,7 +124,7 @@ export default function WhitepaperPage() {
             <div className="pt-3 border-t border-[#1F2937] text-[11px] font-mono text-slate-500 space-y-1">
               <div>Author: <span className="text-slate-300 font-semibold">Samuel</span></div>
               <div>Role: <span className="text-slate-300">Principal AI Systems Architect</span></div>
-              <div>Status: <span className="text-emerald-400 font-semibold">43/43 Tests Verified</span></div>
+              <div>Status: <span className="text-emerald-400 font-semibold">87/87 Tests Verified</span></div>
             </div>
           </div>
         </aside>
@@ -238,7 +238,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
               </div>
 
               <p>
-                Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified across 43 automated tests.
+                Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified across 87 automated tests.
               </p>
             </div>
           </section>
@@ -448,7 +448,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                   rel="noreferrer"
                   className="px-4 py-2.5 rounded bg-[#0F172A] hover:bg-slate-800 text-slate-200 border border-[#1F2937] font-mono text-xs transition-colors flex items-center gap-1.5"
                 >
-                  <span>Review Codebase (43/43 Tests)</span>
+                  <span>Review Codebase (87/87 Tests)</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>

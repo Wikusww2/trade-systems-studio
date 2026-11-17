@@ -70,6 +70,17 @@ def sync_metrics_in_docs(count: int) -> None:
                 f.write(updated)
             print(f"Synchronized test metrics in {os.path.relpath(doc, REPO_ROOT)} -> {count}/{count}")
 
+    metrics_ts = os.path.join(REPO_ROOT, "frontend-dashboard", "src", "lib", "metrics.ts")
+    content = f"""/**
+ * Single Source of Truth for verified pytest test count and system metrics.
+ * Maintained in strict parity with `pytest tests/` output.
+ */
+export const VERIFIED_PYTEST_COUNT = {count};
+"""
+    with open(metrics_ts, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"Synchronized metrics.ts -> {count}")
+
 
 def check_banned_terms() -> int:
     violations = 0

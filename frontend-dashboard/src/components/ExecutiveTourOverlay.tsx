@@ -16,6 +16,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { sound } from "@/lib/audio";
+import { VERIFIED_PYTEST_COUNT } from "@/lib/metrics";
 
 interface TourStep {
   id: string;
@@ -67,9 +68,9 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: "step-5",
     targetId: "audit-workspace",
-    title: "Verifiable Proof: 43/43 Tests & API Playground",
+    title: `Verifiable Proof: ${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Tests & API Playground`,
     badge: "05 / PRODUCTION RIGOR",
-    description: "Every financial and customs formula is backed by 100% Python Decimal precision. Inspect 41 passing Pytest suites, review 33k audits/sec benchmarks, and simulate live REST requests in the API Playground.",
+    description: `Every financial and customs formula is backed by 100% Python Decimal precision. Inspect ${VERIFIED_PYTEST_COUNT} passing Pytest suites, review 33k audits/sec benchmarks, and simulate live REST requests in the API Playground.`,
     statute: "33,496 audits/sec • p99 < 0.09 ms • Zero Floating-Point Drift",
     actionHint: "Click 'Architecture & Tests' in the header to run live API simulations and view recruiter defenses.",
   },

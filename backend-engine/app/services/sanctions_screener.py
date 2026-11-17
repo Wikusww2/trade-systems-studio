@@ -1,5 +1,7 @@
 import asyncio
-from typing import Any, Dict, List, Optional
+import json
+import os
+from typing import Any, Dict, List, Optional, Set
 
 import httpx
 import rapidfuzz.fuzz
@@ -311,12 +313,247 @@ class SanctionsScreener:
     """
     High-performance entity screening engine using rapidfuzz token_sort_ratio
     with OpenSanctions yente schema compatibility and optional live yente API integration.
+    Loads real FollowTheMoney dataset from disk (yente_ofac_ftm.jsonl) with in-memory fallback.
     """
     def __init__(self, yente_url: Optional[str] = None):
         self.yente_url = (yente_url or settings.YENTE_API_URL or "").strip().rstrip("/")
-        self.entities: List[SanctionsEntity] = [
-            SanctionsEntity(**entry) for entry in EMBEDDED_SANCTIONS_DATASET
-        ]
+        self.entities: List[SanctionsEntity] = self._load_entities()
+        self.networks: Dict[str, Dict[str, Any]] = self._load_networks()
+
+    def _load_entities(self) -> List[SanctionsEntity]:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        jsonl_path = os.path.join(current_dir, "../data/yente_ofac_ftm.jsonl")
+        entities: List[SanctionsEntity] = []
+
+        if os.path.exists(jsonl_path):
+            try:
+                with open(jsonl_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        rec = json.loads(line)
+                        schema = rec.get("schema")
+                        if schema in ("Company", "LegalEntity", "Person", "Vessel", "Organization"):
+                            props = rec.get("properties", {})
+                            name = (props.get("name") or [""])[0]
+                            if name:
+                                entities.append(
+                                    SanctionsEntity(
+                                        id=rec.get("id"),
+                                        schema_type=schema,
+                                        name=name,
+                                        aliases=props.get("alias", []),
+                                        country=props.get("country", []),
+                                        programs=props.get("program", []),
+                                        topics=props.get("topics", []),
+                                        description=(props.get("description") or [None])[0],
+                                    )
+                                )
+            except Exception:
+                pass
+
+        if not entities:
+            entities = [SanctionsEntity(**entry) for entry in EMBEDDED_SANCTIONS_DATASET]
+        return entities
+
+    def _load_networks(self) -> Dict[str, Dict[str, Any]]:
+        networks: Dict[str, Dict[str, Any]] = dict(CORPORATE_OWNERSHIP_NETWORKS)
+        # Augment with additional scenario networks
+        networks["baltic-semiconductor-485"] = {
+            "target": {
+                "id": "baltic-semiconductor-485",
+                "label": "Baltic Semiconductor Fabrications OU",
+                "country": "EE",
+                "is_blocked": False,
+                "risk_level": "CLEAN_COMMERCIAL",
+                "programs": [],
+                "sanction_authority": None,
+                "notes": "Near-threshold 48.5% unblocked target under the OFAC 50% Rule."
+            },
+            "nodes": [
+                {
+                    "id": "baltic-semiconductor-485",
+                    "label": "Baltic Semiconductor Fabrications OU",
+                    "country": "EE",
+                    "is_blocked": False,
+                    "risk_level": "CLEAN_COMMERCIAL",
+                    "programs": [],
+                    "sanction_authority": None
+                },
+                {
+                    "id": "node-ivan-volkov",
+                    "label": "Ivan Volkov (SDN)",
+                    "country": "RU",
+                    "is_blocked": True,
+                    "risk_level": "SDN_BLOCKED",
+                    "programs": ["OFAC SDN (E.O. 14024)"],
+                    "sanction_authority": "OFAC"
+                },
+                {
+                    "id": "node-tallinn-venture",
+                    "label": "Tallinn Venture Capital OU",
+                    "country": "EE",
+                    "is_blocked": False,
+                    "risk_level": "CLEAN_COMMERCIAL",
+                    "programs": [],
+                    "sanction_authority": None
+                }
+            ],
+            "edges": [
+                {
+                    "source_id": "node-ivan-volkov",
+                    "target_id": "baltic-semiconductor-485",
+                    "ownership_pct": 48.5,
+                    "relationship_type": "BENEFICIAL_OWNER"
+                },
+                {
+                    "source_id": "node-tallinn-venture",
+                    "target_id": "baltic-semiconductor-485",
+                    "ownership_pct": 51.5,
+                    "relationship_type": "COMMERCIAL_SHAREHOLDER"
+                }
+            ]
+        }
+        networks["arctic-minerals-sub"] = {
+            "target": {
+                "id": "arctic-minerals-sub",
+                "label": "Arctic Minerals Processing AS",
+                "country": "NO",
+                "is_blocked": False,
+                "risk_level": "HIGH_RISK_INDIRECT",
+                "programs": [],
+                "sanction_authority": "OFAC",
+                "notes": "Indirectly controlled by blocked oligarch Victor Petrov via Nordic Titan (60% * 90% = 54%)."
+            },
+            "nodes": [
+                {
+                    "id": "arctic-minerals-sub",
+                    "label": "Arctic Minerals Processing AS",
+                    "country": "NO",
+                    "is_blocked": False,
+                    "risk_level": "HIGH_RISK_INDIRECT",
+                    "programs": []
+                },
+                {
+                    "id": "nordic-titan-holdings",
+                    "label": "Nordic Titan Holdings AS",
+                    "country": "NO",
+                    "is_blocked": True,
+                    "risk_level": "SDN_BLOCKED",
+                    "programs": ["OFAC 50% Rule Tier-1"]
+                },
+                {
+                    "id": "node-petrov",
+                    "label": "Victor Petrov (SDN Oligarch)",
+                    "country": "RU",
+                    "is_blocked": True,
+                    "risk_level": "SDN_BLOCKED",
+                    "programs": ["OFAC SDN (E.O. 14024)"]
+                }
+            ],
+            "edges": [
+                {
+                    "source_id": "nordic-titan-holdings",
+                    "target_id": "arctic-minerals-sub",
+                    "ownership_pct": 90.0,
+                    "relationship_type": "PARENT_HOLDING"
+                },
+                {
+                    "source_id": "node-petrov",
+                    "target_id": "nordic-titan-holdings",
+                    "ownership_pct": 60.0,
+                    "relationship_type": "CONTROLLING_INTEREST"
+                }
+            ]
+        }
+        networks["cyprus-holding-alpha"] = {
+            "target": {
+                "id": "cyprus-holding-alpha",
+                "label": "Alpha Maritime Holdings Ltd",
+                "country": "CY",
+                "is_blocked": False,
+                "risk_level": "HIGH_RISK_SHELL",
+                "programs": []
+            },
+            "nodes": [
+                {
+                    "id": "cyprus-holding-alpha",
+                    "label": "Alpha Maritime Holdings Ltd",
+                    "country": "CY",
+                    "is_blocked": False,
+                    "risk_level": "HIGH_RISK_SHELL",
+                    "programs": []
+                },
+                {
+                    "id": "cyprus-holding-beta",
+                    "label": "Beta Marine Investments Ltd",
+                    "country": "CY",
+                    "is_blocked": False,
+                    "risk_level": "HIGH_RISK_SHELL",
+                    "programs": []
+                }
+            ],
+            "edges": [
+                {
+                    "source_id": "cyprus-holding-beta",
+                    "target_id": "cyprus-holding-alpha",
+                    "ownership_pct": 100.0,
+                    "relationship_type": "CROSS_HOLDING"
+                },
+                {
+                    "source_id": "cyprus-holding-alpha",
+                    "target_id": "cyprus-holding-beta",
+                    "ownership_pct": 100.0,
+                    "relationship_type": "CROSS_HOLDING"
+                }
+            ]
+        }
+        return networks
+
+    def calculate_effective_blocked_ownership(
+        self,
+        target_id: str,
+        visited: Optional[Set[str]] = None
+    ) -> float:
+        """
+        Recursively calculates aggregate blocked ownership percentage under OFAC 50% Rule.
+        Handles direct and multi-hop indirect equity holdings with cycle prevention.
+        """
+        if visited is None:
+            visited = set()
+        if target_id in visited:
+            return 0.0
+        visited.add(target_id)
+
+        network = self.networks.get(target_id)
+        if not network:
+            ent = next((e for e in self.entities if e.id == target_id), None)
+            if ent and any("OFAC" in p or "SDN" in p or "sanction" in ent.topics for p in ent.programs):
+                return 100.0
+            return 0.0
+
+        target_info = network.get("target", {})
+        if target_info.get("is_blocked"):
+            return 100.0
+
+        nodes = {n["id"]: n for n in network.get("nodes", [])}
+        edges = network.get("edges", [])
+
+        total_blocked_pct = 0.0
+        for edge in edges:
+            if edge.get("target_id") == target_id:
+                owner_id = edge.get("source_id")
+                pct = float(edge.get("ownership_pct", 0.0))
+                owner_node = nodes.get(owner_id, {})
+                if owner_node.get("is_blocked"):
+                    total_blocked_pct += pct
+                else:
+                    indirect_pct = self.calculate_effective_blocked_ownership(owner_id, visited.copy())
+                    if indirect_pct >= 50.0:
+                        total_blocked_pct += pct
+
+        return min(round(total_blocked_pct, 2), 100.0)
 
     def match_entity(self, query_name: Optional[str], threshold: float = 85.0) -> EntityMatch:
         """
@@ -492,7 +729,7 @@ class SanctionsScreener:
         """
         Traverses corporate ownership graph and evaluates the OFAC 50% Rule.
         """
-        data = CORPORATE_OWNERSHIP_NETWORKS.get(target_id)
+        data = self.networks.get(target_id) or CORPORATE_OWNERSHIP_NETWORKS.get(target_id)
         if not data:
             match = next((e for e in self.entities if e.id == target_id), None)
             target_name = match.name if match else target_id

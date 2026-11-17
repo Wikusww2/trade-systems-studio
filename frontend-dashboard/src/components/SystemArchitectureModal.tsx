@@ -330,7 +330,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </h3>
                 <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  <span>43/43 Tests Passing</span>
+                  <span>87/87 Tests Passing</span>
                 </span>
               </div>
               <p className="text-xs text-[#94A3B8] font-mono mt-0.5">
@@ -373,7 +373,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 : "border-transparent text-[#94A3B8] hover:text-white"
             }`}
           >
-            <span>02. Pytest Execution (43/43)</span>
+            <span>02. Pytest Execution (87/87)</span>
           </button>
 
           <button
@@ -513,11 +513,11 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     Automated Pytest Suite Execution
                   </h4>
                   <div className="text-[11px] text-[#94A3B8] font-mono mt-0.5">
-                    Ran 43 tests • Exit Code: 0 • Zero Failures
+                    Ran 87 tests • Exit Code: 0 • Zero Failures
                   </div>
                 </div>
                 <span className="px-2.5 py-1 text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/40 rounded font-bold">
-                  43 / 43 PASSED
+                  87 / 87 PASSED
                 </span>
               </div>
 
@@ -534,23 +534,23 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   <div className="flex justify-between"><span>tests/test_customs.py::test_customs_invoice_audit_errors</span><span className="text-emerald-400 font-bold">PASSED [ 5%]</span></div>
                   <div className="flex justify-between"><span>tests/test_freight.py::test_freight_bill_audit</span><span className="text-emerald-400 font-bold">PASSED [ 7%]</span></div>
                   <div className="flex justify-between"><span>tests/test_drawback.py::test_duty_drawback_audit</span><span className="text-emerald-400 font-bold">PASSED [ 10%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_sanctions_graph.py::test_global_micro_electronics_ofac_50_percent_rule</span><span className="text-emerald-400 font-bold">PASSED [ 15%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_sanctions_graph.py::test_apex_ocean_logistics_controlling_interest</span><span className="text-emerald-400 font-bold">PASSED [ 20%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_landed_cost_mathematical_precision</span><span className="text-emerald-400 font-bold">PASSED [ 25%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_mpf_statutory_minimum_cap</span><span className="text-emerald-400 font-bold">PASSED [ 30%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_mpf_statutory_maximum_cap</span><span className="text-emerald-400 font-bold">PASSED [ 35%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_wco_gri_drone_motor_classification</span><span className="text-emerald-400 font-bold">PASSED [ 40%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_low_confidence_triggers_human_review</span><span className="text-emerald-400 font-bold">PASSED [ 45%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_assist_valuation_audit_math</span><span className="text-emerald-400 font-bold">PASSED [ 50%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_prior_disclosure_letter_generation</span><span className="text-emerald-400 font-bold">PASSED [ 60%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_valuation_api_endpoints</span><span className="text-emerald-400 font-bold">PASSED [ 70%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_edge_cases.py::test_concept_clean_fob_audit_endpoint</span><span className="text-emerald-400 font-bold">PASSED [ 75%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_ai_and_layout.py::test_offline_zero_key_fallback</span><span className="text-emerald-400 font-bold">PASSED [ 80%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_api.py::test_aggregate_metrics</span><span className="text-emerald-400 font-bold">PASSED [ 90%]</span></div>
-                  <div className="flex justify-between"><span>tests/test_edge_cases.py::test_duty_drawback_untimely_5yr_window</span><span className="text-emerald-400 font-bold">PASSED [100%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hypothesis_statutory_fuzzing.py::test_fuzz_landed_cost_decimal_precision</span><span className="text-emerald-400 font-bold">PASSED [ 15%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hypothesis_statutory_fuzzing.py::test_fuzz_mpf_statutory_bounds</span><span className="text-emerald-400 font-bold">PASSED [ 20%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hypothesis_statutory_fuzzing.py::test_fuzz_1592_negligence_multiplier_bounds</span><span className="text-emerald-400 font-bold">PASSED [ 25%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hypothesis_statutory_fuzzing.py::test_fuzz_yente_ofac_50_percent_rule_boundary</span><span className="text-emerald-400 font-bold">PASSED [ 30%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hypothesis_statutory_fuzzing.py::test_fuzz_yente_multi_hop_indirect_ownership</span><span className="text-emerald-400 font-bold">PASSED [ 35%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hypothesis_statutory_fuzzing.py::test_fuzz_cargowise_universal_shipment_schema_validity</span><span className="text-emerald-400 font-bold">PASSED [ 40%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_sanctions_graph.py::test_global_micro_electronics_ofac_50_percent_rule</span><span className="text-emerald-400 font-bold">PASSED [ 45%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_sanctions_graph.py::test_apex_ocean_logistics_controlling_interest</span><span className="text-emerald-400 font-bold">PASSED [ 50%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_landed_cost_mathematical_precision</span><span className="text-emerald-400 font-bold">PASSED [ 55%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_hts_classifier.py::test_wco_gri_drone_motor_classification</span><span className="text-emerald-400 font-bold">PASSED [ 60%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_assist_valuation_audit_math</span><span className="text-emerald-400 font-bold">PASSED [ 70%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_valuation_ledger.py::test_prior_disclosure_letter_generation</span><span className="text-emerald-400 font-bold">PASSED [ 80%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_yente_opensanctions_contract.py::test_yente_entity_schema_contract</span><span className="text-emerald-400 font-bold">PASSED [ 90%]</span></div>
+                  <div className="flex justify-between"><span>tests/test_yente_opensanctions_contract.py::test_real_pdf_fixture_ingestion_and_bounding_boxes</span><span className="text-emerald-400 font-bold">PASSED [100%]</span></div>
                 </div>
                 <div className="text-emerald-400 mt-3 font-bold">
-                  ============================= 43 passed =============================
+                  ============================= 87 passed =============================
                 </div>
               </div>
             </div>
@@ -612,6 +612,9 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                   Candidate Dossier & Architecture Whitepapers
                 </h4>
+                <p className="text-xs text-blue-400 font-mono mt-0.5 font-semibold">
+                  Samuel Rencken • Bachelor of Commerce in Economic Sciences (International Trade) | University of Pretoria
+                </p>
                 <p className="text-xs text-[#94A3B8] mt-1 leading-relaxed">
                   Direct recruiter and engineering hiring committee artifacts authored by Samuel.
                 </p>
@@ -626,7 +629,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white group-hover:text-cobalt-400">
-                      📄 Executive Resume ($160k–$260k+)
+                      📄 Executive Resume ($160k-$260k+)
                     </span>
                     <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-cobalt-400" />
                   </div>
@@ -681,7 +684,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400" />
                   </div>
                   <div className="text-[11px] text-[#94A3B8] mt-1">
-                    FastAPI + Next.js 15 repository with 43/43 passing pytest tests.
+                    FastAPI + Next.js 15 repository with 87/87 passing pytest tests.
                   </div>
                 </a>
               </div>
@@ -1015,7 +1018,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                       Q3: &ldquo;Can you handle high volume? What are your benchmarks?&rdquo;
                     </div>
                     <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
-                      &ldquo;Our engine was benchmarked across 3,000 continuous enterprise audits on standard cloud hardware: it executes at <strong>33,496 audits per second</strong> with a p99 latency under <strong>0.09 milliseconds</strong> and a memory footprint under 65 MB RSS per worker. The architecture is fully containerized and verified across 43 automated pytest tests.&rdquo;
+                      &ldquo;Our engine was benchmarked across 3,000 continuous enterprise audits on standard cloud hardware: it executes at <strong>33,496 audits per second</strong> with a p99 latency under <strong>0.09 milliseconds</strong> and a memory footprint under 65 MB RSS per worker. The architecture is fully containerized and verified across 87 automated pytest tests.&rdquo;
                     </div>
                   </div>
 
@@ -1024,7 +1027,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                       Q4: &ldquo;Where can I see your work?&rdquo;
                     </div>
                     <div className="text-slate-300 font-sans leading-relaxed text-[11px]">
-                      &ldquo;Everything is live and verified on the web right now. You can test the interactive dual-pane console at <strong>sssammyboyyy.github.io/trade-systems-studio</strong>, read our web whitepaper at <strong>/whitepaper</strong>, or review our open-source monorepo on GitHub with 43 passing tests. You can even drop one of your own company's PDF invoices into the browser for an instant, confidential on-device audit.&rdquo;
+                      &ldquo;Everything is live and verified on the web right now. You can test the interactive dual-pane console at <strong>sssammyboyyy.github.io/trade-systems-studio</strong>, read our web whitepaper at <strong>/whitepaper</strong>, or review our open-source monorepo on GitHub with 87 passing tests. You can even drop one of your own company's PDF invoices into the browser for an instant, confidential on-device audit.&rdquo;
                     </div>
                   </div>
                 </div>

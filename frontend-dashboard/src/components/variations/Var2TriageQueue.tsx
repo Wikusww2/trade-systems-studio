@@ -5,6 +5,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { usePreIngestFirewall, playPseudoHaptic } from "@/lib/firewall-core";
 import { ThreeWayResolutionBar } from "../ThreeWayResolutionBar";
 import { ResolutionActionType } from "@/lib/types";
+import { resolveAssetPath } from "@/lib/assets";
 import {
   Clock,
   Filter,
@@ -40,6 +41,10 @@ export interface TriageInvoiceRow {
   severity: "critical" | "warning" | "opportunity";
   cutoffSeconds: number;
   status: "QUARANTINED" | "RELEASED" | "ESCALATED";
+  pdfFilename?: string;
+  yenteEntityId?: string;
+  yenteMatchScore?: number;
+  ownershipPath?: string;
 }
 
 // Deterministic generator of 500 realistic commercial invoice triage records
@@ -121,8 +126,77 @@ const STATUTORY_CONFIGS = [
 ];
 
 function generate500Invoices(): TriageInvoiceRow[] {
-  const rows: TriageInvoiceRow[] = [];
-  for (let i = 1; i <= 500; i++) {
+  const rows: TriageInvoiceRow[] = [
+    {
+      id: "DISC-ROW-0001",
+      entryNumber: "CBP-7501-8841-01",
+      carrier: "MAERSK LINE",
+      corridor: "YTN -> LAX (Transpacific)",
+      ownerRoute: "broker_desk",
+      statutoryCode: "19 U.S.C. § 1592",
+      discrepancyTitle: "Unreported Dutiable Assist & CIF Freight Deductible Overstatement",
+      discrepancyDescription: "Buyer supplied offshore production tooling ($45,000) without 19 CFR § 152.103 customs assist declaration, creating 19 U.S.C. § 1592 Negligence exposure.",
+      exposureAmount: 125000.0,
+      confidence: 0.82,
+      severity: "critical",
+      cutoffSeconds: 14 * 3600 - 120,
+      status: "QUARANTINED",
+      pdfFilename: "nightmare_01_customs_ci.pdf",
+    },
+    {
+      id: "DISC-ROW-0002",
+      entryNumber: "BOL-MEDU-9921-02",
+      carrier: "MSC MEDITERRANEAN",
+      corridor: "SHA -> LGB (Transpacific)",
+      ownerRoute: "ap_carrier_dispute",
+      statutoryCode: "FMC Docket 21-08 / OSRA 2022",
+      discrepancyTitle: "Unauthorized Dual Chassis Split & Inflated Fuel Surcharge (FSC)",
+      discrepancyDescription: "Carrier invoiced unauthorized $450 chassis split fee and inflated FSC on clean port gate-out within 4-day free time.",
+      exposureAmount: 1259.8,
+      confidence: 0.94,
+      severity: "warning",
+      cutoffSeconds: 14 * 3600 - 450,
+      status: "QUARANTINED",
+      pdfFilename: "nightmare_02_freight_audit.pdf",
+    },
+    {
+      id: "DISC-ROW-0003",
+      entryNumber: "CBP-7501-DRAW-03",
+      carrier: "COSCO SHIPPING",
+      corridor: "BUS -> OAK (Transpacific)",
+      ownerRoute: "ap_carrier_dispute",
+      statutoryCode: "19 U.S.C. § 1313",
+      discrepancyTitle: "Unclaimed 99% Direct Identification Duty Drawback on Export BOL",
+      discrepancyDescription: "Matching 10-digit HTS 8542.31.0000 import entry matched paired export Bill of Lading within 5-year statutory window.",
+      exposureAmount: 19800.0,
+      confidence: 0.97,
+      severity: "opportunity",
+      cutoffSeconds: 14 * 3600 - 900,
+      status: "RELEASED",
+      pdfFilename: "nightmare_03_duty_drawback.pdf",
+    },
+    {
+      id: "DISC-ROW-0004",
+      entryNumber: "OFAC-501-SDN-04",
+      carrier: "HAPAG-LLOYD",
+      corridor: "HAM -> NYC (Transatlantic)",
+      ownerRoute: "broker_desk",
+      statutoryCode: "31 CFR § 501 / OFAC 50%",
+      discrepancyTitle: "Blocked Entity Corporate Hierarchy: 55% Aggregate SDN Ownership",
+      discrepancyDescription: "Target entity bis-el-cn-0941 owned 25% by Victor Petrov (SDN) and 30% by Rosoboronexport JSC (SDN). Blocked by operation of law under OFAC 50% Rule.",
+      exposureAmount: 350000.0,
+      confidence: 0.99,
+      severity: "critical",
+      cutoffSeconds: 14 * 3600 - 300,
+      status: "QUARANTINED",
+      pdfFilename: "nightmare_04_ofac_registry.pdf",
+      yenteEntityId: "bis-el-cn-0941",
+      yenteMatchScore: 98.5,
+      ownershipPath: "Victor Petrov (25% SDN) + Rosoboronexport JSC (30% SDN) -> 55.0% Blocked",
+    },
+  ];
+
+  for (let i = 5; i <= 500; i++) {
     const config = STATUTORY_CONFIGS[i % STATUTORY_CONFIGS.length];
     const carrier = CARRIERS[i % CARRIERS.length];
     const corridor = CORRIDORS[i % CORRIDORS.length];
@@ -549,6 +623,32 @@ export const Var2TriageQueue: React.FC = () => {
               <div className="font-semibold text-slate-200">{inspectedRow.discrepancyTitle}</div>
               <p className="text-slate-300 leading-relaxed font-sans">{inspectedRow.discrepancyDescription}</p>
             </div>
+
+            {/* Provenance & Real Multi-Page PDF Link */}
+            {inspectedRow.pdfFilename && (
+              <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div>
+                  <div className="text-[10px] uppercase text-blue-400 font-bold tracking-wider">
+                    DOCUMENT PROVENANCE
+                  </div>
+                  <div className="text-slate-200 font-semibold mt-0.5">{inspectedRow.pdfFilename}</div>
+                  {inspectedRow.ownershipPath && (
+                    <div className="text-[11px] text-amber-400 font-mono mt-1">
+                      yente Graph: {inspectedRow.ownershipPath}
+                    </div>
+                  )}
+                </div>
+                <a
+                  href={resolveAssetPath(`/nightmares/${inspectedRow.pdfFilename}`)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold rounded-md transition-colors shrink-0"
+                >
+                  <span>Open Archival PDF</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            )}
 
             {/* Mounted ThreeWayResolutionBar */}
             <div className="pt-2">

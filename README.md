@@ -4,7 +4,7 @@
 [![Whitepaper](https://img.shields.io/badge/Whitepaper-Interactive%20Edition-8b5cf6?style=for-the-badge&logo=googledocs&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)
 [![Scale](https://img.shields.io/badge/Benchmark-33k%20audits%2Fsec-059669?style=for-the-badge&logo=speedtest&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/blob/main/docs/PERFORMANCE_AND_SCALE_BENCHMARKS.md)
 [![CI](https://img.shields.io/badge/CI-Passing-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Pytest-50%2F50%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
+[![Tests](https://img.shields.io/badge/Pytest-87%2F87%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
@@ -118,7 +118,7 @@ trade-systems-studio/
 │   │   │   ├── ai_classifier.py    # Structured outputs classifier
 │   │   │   └── fixture_generator.py# ReportLab synthetic PDF generator
 │   │   └── data/nightmares/     # Ground-truth PDF fixtures with known statutory defects
-│   ├── tests/                   # 50 automated tests across 13 test modules (pytest -v)
+│   ├── tests/                   # 87 automated tests across 14 test modules (pytest -v)
 │   ├── benchmark.py             # Concurrency benchmarking suite (33,496 audits/sec)
 │   ├── demo.py                  # CLI multi-statute evaluation tool
 │   └── main.py
@@ -180,7 +180,7 @@ trade-systems-studio/
 ## ⚡ Automated Verification
 
 ```bash
-# 1. Verify Backend Engine (All 50 statutory tests pass with exit code 0)
+# 1. Verify Backend Engine (All 87 statutory tests pass with exit code 0)
 cd backend-engine
 pytest -v
 

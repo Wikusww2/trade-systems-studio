@@ -295,7 +295,55 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     },
     offline_fallback_active: true,
   },
+  concept_4_sanctions: {
+    concept_id: "concept_4_sanctions",
+    title: "Concept 4: OFAC 50% Rule & Entity Resolution",
+    subtitle: "31 CFR § 501 Blocked Entity Aggregation & EAR Defense Watchlist",
+    document_filename: "nightmare_04_ofac_registry.pdf",
+    document_url: "/nightmares/nightmare_04_ofac_registry.pdf",
+    metrics: {
+      penalty_exposure_avoided: 350000.0,
+      carrier_overbilling_caught: 0,
+      drawback_unclaimed_unlocked: 0,
+    },
+    discrepancies: [
+      {
+        id: "disc-c4-01",
+        concept_id: "concept_4_sanctions",
+        title: "31 CFR § 501 Aggregate Blocked Ownership Violation (55%)",
+        description:
+          "Target entity bis-el-cn-0941 is owned 25% by Victor Petrov (SDN) and 30% by Rosoboronexport JSC (SDN). Aggregate blocked ownership is 55%, rendering the entity blocked by operation of law under the OFAC 50% Rule.",
+        severity: "critical",
+        confidence: 0.99,
+        bounding_box: {
+          x: 42.0,
+          y: 620.0,
+          width: 535.0,
+          height: 100.0,
+          page_number: 1,
+          confidence: 0.99,
+        },
+        statutory_code: "31 CFR § 501",
+        statutory_defense: "OFAC 50 Percent Rule",
+        exposure_amount: 350000.0,
+        metadata: {
+          blocked_ownership_pct: "55.0%",
+          blocking_entities: ["Victor Petrov (25%)", "Rosoboronexport JSC (30%)"],
+          compliance_action: "BLOCK_AND_REPORT",
+        },
+      },
+    ],
+    extracted_data: {
+      entity_id: "bis-el-cn-0941",
+      name: "Global Micro Electronics Ltd",
+      aggregate_blocked_pct: 55.0,
+      action: "BLOCK_AND_REPORT",
+    },
+    offline_fallback_active: true,
+  },
 };
+
+export const INITIAL_CUSTOMS_NIGHTMARE_FIXTURE: AuditResult = MOCK_AUDIT_DATA["concept_1_customs"];
 
 export const MOCK_SANCTIONS_GRAPHS: Record<string, CorporateGraphResponse> = {
   "bis-el-cn-0941": {

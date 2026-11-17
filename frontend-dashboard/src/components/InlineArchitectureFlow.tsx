@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { FileText, Cpu, CheckCircle2, ShieldCheck, ArrowRight, Code, Database, Network } from "lucide-react";
+import { VERIFIED_PYTEST_COUNT } from "@/lib/metrics";
 
 interface PipelineStage {
   id: string;
@@ -99,7 +100,7 @@ export const InlineArchitectureFlow: React.FC = () => {
               System Architecture &amp; Data Pipeline
             </span>
             <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
-              43/43 Verified Automated Tests
+              {`${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Verified Automated Tests`}
             </span>
           </div>
           <h2 className="text-lg sm:text-xl font-black text-slate-100 tracking-tight mt-1 font-sans">
