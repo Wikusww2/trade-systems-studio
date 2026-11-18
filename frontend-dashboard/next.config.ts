@@ -1,3 +1,4 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -10,6 +11,7 @@ const distDir = process.env.NODE_ENV === "development" ? ".next-dev" : ".next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "export",
+  outputFileTracingRoot: path.join(__dirname),
   basePath: basePath || undefined,
   trailingSlash: true,
   distDir,
