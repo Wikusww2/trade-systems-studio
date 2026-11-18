@@ -109,6 +109,8 @@ jobs:
 
       - name: Run Next.js production static export build (root path for E2E)
         working-directory: frontend-dashboard
+        env:
+          NEXT_PUBLIC_OFFLINE_MODE: "true"
         run: npm run build
 
       - name: Set up Python & Playwright Chromium for E2E smoke gate
@@ -119,7 +121,7 @@ jobs:
       - name: Run desktop & mobile Playwright E2E smoke check
         run: |
           python -m pip install --upgrade pip playwright
-          python -m playwright install chromium --with-deps
+          python -m playwright install chromium
           python scripts/run_e2e_playwright.py
 
       - name: Verify GitHub Pages basePath static export build

@@ -6,9 +6,8 @@ Runs all 4 enterprise pillars with strict mathematical determinism (100% Python 
 and sub-millisecond statutory compliance evaluation.
 """
 
-import sys
 import time
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
 # ANSI Color Codes
 CYAN = "\033[96m"

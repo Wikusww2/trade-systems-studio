@@ -25,8 +25,10 @@ const isPublicHost =
   isBrowser &&
   window.location.hostname !== "localhost" &&
   window.location.hostname !== "127.0.0.1";
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || (isPublicHost ? "" : "http://localhost:8000");
+const isOfflineForced = process.env.NEXT_PUBLIC_OFFLINE_MODE === "true";
+const API_BASE = isOfflineForced
+  ? ""
+  : process.env.NEXT_PUBLIC_API_URL || (isPublicHost ? "" : "http://localhost:8000");
 
 export async function fetchAudit(conceptId: string): Promise<AuditResult> {
   if (!API_BASE) {
