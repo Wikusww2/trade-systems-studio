@@ -12,3 +12,4 @@ rapidfuzz>=3.0.0
 instructor>=1.0.0
 docling-core>=2.0.0
 hypothesis>=6.100.0
+email-validator>=2.0.0
