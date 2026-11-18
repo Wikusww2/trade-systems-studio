@@ -61,6 +61,9 @@ jobs:
       - name: Verify zero em-dash violations
         run: python scripts/check_em_dashes.py
 
+      - name: Verify dual-surface OKLCH typography and ergonomics tokens
+        run: python scripts/check_typography_tokens.py
+
       - name: Install dependencies
         working-directory: backend-engine
         run: |
