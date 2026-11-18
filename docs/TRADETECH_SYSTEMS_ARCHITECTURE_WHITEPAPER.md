@@ -2,7 +2,7 @@
 ## Deterministic Trade Compliance Engineering: Python Decimal Invariants, Fail-Closed Classification Gating, and Cycle-Safe Corporate Sanctions Graphs
 
 > **Author:** Samuel Rencken  
-> **Academic Foundation:** BCom in Economic Sciences (International Trade), University of Pretoria  
+> **Academic Foundation:** BCom in Economic Sciences (International Trade), North-West University (NWU)  
 > **Role:** Principal AI Systems Architect & Lead TradeTech Engineer  
 > **Interactive Web Edition:** [https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)  
 > **Live Console:** [https://sssammyboyyy.github.io/trade-systems-studio/](https://sssammyboyyy.github.io/trade-systems-studio/)  

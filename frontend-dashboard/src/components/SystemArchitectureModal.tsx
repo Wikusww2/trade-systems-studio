@@ -668,7 +668,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                   Candidate Dossier & Architecture Whitepapers
                 </h4>
                 <p className="text-xs text-blue-400 font-mono mt-0.5 font-semibold">
-                  Samuel Rencken • Bachelor of Commerce in Economic Sciences (International Trade) | University of Pretoria
+                  Samuel Rencken • Bachelor of Commerce in Economic Sciences (International Trade) | North-West University (NWU)
                 </p>
                 <p className="text-xs text-[#94A3B8] mt-1 leading-relaxed">
                   Direct recruiter and engineering hiring committee artifacts authored by Samuel.

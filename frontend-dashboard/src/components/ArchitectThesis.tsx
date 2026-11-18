@@ -25,7 +25,7 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
                 <span className="text-[11px] text-emerald-400 font-semibold">Principal Trade Systems Architect</span>
               </div>
               <p className="text-[11px] text-blue-400 font-mono mt-0.5 font-medium">
-                Bachelor of Commerce in Economic Sciences (International Trade) | University of Pretoria
+                Bachelor of Commerce in Economic Sciences (International Trade) | North-West University (NWU)
               </p>
               <p className="text-[11px] text-slate-400 mt-0.5">
                 Specializing in Autonomous Document Pipelines, Customs Compliance, and CargoWise eAdaptor Infrastructure
@@ -49,7 +49,7 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
             When I started auditing cross-border commercial invoices and carrier freight bills, I noticed a dangerous pattern: logistics teams were plugging raw LLM wrappers directly into customs workflows.
           </p>
           <p>
-            Holding a Bachelor of Commerce in Economic Sciences (International Trade) from the University of Pretoria, I approached this problem from statutory first principles: international trade compliance and customs valuation are strictly deterministic state machines, not probabilistic text completions. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic 19 U.S.C. § 1592 civil penalties up to 4.0x lawful duty loss.
+            Holding a Bachelor of Commerce in Economic Sciences (International Trade) from North-West University (NWU), I approached this problem from statutory first principles: international trade compliance and customs valuation are strictly deterministic state machines, not probabilistic text completions. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic 19 U.S.C. § 1592 civil penalties up to 4.0x lawful duty loss.
           </p>
           <p>
             I built Trade Systems Studio to prove a deterministic alternative: use spatial document vision (local pypdf / Docling layout extraction) strictly to extract bounding box coordinates, and use deterministic Python rules engines with Python Decimal to enforce 19 CFR valuation math, WCO GRI 1 to 6 classification hierarchies, and CargoWise UniversalShipment XML schemas with zero float drift.

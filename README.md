@@ -233,7 +233,7 @@ npm run dev
 ## 👤 The Principal Architect
 
 **Samuel Rencken**  
-*BCom in Economic Sciences (International Trade) | University of Pretoria*  
+*BCom in Economic Sciences (International Trade) | North-West University (NWU)*  
 *Principal Systems Architect & Forward-Deployed TradeTech Lead*  
 
 Samuel operates at the rare intersection of statutory trade legal mechanics (19 U.S.C. § 1592, 19 CFR § 152.103, WCO GRI 1 to 6) and deterministic, zero-drift systems engineering. TradeTech Systems Studio demonstrates how to replace fragile language model wrappers with mathematically verifiable, high-throughput pre-audit firewalls built for global supply chain scale.

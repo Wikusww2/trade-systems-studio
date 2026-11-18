@@ -162,7 +162,7 @@ export default function WhitepaperPage() {
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 pt-2 border-t border-[#1F2937]">
               <div>Author: <span className="text-white font-bold">Samuel Rencken</span></div>
               <div>•</div>
-              <div>Academic Foundation: <span className="text-cyan-400">BCom in Economic Sciences (International Trade), University of Pretoria</span></div>
+              <div>Academic Foundation: <span className="text-cyan-400">BCom in Economic Sciences (International Trade), North-West University (NWU)</span></div>
               <div>•</div>
               <div>Stack: <span className="text-emerald-400">FastAPI + Next.js 15.5.29</span></div>
             </div>
