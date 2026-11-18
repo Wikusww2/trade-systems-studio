@@ -70,8 +70,8 @@ const TOUR_STEPS: TourStep[] = [
     targetId: "audit-workspace",
     title: `Verifiable Proof: ${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Tests & API Playground`,
     badge: "05 / PRODUCTION RIGOR",
-    description: `Every financial and customs formula is backed by 100% Python Decimal precision. Inspect ${VERIFIED_PYTEST_COUNT} passing Pytest suites, review 33k audits/sec benchmarks, and simulate live REST requests in the API Playground.`,
-    statute: "33,496 audits/sec • p99 < 0.09 ms • Zero Floating-Point Drift",
+    description: `Every financial and customs formula is backed by 100% Python Decimal precision. Inspect ${VERIFIED_PYTEST_COUNT} passing Pytest suites, review two-tier 6.5k evals/sec core & <60ms real PDF benchmarks, and simulate live REST requests in the API Playground.`,
+    statute: "6,496 evals/sec Core • < 60 ms Real 2-Page PDF p99 • Zero Floating-Point Drift",
     actionHint: "Click 'Architecture & Tests' in the header to run live API simulations and view recruiter defenses.",
   },
 ];

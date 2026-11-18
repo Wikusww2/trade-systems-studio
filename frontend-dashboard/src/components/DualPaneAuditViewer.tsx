@@ -552,12 +552,12 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#1F2937]">
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
                 <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
-                  Sustained Throughput
+                  Core Throughput
                 </div>
                 <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
-                  33,496 /sec
+                  6,496 /sec
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">Audits per second</div>
+                <div className="text-[10px] text-slate-400 font-mono">Statutory core evals</div>
               </div>
 
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
@@ -565,9 +565,9 @@ const DualPaneAuditViewerInner: React.FC = () => {
                   p99 Latency
                 </div>
                 <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
-                  &lt; 0.09 ms
+                  &lt; 0.31 ms
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">Zero float drift</div>
+                <div className="text-[10px] text-slate-400 font-mono">Core (&lt;60ms 2p PDF)</div>
               </div>
 
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">

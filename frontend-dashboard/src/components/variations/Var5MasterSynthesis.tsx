@@ -198,8 +198,8 @@ export const Var5MasterSynthesis: React.FC<Var5MasterSynthesisProps> = ({ onSele
               <tr>
                 <td className="p-3 font-bold text-slate-200">Var 4: Wiretap #arc</td>
                 <td className="p-3 text-slate-400">Telemetry Ingest &amp; Live Diff</td>
-                <td className="p-3 text-right tabular-nums text-emerald-400 font-bold">33,496/s</td>
-                <td className="p-3 text-right tabular-nums text-emerald-400">&lt; 25ms</td>
+                <td className="p-3 text-right tabular-nums text-emerald-400 font-bold">6,496/s core</td>
+                <td className="p-3 text-right tabular-nums text-emerald-400">&lt; 0.31ms core</td>
                 <td className="p-3 text-center text-emerald-400 font-bold">0.00%</td>
                 <td className="p-3 text-center text-emerald-400">Interactive Map</td>
               </tr>

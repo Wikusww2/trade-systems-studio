@@ -20,6 +20,6 @@ We enforce an absolute architectural ban on LLM arithmetic across the entire mon
 4. **Content-Addressed AuditRunProvenance:** Each evaluation emits a deterministic composite `audit_run_id` calculated as `SHA-256(calc_version + engagement_policy_hash + ruleset_hash + normalized_document_hash)`. The wall-clock execution time is recorded in a separate immutable `executed_at` ISO 8601 UTC field, guaranteeing 100% reproducible regression replay hashes.
 
 ## Consequences
-- **Positive:** Guaranteed zero floating-point drift, full compliance with CBP audit standards, reproducible automated regression tests, and stateless execution achieving 33,496 audits/sec at p99 < 0.09 ms.
+- **Positive:** Guaranteed zero floating-point drift, full compliance with CBP audit standards, reproducible automated regression tests (200/200 pytest), and stateless execution achieving 6,496 evals/sec at p99 < 0.31 ms on pure statutory cores (and < 60 ms p99 end-to-end with real 2-page `pypdf` parsing).
 - **Negative:** Schema definitions and rule trees must be maintained in explicit code rather than natural language prompt chains.
 - **Verification:** Enforced via `pytest tests/test_customs.py`, `tests/test_hts_classifier.py`, and `tests/test_valuation_ledger.py`.

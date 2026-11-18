@@ -154,14 +154,14 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                 </div>
                 <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-amber-800/60">
                   <a
-                    href="mailto:samuel@tradetech-studio.com?subject=Technical%20Architecture%20Review%20Request"
+                    href="mailto:samuel-tradetech@outlook.com?subject=Technical%20Architecture%20Review%20Request"
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-900/60 hover:bg-amber-800/70 text-amber-100 border border-amber-600/60 rounded-xs text-[11px] font-semibold transition-colors"
                   >
                     <Mail className="w-3.5 h-3.5" />
-                    <span>samuel@tradetech-studio.com</span>
+                    <span>samuel-tradetech@outlook.com</span>
                   </a>
                   <a
-                    href="https://www.linkedin.com/in/samuel-leroux"
+                    href="https://www.linkedin.com/in/samuel-rencken-880410249"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-900/60 hover:bg-blue-800/70 text-blue-100 border border-blue-600/60 rounded-xs text-[11px] font-semibold transition-colors"
