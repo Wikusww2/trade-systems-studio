@@ -201,7 +201,7 @@ export const DeveloperApiSandbox: React.FC = () => {
             <button
               onClick={() => { setActiveEndpoint("cargowise"); setResponseOutput(null); }}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "cargowise" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
+                activeEndpoint === "cargowise" ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
               }`}
             >
               /export/cargowise-xml
@@ -209,7 +209,7 @@ export const DeveloperApiSandbox: React.FC = () => {
             <button
               onClick={() => { setActiveEndpoint("evaluate_gri"); setResponseOutput(null); }}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "evaluate_gri" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
+                activeEndpoint === "evaluate_gri" ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
               }`}
             >
               /hts/classify
@@ -217,7 +217,7 @@ export const DeveloperApiSandbox: React.FC = () => {
             <button
               onClick={() => { setActiveEndpoint("valuation"); setResponseOutput(null); }}
               className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "valuation" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200"
+                activeEndpoint === "valuation" ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
               }`}
             >
               /valuation/audit-entry
@@ -244,7 +244,7 @@ export const DeveloperApiSandbox: React.FC = () => {
           onClick={handleRun}
           disabled={isRunning}
           aria-label="Execute test request"
-          className="mt-2.5 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold text-[11px] transition-all shadow-sm cursor-pointer disabled:opacity-50"
+          className="mt-2.5 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-canvas-stone rounded font-bold text-[11px] transition-all shadow-sm cursor-pointer disabled:opacity-50"
         >
           {isRunning ? (
             <>

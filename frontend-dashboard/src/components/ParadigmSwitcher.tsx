@@ -56,7 +56,7 @@ export const ParadigmSwitcher: React.FC<ParadigmSwitcherProps> = ({
             onClick={() => { playPseudoHaptic(); onChange(p.id); }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all duration-150 active:scale-[0.97] ${
               isActive
-                ? "bg-blue-600 text-white font-semibold shadow-sm border border-blue-400/40"
+                ? "bg-blue-600 text-canvas-stone font-semibold shadow-sm border border-blue-400/40"
                 : "text-slate-400 hover:text-slate-200 hover:bg-[#1E293B]/60"
             }`}
             title={`Switch to ${p.label} (${p.shortcut})`}

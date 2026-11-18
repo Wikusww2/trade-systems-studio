@@ -159,57 +159,57 @@ export const ProvenanceMetadataBar: React.FC<{ audit: AuditResult | null }> = ({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-3 py-2 bg-[#0B0F19] border border-[#1F2937] rounded-lg font-mono text-[10px] text-slate-400 mb-3">
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-3 py-2 bg-canvas-dark border border-terminal-subtle rounded-lg type-caption-mono text-ink-muted mb-3">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <span className="flex items-center gap-1.5 text-emerald-400 font-semibold uppercase tracking-wider">
+        <span className="flex items-center gap-1.5 text-ink-emerald font-medium uppercase">
           <Lock className="w-3 h-3" /> Provenance
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-400 uppercase tracking-wider">Source:</span>
-          <span className="text-slate-300">{audit.document_filename}</span>
+          <span className="text-ink-muted uppercase">Source:</span>
+          <span className="text-ink-secondary">{audit.document_filename}</span>
         </span>
 
         <button
           onClick={copySha}
           title="Copy full SHA-256 hash"
-          className="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors"
+          className="flex items-center gap-1 text-ink-muted hover:text-ink-primary transition-colors"
         >
-          <span className="text-slate-400 uppercase tracking-wider">SHA-256:</span>
-          <span className="text-cobalt-300 font-mono">
+          <span className="text-ink-muted uppercase">SHA-256:</span>
+          <span className="text-ink-cobalt type-caption-mono">
             {sha.slice(0, 8)}...{sha.slice(-6)}
           </span>
           {copiedSha ? (
-            <Check className="w-2.5 h-2.5 text-emerald-400" />
+            <Check className="w-2.5 h-2.5 text-ink-emerald" />
           ) : (
-            <Copy className="w-2.5 h-2.5 text-slate-400" />
+            <Copy className="w-2.5 h-2.5 text-ink-muted" />
           )}
         </button>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-400 uppercase tracking-wider">Layout:</span>
-          <span className="text-slate-300">pypdf / Docling [0,1000) AST</span>
+          <span className="text-ink-muted uppercase">Layout:</span>
+          <span className="text-ink-secondary">pypdf / Docling [0,1000) AST</span>
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-400 uppercase tracking-wider">Kernel Latency:</span>
-          <span className="text-emerald-400 font-bold">&lt; 0.09 ms</span>
+          <span className="text-ink-muted uppercase">Kernel Latency:</span>
+          <span className="text-ink-emerald font-medium tabular-nums">&lt; 0.09 ms</span>
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-400 uppercase tracking-wider">Runtime:</span>
-          <span className="text-slate-300">
+          <span className="text-ink-muted uppercase">Runtime:</span>
+          <span className="text-ink-secondary">
             {audit.offline_fallback_active ? "Deterministic Local" : "Live ASGI"}
           </span>
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-400 uppercase tracking-wider">Confidence Gate:</span>
-          <span className="text-slate-300">{CONFIDENCE_GATE.toFixed(2)}</span>
+          <span className="text-ink-muted uppercase">Confidence Gate:</span>
+          <span className="text-ink-numeric tabular-nums">{CONFIDENCE_GATE.toFixed(2)}</span>
         </span>
       </div>
 
-      <div className="text-[9px] text-slate-400 hidden sm:block">
+      <div className="type-caption-mono text-ink-muted hidden sm:block">
         Statutes Cited: {statutes.size} | Findings: {audit.discrepancies.length}
       </div>
     </div>
@@ -238,26 +238,26 @@ export const DecisionProvenanceCard: React.FC<{ discrepancy: Discrepancy }> = ({
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-400 uppercase tracking-wider">Rule</span>
-        <span className="text-cobalt-300 font-semibold">{discrepancy.statutory_code}</span>
+        <span className="text-ink-muted uppercase tracking-wider">Rule</span>
+        <span className="statutory-cite text-[13px] text-ink-cobalt">{discrepancy.statutory_code}</span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-400 uppercase tracking-wider">Finding</span>
-        <span className="text-slate-300">{discrepancy.title}</span>
+        <span className="text-ink-muted uppercase tracking-wider">Finding</span>
+        <span className="text-ink-secondary">{discrepancy.title}</span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-400 uppercase tracking-wider">Exposure</span>
-        <span className="text-red-400 font-bold tabular-nums">
+        <span className="text-ink-muted uppercase tracking-wider">Exposure</span>
+        <span className="type-mono-data text-ink-crimson font-medium tabular-nums">
           {USD.format(discrepancy.exposure_amount)}
         </span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-400 uppercase tracking-wider">Confidence</span>
+        <span className="text-ink-muted uppercase tracking-wider">Confidence</span>
         <span
-          className={`tabular-nums ${isGated ? "text-amber-400 font-bold" : "text-emerald-400"}`}
+          className={`type-mono-data tabular-nums ${isGated ? "text-ink-amber font-medium" : "text-ink-emerald"}`}
         >
           {(discrepancy.confidence * 100).toFixed(0)}%{" "}
           {isGated ? "< 0.85 gate" : "≥ 0.85 gate"}
@@ -381,7 +381,7 @@ export const ContestableOverridePanel: React.FC<{
         <button
           onClick={handleSubmit}
           disabled={!correctedCode.trim()}
-          className="px-3 py-1.5 rounded-md bg-cobalt-600 hover:bg-cobalt-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] font-bold uppercase tracking-wider transition-colors"
+          className="px-3 py-1.5 rounded-md bg-cobalt-600 hover:bg-cobalt-500 disabled:opacity-40 disabled:cursor-not-allowed text-canvas-stone type-caption-mono font-medium uppercase transition-colors"
         >
           Commit Override
         </button>

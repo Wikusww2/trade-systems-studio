@@ -3,7 +3,7 @@
 Scans every tracked source and documentation file line-by-line for:
 1. Em-dash character (U+2014) - strictly forbidden anywhere.
 2. En-dash character (U+2013) used as a prose dash (legitimate numeric, date,
-   or series ranges such as 150-350, $160k-$260k, 2024-Present, Series A-C,
+   or series ranges such as 150-350, $100k-$2.4M, 2024-Present, Series A-C,
    or regex character classes are permitted).
 
 Reports violations in standard compiler format:
@@ -22,7 +22,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EXCLUDE_DIRS = {
     ".venv", "node_modules", ".next", ".git", "__pycache__",
-    ".pytest_cache", "out", "dist", "build", ".hyperframes", "legacy",
+    ".pytest_cache", "out", "dist", "build", ".hyperframes", "legacy", "backups",
 }
 EXTENSIONS = (".tsx", ".ts", ".md", ".py", ".json", ".jsonc", ".css", ".html", ".yml", ".yaml")
 
@@ -34,7 +34,7 @@ def is_legitimate_en_dash_range(line: str, idx: int) -> bool:
     """Determine whether an en-dash at index `idx` is a legitimate range.
 
     Legitimate ranges include:
-    - Numeric, currency, time, and percentage ranges (e.g. 150-350, $160k-$260k, 0.25x-2.0x, 0.0s-5.0s, +/-0.5%-2.0%)
+    - Numeric, currency, time, and percentage ranges (e.g. 150-350, $100k-$2.4M, 0.25x-2.0x, 0.0s-5.0s, +/-0.5%-2.0%)
     - Year and date ranges (e.g. 2024-Present, 2020-2025)
     - Alphanumeric series/phase ranges (e.g. Series A-C, Phase 0-2, Acts 1-3)
     - Character classes or string patterns in code (e.g. [,-–/])

@@ -19,9 +19,7 @@ if not os.path.exists(VENV_PYTHON):
 
 DOC_FILES = [
     os.path.join(REPO_ROOT, "README.md"),
-    os.path.join(REPO_ROOT, "PORTFOLIO.md"),
-    os.path.join(REPO_ROOT, "AGENTS.md"),
-    os.path.join(REPO_ROOT, "docs", "RECRUITER_BRIEFING_PACK.md"),
+    os.path.join(REPO_ROOT, "docs", "TRADETECH_SYSTEMS_ARCHITECTURE_WHITEPAPER.md"),
 ]
 
 BANNED_COMMODITY_TERMS = [

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Discrepancy } from "@/lib/types";
 import { sound } from "@/lib/audio";
+import { TabularAmount } from "./TabularAmount";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -42,26 +43,26 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
       case "critical":
         return {
           badge:
-            "bg-red-500/10 text-red-400 border-red-500/30",
-          icon: <AlertOctagon className="w-4 h-4 text-red-400 shrink-0" />,
-          accent: "text-red-400",
+            "bg-red-500/10 text-ink-crimson border-red-500/30",
+          icon: <AlertOctagon className="w-4 h-4 text-ink-crimson shrink-0" />,
+          accent: "text-ink-crimson",
           highlightBg: "hover:border-red-500/50",
         };
       case "opportunity":
         return {
           badge:
-            "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-          icon: <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />,
-          accent: "text-emerald-400",
+            "bg-emerald-500/10 text-ink-emerald border-emerald-500/30",
+          icon: <ShieldCheck className="w-4 h-4 text-ink-emerald shrink-0" />,
+          accent: "text-ink-emerald",
           highlightBg: "hover:border-emerald-500/50",
         };
       case "warning":
       default:
         return {
           badge:
-            "bg-amber-500/10 text-amber-400 border-amber-500/30",
-          icon: <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />,
-          accent: "text-amber-400",
+            "bg-amber-500/10 text-ink-amber border-amber-500/30",
+          icon: <AlertTriangle className="w-4 h-4 text-ink-amber shrink-0" />,
+          accent: "text-ink-amber",
           highlightBg: "hover:border-amber-500/50",
         };
     }
@@ -117,18 +118,18 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
           <div className="flex items-center gap-2">
             {style.icon}
             <span
-              className={`text-[10px] tracking-wider uppercase font-mono px-2 py-0.5 border rounded-md font-semibold ${style.badge}`}
+              className={`type-caption-mono uppercase px-2 py-0.5 border rounded-md ${style.badge}`}
             >
               {discrepancy.severity}
             </span>
-            <span className="text-[10px] font-mono text-slate-400 bg-slate-900/60 px-2 py-0.5 border border-slate-800 rounded-md">
+            <span className="statutory-cite text-[12px] text-ink-statutory bg-slate-900/60 px-2 py-0.5 border border-slate-800 rounded-md">
               {discrepancy.statutory_code}
             </span>
           </div>
 
           {/* Confidence Telemetry */}
-          <div className="flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-slate-400">
-            <span className={isUncertain ? "text-amber-400 font-bold" : "text-slate-400"}>
+          <div className="flex items-center gap-1.5 type-caption-mono tabular-nums text-ink-muted">
+            <span className={isUncertain ? "text-ink-amber font-medium" : "text-ink-muted"}>
               {(discrepancy.confidence * 100).toFixed(0)}% CONF
             </span>
             {isUncertain && (
@@ -141,30 +142,29 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
         </div>
 
         {/* Discrepancy Title */}
-        <h3 className="relative z-10 text-sm font-semibold text-slate-100 mb-1 flex items-start justify-between gap-2">
+        <h3 className="relative z-10 type-heading-sm text-ink-primary mb-1 flex items-start justify-between gap-2">
           <span>{discrepancy.title}</span>
-          <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-ink-muted shrink-0 mt-1" />
         </h3>
 
         {/* Concise Summary / Core Finding */}
-        <p className="relative z-10 text-xs text-slate-300 leading-snug mb-2 line-clamp-2">
+        <p className="relative z-10 type-body-dense text-ink-secondary mb-2 line-clamp-2">
           {discrepancy.executive_summary || discrepancy.description}
         </p>
 
         {/* Financial Blast Radius Line */}
         <div className="relative z-10 flex items-center justify-between pt-2 border-t border-slate-800">
-          <span className="text-[10px] font-mono uppercase text-slate-400 tracking-wider">
+          <span className="type-caption-mono uppercase text-ink-muted">
             {discrepancy.severity === "opportunity"
               ? "Recoverable Cash Margin"
               : "Statutory Financial Exposure"}
           </span>
-          <span className={`text-sm font-mono font-bold tabular-nums ${style.accent}`}>
-            {discrepancy.exposure_amount > 0
-              ? `$${discrepancy.exposure_amount.toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}`
-              : "Valuation Defect"}
+          <span className={`type-mono-data text-sm font-medium ${style.accent}`}>
+            {discrepancy.exposure_amount > 0 ? (
+              <TabularAmount value={discrepancy.exposure_amount} />
+            ) : (
+              "Valuation Defect"
+            )}
           </span>
         </div>
 
@@ -178,7 +178,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
               e.stopPropagation();
               setShowCitation(!showCitation);
             }}
-            className="w-full flex items-center justify-between text-[11px] font-mono text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between type-caption-mono text-ink-cobalt hover:text-cobalt-300 transition-colors cursor-pointer"
           >
             <span className="flex items-center gap-1.5 font-medium">
               <Scale className="w-3 h-3" />
@@ -192,16 +192,16 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
           </button>
 
           {showCitation && (
-            <div id={`citation-${discrepancy.id}`} className="mt-2 p-2.5 bg-slate-950/80 border border-slate-800 text-[11px] text-slate-300 leading-relaxed rounded-md space-y-2">
-              <p className="font-serif italic text-slate-400 border-l-2 border-blue-500 pl-2">
+            <div id={`citation-${discrepancy.id}`} className="mt-2 p-2.5 bg-slate-950/80 border border-slate-800 type-body-dense text-ink-secondary rounded-md space-y-2">
+              <p className="statutory-cite border-l-2 border-cobalt-500 pl-2">
                 {discrepancy.description}
               </p>
               {discrepancy.statutory_defense && (
                 <div className="pt-1.5 border-t border-slate-800">
-                  <span className="font-semibold text-blue-400 block mb-0.5 font-mono text-[10px] uppercase">
+                  <span className="font-medium text-ink-cobalt block mb-0.5 type-caption-mono uppercase">
                     Remediation Protocol:
                   </span>
-                  <p>{discrepancy.statutory_defense}</p>
+                  <p className="type-body-dense text-ink-secondary">{discrepancy.statutory_defense}</p>
                 </div>
               )}
             </div>

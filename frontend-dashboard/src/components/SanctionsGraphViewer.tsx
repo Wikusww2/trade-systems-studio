@@ -193,7 +193,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
               onClick={() => handleSelectPreset(preset.id)}
               className={`px-3 py-1.5 rounded-sm font-mono text-xs flex items-center gap-2 transition-all shrink-0 ${
                 isSelected
-                  ? "bg-slate-900 dark:bg-[#1E293B] text-white border border-slate-700 shadow-xs"
+                  ? "bg-slate-900 dark:bg-[#1E293B] text-canvas-stone border border-slate-700 shadow-xs"
                   : "bg-white dark:bg-[#0F172A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#1F2937] hover:border-slate-400"
               }`}
             >
@@ -278,7 +278,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
                       <text
                         textAnchor="middle"
                         dy="4"
-                        fill="#FFFFFF"
+                        fill="#F8FAFC"
                         fontFamily="monospace"
                         fontSize="11"
                         fontWeight="bold"
@@ -340,7 +340,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
                   <text
                     textAnchor="middle"
                     dy="12"
-                    fill="#FFFFFF"
+                    fill="#F8FAFC"
                     fontFamily="monospace"
                     fontSize="9"
                     fontWeight="bold"
@@ -390,7 +390,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
               <text
                 textAnchor="middle"
                 dy="-8"
-                fill="#FFFFFF"
+                fill="#F8FAFC"
                 fontFamily="sans-serif"
                 fontSize="12"
                 fontWeight="900"
@@ -498,7 +498,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
           {onOpenLeadModal && (
             <button
               onClick={onOpenLeadModal}
-              className="mt-6 w-full py-2 px-3 bg-slate-900 dark:bg-[#1E293B] hover:bg-slate-800 dark:hover:bg-[#1E293B] text-white font-mono text-xs font-bold rounded-sm border border-slate-700 flex items-center justify-center gap-2 transition-colors"
+              className="mt-6 w-full py-2 px-3 bg-slate-900 dark:bg-[#1E293B] hover:bg-slate-800 dark:hover:bg-[#1E293B] text-canvas-stone font-mono text-xs font-bold rounded-sm border border-slate-700 flex items-center justify-center gap-2 transition-colors"
             >
               <span>Screen Your Counterparties ($0)</span>
               <ArrowRight className="w-3.5 h-3.5 text-cobalt-400" />

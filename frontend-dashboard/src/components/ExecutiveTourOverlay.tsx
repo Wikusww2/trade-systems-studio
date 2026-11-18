@@ -72,7 +72,7 @@ const TOUR_STEPS: TourStep[] = [
     badge: "05 / PRODUCTION RIGOR",
     description: `Every financial and customs formula is backed by 100% Python Decimal precision. Inspect ${VERIFIED_PYTEST_COUNT} passing Pytest suites, review two-tier 6.5k evals/sec core & <60ms real PDF benchmarks, and simulate live REST requests in the API Playground.`,
     statute: "6,496 evals/sec Core • < 60 ms Real 2-Page PDF p99 • Zero Floating-Point Drift",
-    actionHint: "Click 'Architecture & Tests' in the header to run live API simulations and view recruiter defenses.",
+    actionHint: "Click 'Architecture & Tests' in the header to run live API simulations and inspect architecture decision records.",
   },
 ];
 
@@ -154,7 +154,7 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
               sound.playTick();
               onClose();
             }}
-            className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors"
+            className="p-1 text-slate-400 hover:text-ink-primary rounded hover:bg-slate-800 transition-colors"
             title="Exit Tour"
           >
             <X className="w-4 h-4" />
@@ -172,7 +172,7 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
             </span>
           </div>
 
-          <h3 className="text-base font-bold text-white font-sans">
+          <h3 className="text-base font-bold text-ink-primary font-sans">
             {currentStep.title}
           </h3>
 

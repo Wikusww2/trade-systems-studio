@@ -1,4 +1,5 @@
 import "./globals.css";
+import "../styles/typography.css";
 import React from "react";
 import { AmbientMotionBackground } from "@/components/AmbientMotionBackground";
 
@@ -27,14 +28,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&family=JetBrains+Mono:wght@300..700&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased bg-[#0B0F19] text-[#F8FAFC] selection:bg-blue-600 selection:text-white relative min-h-screen">
+      <body className="antialiased bg-canvas-dark text-ink-primary font-sans selection:bg-cobalt-600 selection:text-canvas-stone relative min-h-screen">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded focus:outline-none focus:ring-2 focus:ring-white"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-cobalt-600 focus:text-canvas-stone focus:rounded focus:outline-none focus:ring-2 focus:ring-ink-primary"
         >
           Skip to main content
         </a>

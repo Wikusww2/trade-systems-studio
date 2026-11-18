@@ -45,17 +45,17 @@ export const MobileBottomNavPill: React.FC<MobileBottomNavPillProps> = ({
               }}
               className={`relative flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 active:scale-[0.96] ${
                 activeTab === "doc"
-                  ? "bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30 ring-1 ring-blue-400/40"
-                  : "text-slate-400 hover:text-slate-100 hover:bg-white/5"
+                  ? "bg-cobalt-600 text-canvas-stone font-semibold shadow-lg shadow-blue-600/30 ring-1 ring-blue-400/40"
+                  : "text-ink-muted hover:text-ink-primary hover:bg-white/5"
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span className="tracking-tight">Document</span>
+              <span className="tracking-[0.015em]">Document</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                className={`type-caption-mono px-1.5 py-0.5 rounded-full font-medium ${
                   activeTab === "doc"
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-800/80 text-slate-400 border border-slate-700/60"
+                    ? "bg-white/20 text-canvas-stone"
+                    : "bg-slate-800/80 text-ink-muted border border-slate-700/60"
                 }`}
               >
                 PDF
@@ -71,17 +71,17 @@ export const MobileBottomNavPill: React.FC<MobileBottomNavPillProps> = ({
               }}
               className={`relative flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 active:scale-[0.96] ${
                 activeTab === "findings"
-                  ? "bg-red-600 text-white font-semibold shadow-lg shadow-red-600/30 ring-1 ring-red-400/40"
-                  : "text-slate-400 hover:text-slate-100 hover:bg-white/5"
+                  ? "bg-red-600 text-canvas-stone font-semibold shadow-lg shadow-red-600/30 ring-1 ring-red-400/40"
+                  : "text-ink-muted hover:text-ink-primary hover:bg-white/5"
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
-              <span className="tracking-tight">Report</span>
+              <span className="tracking-[0.015em]">Report</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold tabular-nums ${
+                className={`type-caption-mono px-1.5 py-0.5 rounded-full font-medium tabular-nums ${
                   activeTab === "findings"
-                    ? "bg-white/20 text-white"
-                    : "bg-red-950/80 text-red-400 border border-red-800/60"
+                    ? "bg-white/20 text-canvas-stone"
+                    : "bg-red-950/80 text-ink-crimson border border-red-800/60"
                 }`}
               >
                 {discrepancyCount}

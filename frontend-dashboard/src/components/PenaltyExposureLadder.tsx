@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { AlertOctagon, Scale, ShieldAlert, ArrowRight, Check } from "lucide-react";
 import { sound } from "@/lib/audio";
+import { TabularAmount } from "./TabularAmount";
 
 interface PenaltyExposureLadderProps {
   dutyLossUsd?: number;
@@ -62,19 +63,19 @@ export const PenaltyExposureLadder: React.FC<PenaltyExposureLadderProps> = ({
   };
 
   return (
-    <div className="mt-4 p-4 bg-slate-900 border border-slate-800 rounded-sm font-mono text-white">
+    <div className="mt-4 p-4 bg-terminal-slate border border-slate-800 rounded-sm font-mono text-ink-primary">
       <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <Scale className="w-4 h-4 text-red-400" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
+          <Scale className="w-4 h-4 text-ink-crimson" />
+          <span className="type-mono-data uppercase text-ink-primary font-medium">
             19 U.S.C. § 1592 Statutory Risk Ladder
           </span>
         </div>
-        <span className="text-[10px] text-slate-400 uppercase">Interactive Exposure Gauge</span>
+        <span className="type-caption-mono text-ink-muted uppercase">Interactive Exposure Gauge</span>
       </div>
 
       {/* Tier Selector Buttons */}
-      <div className="grid grid-cols-3 gap-1.5 mb-4 p-1 bg-slate-950 rounded-xs border border-slate-800">
+      <div className="grid grid-cols-3 gap-1.5 mb-4 p-1 bg-canvas-dark rounded-xs border border-slate-800">
         {(["negligence", "gross_negligence", "fraud"] as const).map((tierKey) => {
           const item = tiers[tierKey];
           const isSelected = culpability === tierKey;
@@ -82,10 +83,10 @@ export const PenaltyExposureLadder: React.FC<PenaltyExposureLadderProps> = ({
             <button
               key={tierKey}
               onClick={() => handleSelect(tierKey)}
-              className={`py-2 px-1 text-center rounded-xs text-[11px] font-bold uppercase tracking-wider transition-colors ${
+              className={`py-2 px-1 text-center rounded-xs type-caption-mono font-medium uppercase transition-colors ${
                 isSelected
-                  ? `${item.barColor} text-[#0F172A] shadow-sm`
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                  ? `${item.barColor} text-terminal-slate shadow-sm`
+                  : "text-ink-muted hover:text-ink-primary hover:bg-slate-900"
               }`}
             >
               {item.label}
@@ -95,7 +96,7 @@ export const PenaltyExposureLadder: React.FC<PenaltyExposureLadderProps> = ({
       </div>
 
       {/* Interactive Gauge Bar */}
-      <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden mb-4 border border-slate-800">
+      <div className="w-full h-2 bg-canvas-dark rounded-full overflow-hidden mb-4 border border-slate-800">
         <div
           className={`h-full transition-[width,background-color] duration-300 ease-out ${active.barColor}`}
           style={{ width: active.gaugePct }}
@@ -105,29 +106,29 @@ export const PenaltyExposureLadder: React.FC<PenaltyExposureLadderProps> = ({
       {/* Calculated Maximum Exposure Card */}
       <div className={`p-3 rounded-xs border ${active.accent} mb-3`}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] uppercase font-bold text-slate-400">
+          <span className="statutory-cite text-[13px] text-ink-statutory">
             {active.statute} Multiplier
           </span>
-          <span className="text-xs font-bold text-slate-200">{active.multiplier}</span>
+          <span className="type-mono-data text-ink-primary font-medium">{active.multiplier}</span>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-black text-red-400">
-            ${active.penaltyMax.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          <span className="type-display-lg font-mono text-ink-crimson tabular-nums">
+            <TabularAmount value={active.penaltyMax} />
           </span>
-          <span className="text-[11px] text-slate-400">Statutory Ceiling</span>
+          <span className="type-caption-mono text-ink-muted">Statutory Ceiling</span>
         </div>
-        <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+        <p className="type-body-dense text-ink-secondary mt-1">
           {active.description}
         </p>
       </div>
 
       {/* Architectural Defense Protocol */}
-      <div className="p-2.5 bg-slate-950/80 border border-slate-800/80 rounded-xs">
-        <div className="text-[10px] uppercase font-bold text-cobalt-400 mb-1 flex items-center gap-1.5">
-          <ShieldAlert className="w-3.5 h-3.5 text-cobalt-400" />
+      <div className="p-2.5 bg-canvas-dark/80 border border-slate-800/80 rounded-xs">
+        <div className="type-caption-mono uppercase font-medium text-ink-cobalt mb-1 flex items-center gap-1.5">
+          <ShieldAlert className="w-3.5 h-3.5 text-ink-cobalt" />
           <span>Samuel's Prior Disclosure Safe Harbor</span>
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed">
+        <p className="statutory-cite text-[13px] text-ink-secondary">
           {active.defense}
         </p>
       </div>

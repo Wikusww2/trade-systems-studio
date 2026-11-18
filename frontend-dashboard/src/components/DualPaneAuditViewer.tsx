@@ -140,7 +140,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
   const [isFilmOpen, setIsFilmOpen] = useState<boolean>(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState<boolean>(false);
-  const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground" | "screener">("architecture");
+  const [architectureModalTab, setArchitectureModalTab] = useState<"architecture" | "tests" | "math_proof" | "candidate" | "playground">("architecture");
   const [isTourActive, setIsTourActive] = useState<boolean>(false);
 
   // Mobile segmented view state ('doc' | 'findings') - Default to 'doc' so source document is visible first
@@ -233,11 +233,9 @@ const DualPaneAuditViewerInner: React.FC = () => {
         setActiveConceptId("concept_3_drawback");
       } else if (tabParam === "clean_fob" || tabParam === "concept_clean_fob") {
         setActiveConceptId("concept_clean_fob");
-      } else if (tabParam === "architecture" || tabParam === "tests" || tabParam === "screener" || tabParam === "pitch" || tabParam === "playground" || tabParam === "api") {
+      } else if (tabParam === "architecture" || tabParam === "tests" || tabParam === "playground" || tabParam === "api") {
         if (tabParam === "tests") {
           setArchitectureModalTab("tests");
-        } else if (tabParam === "screener" || tabParam === "pitch") {
-          setArchitectureModalTab("screener");
         } else if (tabParam === "playground" || tabParam === "api") {
           setArchitectureModalTab("playground");
         } else {
@@ -380,28 +378,28 @@ const DualPaneAuditViewerInner: React.FC = () => {
     null;
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-transparent text-slate-100 flex flex-col font-sans transition-colors duration-200 relative selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-transparent text-ink-primary flex flex-col font-sans transition-colors duration-200 relative selection:bg-cobalt-600 selection:text-canvas-stone">
       {/* 1. STICKY MINIMALIST DEVELOPER HEADER (56px) */}
-      <header className="sticky top-0 z-40 bg-[#0F172A]/90 backdrop-blur-md border-b border-[#1F2937] px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full max-w-full overflow-hidden">
+      <header className="sticky top-0 z-40 bg-terminal-slate/90 backdrop-blur-md border-b border-terminal-subtle px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full max-w-full overflow-hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           {/* Identity & Practice */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-mono font-bold text-xs shadow-md shadow-blue-500/20 shrink-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cobalt-600 text-canvas-stone flex items-center justify-center font-mono font-semibold text-xs shadow-md shadow-blue-500/20 shrink-0">
               S
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1 sm:gap-2">
-                <span className="font-mono text-xs font-bold tracking-wider text-slate-100 uppercase truncate">
+                <span className="font-mono text-xs font-semibold tracking-wider text-ink-primary uppercase truncate">
                   SAMUEL
                 </span>
-                <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">·</span>
-                <span className="font-mono text-[10px] tracking-wider text-blue-400 uppercase font-semibold truncate hidden sm:inline">
+                <span className="type-caption-mono text-ink-muted hidden sm:inline">·</span>
+                <span className="type-caption-mono text-ink-cobalt uppercase font-medium truncate hidden sm:inline">
                   TRADE SYSTEMS STUDIO
                 </span>
               </div>
               <div className="hidden lg:flex items-center gap-1.5 mt-0.5">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-mono text-emerald-400">
+                <span className="type-caption-mono text-ink-emerald">
                   Available for Principal Systems & Forward-Deployed AI
                 </span>
               </div>
@@ -421,16 +419,16 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 setArchitectureModalTab("architecture");
                 setIsArchitectureModalOpen(true);
               }}
-              className="px-2.5 sm:px-3 py-1.5 border border-slate-700/80 hover:border-slate-500 bg-[#1E293B]/40 hover:bg-[#1E293B] text-slate-300 hover:text-white font-mono text-xs rounded-md transition-colors flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1.5 border border-slate-700/80 hover:border-slate-500 bg-terminal-elevated/40 hover:bg-terminal-elevated text-ink-secondary hover:text-ink-primary type-mono-data rounded-md transition-colors flex items-center gap-1.5"
               title="Open Architecture & Executive Dossier"
             >
-              <Terminal className="w-3.5 h-3.5 text-blue-400" />
+              <Terminal className="w-3.5 h-3.5 text-ink-cobalt" />
               <span className="hidden md:inline">Architecture & Dossier</span>
             </button>
 
             <button
               onClick={openReview}
-              className="px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-colors rounded-md shadow-sm"
+              className="px-2.5 sm:px-3.5 py-1.5 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-mono font-semibold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-colors rounded-md shadow-sm"
             >
               <span className="hidden sm:inline">Schedule Architecture Review</span>
               <span className="sm:hidden">Review</span>
@@ -441,7 +439,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <button
               onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
               aria-label="Toggle navigation"
-              className="sm:hidden p-1.5 text-slate-300 border border-slate-700 rounded-md shrink-0"
+              className="sm:hidden p-1.5 text-ink-secondary border border-slate-700 rounded-md shrink-0"
             >
               {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
@@ -450,34 +448,34 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
         {/* Mobile Navigation Dropdown */}
         {isMobileNavOpen && (
-          <div className="sm:hidden pt-3 pb-2 mt-2 border-t border-[#1F2937] space-y-2 font-mono text-xs">
+          <div className="sm:hidden pt-3 pb-2 mt-2 border-t border-terminal-subtle space-y-2 type-mono-data">
             <div className="pb-2 flex justify-center">
               <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} showLabel={false} />
             </div>
             <a
               href="#workbench"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
+              className="block px-2 py-1.5 text-ink-secondary hover:bg-slate-800 rounded-md"
             >
               #workbench
             </a>
             <a
               href="#architecture"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
+              className="block px-2 py-1.5 text-ink-secondary hover:bg-slate-800 rounded-md"
             >
               #architecture
             </a>
             <a
               href="#architect-thesis"
               onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-slate-300 hover:bg-slate-800 rounded-md"
+              className="block px-2 py-1.5 text-ink-secondary hover:bg-slate-800 rounded-md"
             >
               #architect-thesis
             </a>
             <button
               onClick={openReview}
-              className="w-full mt-2 py-2 px-3 bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-md text-center"
+              className="w-full mt-2 py-2 px-3 bg-cobalt-600 text-canvas-stone font-semibold text-xs uppercase tracking-wider rounded-md text-center"
             >
               Schedule Architecture Review
             </button>
@@ -488,7 +486,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
       <main>
         {/* Mobile Paradigm Switcher Bar (only when menu is closed) */}
         {!isMobileNavOpen && (
-          <div className="sm:hidden px-3 py-2 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-center">
+          <div className="sm:hidden px-3 py-2 bg-canvas-dark border-b border-terminal-subtle flex items-center justify-center">
             <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} showLabel={false} />
           </div>
         )}
@@ -498,22 +496,22 @@ const DualPaneAuditViewerInner: React.FC = () => {
         ) : (
           <>
       {/* 2. ACT 1: ABOVE-THE-FOLD SYSTEMS HERO */}
-      <section className="border-b border-[#1F2937] bg-[#0F172A]/40 py-8 lg:py-12 relative">
+      <section className="border-b border-terminal-subtle bg-terminal-slate/40 py-8 lg:py-12 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">
             {/* Verification + Executive Lens */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
-              <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-cobalt-950/80 border border-cobalt-800 text-cobalt-300 rounded-md font-semibold">
-                  <Zap className="w-3.5 h-3.5 text-cobalt-400" />
+              <div className="flex flex-wrap items-center gap-2 type-mono-data">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-cobalt-950/80 border border-cobalt-800 text-cobalt-300 rounded-md font-medium">
+                  <Zap className="w-3.5 h-3.5 text-ink-cobalt" />
                   <span>Deterministic Pre-Ingest Firewall</span>
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
-                  <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-terminal-elevated border border-terminal-subtle text-ink-secondary rounded-md">
+                  <Cpu className="w-3.5 h-3.5 text-ink-emerald" />
                   <span>CargoWise UniversalShipment XML &amp; ACE Ready</span>
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1E293B] border border-[#1F2937] text-slate-300 rounded-md">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-terminal-elevated border border-terminal-subtle text-ink-secondary rounded-md tabular-nums">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-ink-emerald" />
                   <span>{`${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Automated Tests Passing`}</span>
                 </span>
               </div>
@@ -521,25 +519,25 @@ const DualPaneAuditViewerInner: React.FC = () => {
               <IcpPersonaSwitcher persona={persona} onChange={setPersona} />
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.15] text-balance mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-ink-primary tracking-[-0.025em] leading-[1.15] text-balance mb-4">
               Deterministic Pre-Ingest Verification for{" "}
-              <span className="text-cobalt-400">CargoWise &amp; ACE</span>
+              <span className="text-ink-cobalt">CargoWise &amp; ACE</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-6 font-normal">
-              Intercepting 19 U.S.C. § 1592 customs penalties, carrier accessorial overbilling, and GRI misclassifications before UniversalShipment XML enters your TMS. Built with sub-50ms execution, zero floating-point drift, and 100% Python Decimal precision.
+            <p className="type-body-default sm:text-base text-ink-secondary leading-relaxed mb-6 font-normal">
+              Intercepting <span className="statutory-cite">19 U.S.C. § 1592</span> customs penalties, carrier accessorial overbilling, and GRI misclassifications before UniversalShipment XML enters your TMS. Built with sub-50ms execution, zero floating-point drift, and 100% Python Decimal precision.
             </p>
 
             {/* Executive Lens Takeaway */}
             <div className="mb-6 pl-3 border-l-2 border-cobalt-600">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-cobalt-400 font-bold mb-1">
+              <div className="type-caption-mono uppercase text-ink-cobalt font-medium mb-1">
                 {persona === "cfo"
                   ? "CFO / EBITDA lens"
                   : persona === "counsel"
                   ? "General Counsel lens"
                   : "CTO / Platform lens"}
               </div>
-              <p className="text-sm text-slate-200 max-w-2xl">
+              <p className="type-body-default text-ink-secondary max-w-2xl">
                 {persona === "cfo"
                   ? "Cash leaks at the carrier invoice and the duty payment. Both are intercepted here before the wire releases: 5% to 15% of freight spend is recoverable billing error, not cost of doing business."
                   : persona === "counsel"
@@ -549,45 +547,45 @@ const DualPaneAuditViewerInner: React.FC = () => {
             </div>
 
             {/* Systems Metrics Strip: documented benchmarks only */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#1F2937]">
-              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-terminal-subtle">
+              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
+                <div className="type-caption-mono uppercase text-ink-muted">
                   Core Throughput
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
+                <div className="text-base sm:text-lg font-mono font-semibold text-ink-cobalt tabular-nums">
                   6,496 /sec
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">Statutory core evals</div>
+                <div className="type-caption-mono text-ink-muted">Statutory core evals</div>
               </div>
 
-              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
+                <div className="type-caption-mono uppercase text-ink-muted">
                   p99 Latency
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
+                <div className="text-base sm:text-lg font-mono font-semibold text-ink-cobalt tabular-nums">
                   &lt; 0.31 ms
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">Core (&lt;60ms 2p PDF)</div>
+                <div className="type-caption-mono text-ink-muted">Core (&lt;60ms 2p PDF)</div>
               </div>
 
-              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
+                <div className="type-caption-mono uppercase text-ink-muted">
                   Arithmetic Standard
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-emerald-400 tabular-nums">
+                <div className="text-base sm:text-lg font-mono font-semibold text-ink-emerald tabular-nums">
                   100% Decimal
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">Zero LLM Calculations</div>
+                <div className="type-caption-mono text-ink-muted">Zero LLM Calculations</div>
               </div>
 
-              <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
-                <div className="text-[10px] font-mono uppercase text-slate-400 font-semibold">
+              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
+                <div className="type-caption-mono uppercase text-ink-muted">
                   Carrier Leakage Intercept
                 </div>
-                <div className="text-base sm:text-lg font-mono font-bold text-red-400 tabular-nums">
+                <div className="text-base sm:text-lg font-mono font-semibold text-ink-crimson tabular-nums">
                   5% to 15%
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono">Pre-Payment Guard</div>
+                <div className="type-caption-mono text-ink-muted">Pre-Payment Guard</div>
               </div>
             </div>
           </div>
@@ -618,8 +616,8 @@ const DualPaneAuditViewerInner: React.FC = () => {
                   onClick={() => switchConcept(pillar.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-colors ${
                     isActive
-                      ? "bg-[#1E293B] border-blue-500 text-white shadow-sm ring-1 ring-blue-500/50"
-                      : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200"
+                      ? "bg-terminal-elevated border-cobalt-500 text-ink-primary shadow-sm ring-1 ring-cobalt-500/50"
+                      : "bg-terminal-slate border-terminal-subtle text-ink-muted hover:text-ink-primary"
                   }`}
                 >
                   {pillar.icon}
@@ -633,12 +631,12 @@ const DualPaneAuditViewerInner: React.FC = () => {
           <div className="hidden lg:flex items-center gap-2 shrink-0">
             <button
               onClick={() => exportAuditPacket()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-mono text-xs font-semibold uppercase tracking-wider transition-colors shadow-xs"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Board & Counsel Audit Packet</span>
             </button>
-            <div className="flex items-center gap-1 p-0.5 bg-[#0F172A] border border-[#1F2937] rounded-lg shrink-0">
+            <div className="flex items-center gap-1 p-0.5 bg-terminal-slate border border-terminal-subtle rounded-lg shrink-0">
             <button
               type="button"
               onClick={() => {
@@ -646,10 +644,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 setDesktopViewMode("split");
               }}
               title="Split View (60/40)"
-              className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-colors ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded type-caption-mono transition-colors ${
                 desktopViewMode === "split"
-                  ? "bg-blue-600 text-white font-semibold shadow-xs"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-cobalt-600 text-canvas-stone font-medium shadow-xs"
+                  : "text-ink-muted hover:text-ink-primary"
               }`}
             >
               <Columns2 className="w-3 h-3" />
@@ -662,10 +660,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 setDesktopViewMode("doc_focus");
               }}
               title="Focus on Document"
-              className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-colors ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded type-caption-mono transition-colors ${
                 desktopViewMode === "doc_focus"
-                  ? "bg-blue-600 text-white font-semibold shadow-xs"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-cobalt-600 text-canvas-stone font-medium shadow-xs"
+                  : "text-ink-muted hover:text-ink-primary"
               }`}
             >
               <FileText className="w-3 h-3" />
@@ -678,10 +676,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 setDesktopViewMode("report_focus");
               }}
               title="Focus on Forensic Report"
-              className={`flex items-center gap-1 px-2.5 py-1 rounded text-[11px] transition-colors ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded type-caption-mono transition-colors ${
                 desktopViewMode === "report_focus"
-                  ? "bg-blue-600 text-white font-semibold shadow-xs"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-cobalt-600 text-canvas-stone font-medium shadow-xs"
+                  : "text-ink-muted hover:text-ink-primary"
               }`}
             >
               <LayoutList className="w-3 h-3" />
@@ -693,34 +691,34 @@ const DualPaneAuditViewerInner: React.FC = () => {
 
         {/* Dynamic Kill Shot Metrics Flash Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 font-mono">
-          <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
-            <div className="text-[9px] uppercase text-slate-400 font-semibold">
+          <div className="bg-terminal-slate border border-terminal-subtle px-4 py-3 rounded-lg">
+            <div className="type-caption-mono uppercase text-ink-muted">
               19 U.S.C. § 1592 Exposure Avoided
             </div>
-            <div className="text-base sm:text-xl font-bold text-red-400 tabular-nums">
+            <div className="type-display-md sm:type-display-lg font-mono text-ink-crimson tabular-nums mt-0.5">
               <RollingNumber value={displayedExposureAvoided} />
             </div>
-            <div className="text-[10px] text-slate-400">Statutory safe-harbor mitigation</div>
+            <div className="type-caption-mono text-ink-muted mt-0.5">Statutory safe-harbor mitigation</div>
           </div>
 
-          <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
-            <div className="text-[9px] uppercase text-slate-400 font-semibold">
+          <div className="bg-terminal-slate border border-terminal-subtle px-4 py-3 rounded-lg">
+            <div className="type-caption-mono uppercase text-ink-muted">
               Pre-Payment Freight Overbilling Intercepted
             </div>
-            <div className="text-base sm:text-xl font-bold text-red-400 tabular-nums">
+            <div className="type-display-md sm:type-display-lg font-mono text-ink-crimson tabular-nums mt-0.5">
               <RollingNumber value={displayedCarrierOverbilling} />
             </div>
-            <div className="text-[10px] text-slate-400">Withheld prior to cash disbursement</div>
+            <div className="type-caption-mono text-ink-muted mt-0.5">Withheld prior to cash disbursement</div>
           </div>
 
-          <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
-            <div className="text-[9px] uppercase text-slate-400 font-semibold">
+          <div className="bg-terminal-slate border border-terminal-subtle px-4 py-3 rounded-lg">
+            <div className="type-caption-mono uppercase text-ink-muted">
               99% Duty Drawback Cash Unlocked
             </div>
-            <div className="text-base sm:text-xl font-bold text-emerald-400 tabular-nums">
+            <div className="type-display-md sm:type-display-lg font-mono text-ink-emerald tabular-nums mt-0.5">
               <RollingNumber value={displayedDrawback} />
             </div>
-            <div className="text-[10px] text-slate-400">19 U.S.C. § 1313 direct cash refund</div>
+            <div className="type-caption-mono text-ink-muted mt-0.5">19 U.S.C. § 1313 direct cash refund</div>
           </div>
         </div>
 
@@ -797,10 +795,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
                       sound.playTick();
                       setRightTerminalTab("discrepancies");
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+                    className={`px-2.5 py-1 rounded-md type-caption-mono font-medium transition-colors ${
                       rightTerminalTab === "discrepancies"
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? "bg-cobalt-600 text-canvas-stone shadow-xs"
+                        : "text-ink-muted hover:text-ink-primary"
                     }`}
                   >
                     Findings ({auditData?.discrepancies.length || 0})
@@ -811,10 +809,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
                       sound.playLock();
                       setRightTerminalTab("cargowise");
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+                    className={`px-2.5 py-1 rounded-md type-caption-mono font-medium transition-colors flex items-center gap-1 ${
                       rightTerminalTab === "cargowise"
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? "bg-cobalt-600 text-canvas-stone shadow-xs"
+                        : "text-ink-muted hover:text-ink-primary"
                     }`}
                   >
                     <Code2 className="w-3 h-3" />
@@ -826,10 +824,10 @@ const DualPaneAuditViewerInner: React.FC = () => {
                       sound.playLock();
                       setRightTerminalTab("developer_api");
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors flex items-center gap-1 ${
+                    className={`px-2.5 py-1 rounded-md type-caption-mono font-medium transition-colors flex items-center gap-1 ${
                       rightTerminalTab === "developer_api"
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? "bg-cobalt-600 text-canvas-stone shadow-xs"
+                        : "text-ink-muted hover:text-ink-primary"
                     }`}
                   >
                     <Terminal className="w-3 h-3" />
@@ -1003,13 +1001,13 @@ const DualPaneAuditViewerInner: React.FC = () => {
       </main>
 
       {/* 9. ENTERPRISE FOOTER */}
-      <footer className="border-t border-[#1F2937] bg-[#0F172A] py-10 mt-12 font-mono text-xs text-slate-400">
+      <footer className="border-t border-terminal-subtle bg-terminal-slate py-10 mt-12 type-mono-data text-ink-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="max-w-xl text-center md:text-left">
-            <h3 className="text-sm font-bold text-slate-100 mb-1">
+            <h3 className="type-heading-sm text-ink-primary mb-1">
               Trade Systems Studio: Deterministic Trade Compliance Engineering
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="type-body-dense text-ink-muted">
               Built and maintained by Samuel Rencken. Every statutory figure computed in Python Decimal, every finding traceable to its source clause.
             </p>
           </div>
@@ -1017,7 +1015,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={openReview}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors rounded-md"
+              className="px-5 py-2.5 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-semibold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors rounded-md"
             >
               <span>Schedule Architecture Review</span>
               <ArrowRight className="w-3.5 h-3.5" />

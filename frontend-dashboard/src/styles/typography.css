@@ -1,0 +1,186 @@
+/* TradeTech Systems Studio: Dual-Surface Dark Mode Typography & Ergonomics Core */
+
+/* Dark Terminal Default Canvas (oklch(15% 0.01 250) / #0B0F19 Base) */
+:root {
+  --font-sans: "Inter Variable", "Inter", "Inter Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "JetBrains Mono Fallback", "SF Mono", "Fira Code", Consolas, monospace;
+  --font-serif: "Newsreader", Georgia, Cambria, "Times New Roman", serif;
+
+  /* Base Terminal Inks (Attenuated 10:1 to 15.8:1 Contrast in Perceptual OKLCH) */
+  --ink-primary: oklch(0.98 0.01 240);
+  --ink-secondary: oklch(0.85 0.02 240);
+  --ink-muted: oklch(0.70 0.03 240);
+  --ink-faint: oklch(0.50 0.03 240);
+  --ink-statutory: oklch(0.90 0.02 240);
+  --ink-numeric: oklch(0.95 0.01 240);
+
+  /* Semantic Functional Status Inks (Dark Surface) */
+  --ink-crimson: oklch(0.68 0.22 25);
+  --ink-amber: oklch(0.82 0.16 85);
+  --ink-emerald: oklch(0.78 0.18 150);
+  --ink-cobalt: oklch(0.72 0.18 250);
+
+  /* Optical Grade Token & Dark Mode De-Weighted Font Weights (Counter Blooming Mitigation) */
+  --font-grade: -30;
+  --fw-display-lg: 600;
+  --fw-display-md: 600;
+  --fw-heading-sm: 500;
+  --fw-body-default: 400;
+  --fw-body-dense: 400;
+  --fw-mono-data: 450;
+  --fw-statutory-cite: 400;
+  --fw-caption-mono: 400;
+
+  /* Positive Micro-Tracking for Glowing Dark Pixels */
+  --ls-display-lg: -0.025em;
+  --ls-display-md: -0.020em;
+  --ls-heading-sm: -0.010em;
+  --ls-body-default: 0.010em;
+  --ls-body-dense: 0.015em;
+  --ls-mono-data: 0.020em;
+  --ls-statutory-cite: 0.015em;
+  --ls-caption-mono: 0.025em;
+}
+
+/* Light Document Lens Override (PDF Preview Canvas / Crisp Stone Paper) */
+.lens-surface-light {
+  --ink-primary: oklch(0.18 0.03 260);
+  --ink-secondary: oklch(0.32 0.04 260);
+  --ink-muted: oklch(0.50 0.03 260);
+  --ink-faint: oklch(0.70 0.02 260);
+  --ink-statutory: oklch(0.24 0.04 260);
+  --ink-numeric: oklch(0.18 0.03 260);
+
+  --ink-crimson: oklch(0.55 0.22 25);
+  --ink-amber: oklch(0.65 0.18 85);
+  --ink-emerald: oklch(0.58 0.18 150);
+  --ink-cobalt: oklch(0.52 0.22 250);
+
+  --font-grade: 0;
+
+  /* Standard Font Weights on Light Backgrounds */
+  --fw-display-lg: 700;
+  --fw-display-md: 600;
+  --fw-heading-sm: 600;
+  --fw-body-default: 400;
+  --fw-body-dense: 450;
+  --fw-mono-data: 500;
+  --fw-statutory-cite: 400;
+  --fw-caption-mono: 500;
+
+  /* Neutralized Letter Spacing on Light Paper */
+  --ls-display-lg: -0.020em;
+  --ls-display-md: -0.015em;
+  --ls-heading-sm: 0.000em;
+  --ls-body-default: 0.000em;
+  --ls-body-dense: 0.005em;
+  --ls-mono-data: 0.010em;
+  --ls-statutory-cite: 0.000em;
+  --ls-caption-mono: 0.015em;
+}
+
+/* Inter OpenType disambiguation (cv05 l, cv08 I/K, cv11 single-story a) + optical sizing */
+.font-sans {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv05" 1, "cv08" 1, "cv11" 1;
+  font-optical-sizing: auto;
+}
+
+/* JetBrains Mono financial discipline: tabular digits, slashed zero, ligatures disabled */
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "zero" 1, "calt" 0;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+}
+
+/* Strict Tabular Numeric Discipline with Positive Micro-Tracking Floor */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1, "calt" 0;
+  letter-spacing: var(--ls-mono-data);
+}
+
+/* Rigid Decimal, Sign, and Currency Alignment Grid for Financial Columns */
+.tabular-currency {
+  display: inline-grid;
+  grid-template-columns: 1ch 1ch auto;
+  align-items: baseline;
+  justify-items: end;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1, "calt" 0;
+  letter-spacing: var(--ls-mono-data);
+  white-space: nowrap;
+}
+
+/* Statutory Law Citation Discipline (Newsreader Serif) */
+.statutory-cite {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-optical-sizing: auto;
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  font-weight: var(--fw-statutory-cite);
+  letter-spacing: var(--ls-statutory-cite);
+  color: var(--ink-statutory);
+}
+
+/* Modular Scale Utility Aliases */
+.type-display-lg {
+  font-size: 2.0rem;
+  line-height: 2.375rem;
+  font-weight: var(--fw-display-lg);
+  letter-spacing: var(--ls-display-lg);
+}
+
+.type-display-md {
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: var(--fw-display-md);
+  letter-spacing: var(--ls-display-md);
+}
+
+.type-heading-sm {
+  font-size: 1.0rem;
+  line-height: 1.375rem;
+  font-weight: var(--fw-heading-sm);
+  letter-spacing: var(--ls-heading-sm);
+}
+
+.type-body-default {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: var(--fw-body-default);
+  letter-spacing: var(--ls-body-default);
+}
+
+.type-body-dense {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: var(--fw-body-dense);
+  letter-spacing: var(--ls-body-dense);
+}
+
+.type-mono-data {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.0rem;
+  font-weight: var(--fw-mono-data);
+  letter-spacing: var(--ls-mono-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1, "calt" 0;
+}
+
+.type-caption-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 0.875rem;
+  font-weight: var(--fw-caption-mono);
+  letter-spacing: var(--ls-caption-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "zero" 1, "calt" 0;
+}

@@ -59,30 +59,81 @@ const config: Config = {
         slate: {
           500: "#8494ab",
         },
+        // Dual-Surface Perceptual OKLCH Semantic Ink Tokens (src/styles/typography.css)
+        ink: {
+          primary: "var(--ink-primary)",
+          secondary: "var(--ink-secondary)",
+          muted: "var(--ink-muted)",
+          faint: "var(--ink-faint)",
+          statutory: "var(--ink-statutory)",
+          numeric: "var(--ink-numeric)",
+          crimson: "var(--ink-crimson)",
+          amber: "var(--ink-amber)",
+          emerald: "var(--ink-emerald)",
+          cobalt: "var(--ink-cobalt)",
+        },
       },
       fontFamily: {
-        sans: [
-          "Inter",
-          "Plus Jakarta Sans",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "sans-serif",
+        sans: ["var(--font-sans)"],
+        mono: ["var(--font-mono)"],
+        serif: ["var(--font-serif)"],
+      },
+      fontSize: {
+        "display-lg": [
+          "2.0rem",
+          {
+            lineHeight: "2.375rem",
+            letterSpacing: "var(--ls-display-lg)",
+            fontWeight: "var(--fw-display-lg)",
+          },
         ],
-        mono: [
-          "JetBrains Mono",
-          "SF Mono",
-          "Fira Code",
-          "Consolas",
-          "monospace",
+        "display-md": [
+          "1.5rem",
+          {
+            lineHeight: "1.875rem",
+            letterSpacing: "var(--ls-display-md)",
+            fontWeight: "var(--fw-display-md)",
+          },
         ],
-        serif: [
-          "Newsreader",
-          "Georgia",
-          "Cambria",
-          "Times New Roman",
-          "serif",
+        "heading-sm": [
+          "1.0rem",
+          {
+            lineHeight: "1.375rem",
+            letterSpacing: "var(--ls-heading-sm)",
+            fontWeight: "var(--fw-heading-sm)",
+          },
+        ],
+        "body-default": [
+          "0.875rem",
+          {
+            lineHeight: "1.25rem",
+            letterSpacing: "var(--ls-body-default)",
+            fontWeight: "var(--fw-body-default)",
+          },
+        ],
+        "body-dense": [
+          "0.8125rem",
+          {
+            lineHeight: "1.125rem",
+            letterSpacing: "var(--ls-body-dense)",
+            fontWeight: "var(--fw-body-dense)",
+          },
+        ],
+        "mono-data": [
+          "0.75rem",
+          {
+            lineHeight: "1.0rem",
+            letterSpacing: "var(--ls-mono-data)",
+            fontWeight: "var(--fw-mono-data)",
+          },
+        ],
+        "caption-mono": [
+          "0.6875rem",
+          {
+            lineHeight: "0.875rem",
+            letterSpacing: "var(--ls-caption-mono)",
+            fontWeight: "var(--fw-caption-mono)",
+          },
         ],
       },
     },

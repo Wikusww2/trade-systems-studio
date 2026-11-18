@@ -21,6 +21,6 @@ We extract a deep headless firewall core in `frontend-dashboard/src/lib/firewall
 4. **Top-Right Paradigm Switcher:** A persistent segmented header allows switching between `#var-1` through `#var-4` and `#synthesis` (`⌘1` to `⌘5`), updating the operational presentation without altering underlying statutory numbers.
 
 ## Consequences
-- **Positive:** Variations remain thin visual views (< 350 lines each), mathematical determinism is strictly maintained across all layouts, and `#arc` serves as a stable, recruiter-grade architectural artifact.
+- **Positive:** Variations remain thin visual views (< 350 lines each), mathematical determinism is strictly maintained across all layouts, and `#arc` serves as a stable, production-grade architectural artifact.
 - **Negative:** Any change to core audit state interfaces must be backward-compatible with all 4 variation views.
 - **Verification:** Verified via `npx tsc --noEmit`, `npm run build`, and headless Playwright visual regression gates.

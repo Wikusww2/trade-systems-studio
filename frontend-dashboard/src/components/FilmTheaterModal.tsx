@@ -199,7 +199,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="film-theater-modal-title"
-        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-canvas-dark/85 backdrop-blur-xl"
       >
         <motion.div
           ref={modalRef}
@@ -232,7 +232,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
               <button
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-sm transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-ink-primary hover:bg-slate-800 rounded-sm transition-colors cursor-pointer"
                 title="Close Theater"
               >
                 <X className="w-5 h-5" />
@@ -241,7 +241,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
           </div>
 
           {/* Film Screen Canvas / Snapshot Viewer */}
-          <div className="relative aspect-video w-full bg-black overflow-hidden flex items-center justify-center">
+          <div className="relative aspect-video w-full bg-canvas-dark overflow-hidden flex items-center justify-center">
             {/* Active Scene Frame Snapshot */}
             <motion.img
               key={activeScene.id}
@@ -255,10 +255,10 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
 
             {/* In-Frame Statutory Badge Overlay */}
             <div className="absolute top-4 left-4 z-10 flex items-center gap-2 pointer-events-none">
-              <span className="px-2.5 py-1 bg-black/75 backdrop-blur-md border border-slate-700 rounded-sm font-mono text-[11px] text-cobalt-400 font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-1 bg-canvas-dark/75 backdrop-blur-md border border-slate-700 rounded-sm font-mono text-[11px] text-cobalt-400 font-bold uppercase tracking-wider">
                 {activeScene.chapterBadge}
               </span>
-              <span className="px-2 py-1 bg-black/75 backdrop-blur-md border border-slate-800 rounded-sm font-mono text-[10px] text-slate-300">
+              <span className="px-2 py-1 bg-canvas-dark/75 backdrop-blur-md border border-slate-800 rounded-sm font-mono text-[10px] text-slate-300">
                 {activeScene.statutoryAnchor}
               </span>
             </div>
@@ -266,9 +266,9 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
             {/* Quick Play/Pause Center Trigger Overlay on Hover */}
             <button
               onClick={togglePlay}
-              className="absolute inset-0 w-full h-full opacity-0 hover:opacity-100 transition-opacity bg-black/25 flex items-center justify-center"
+              className="absolute inset-0 w-full h-full opacity-0 hover:opacity-100 transition-opacity bg-canvas-dark/25 flex items-center justify-center"
             >
-              <div className="w-16 h-16 rounded-full bg-cobalt-500/90 text-white flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <div className="w-16 h-16 rounded-full bg-cobalt-500/90 text-canvas-stone flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
                 {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
               </div>
             </button>
@@ -310,7 +310,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
               <div className="flex items-center gap-3">
                 <button
                   onClick={handlePrev}
-                  className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-sm transition-colors"
+                  className="p-1.5 text-slate-300 hover:text-ink-primary hover:bg-slate-800 rounded-sm transition-colors"
                   title="Previous Chapter"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -318,7 +318,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
 
                 <button
                   onClick={togglePlay}
-                  className="p-2 bg-cobalt-600 hover:bg-cobalt-500 text-white rounded-sm transition-colors shadow-sm"
+                  className="p-2 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone rounded-sm transition-colors shadow-sm"
                   title={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -326,7 +326,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
 
                 <button
                   onClick={handleNext}
-                  className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-sm transition-colors"
+                  className="p-1.5 text-slate-300 hover:text-ink-primary hover:bg-slate-800 rounded-sm transition-colors"
                   title="Next Chapter"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -351,7 +351,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
                     onClose();
                     onOpenLeadModal();
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded-sm transition-all flex items-center gap-2 shadow-sm"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-canvas-stone font-mono text-xs font-bold rounded-sm transition-all flex items-center gap-2 shadow-sm"
                 >
                   <span>Request 25-Invoice Audit</span>
                   <ExternalLink className="w-3.5 h-3.5" />

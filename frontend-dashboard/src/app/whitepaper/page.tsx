@@ -50,14 +50,14 @@ export default function WhitepaperPage() {
           <Link
             href="/"
             onClick={() => sound.playTick()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all group"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-ink-primary transition-all group"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-slate-400 group-hover:-translate-x-0.5 transition-transform" />
             <span>Live Console</span>
           </Link>
           <div className="h-4 w-px bg-slate-700 hidden sm:block" />
           <div className="hidden sm:flex items-center gap-2 text-xs font-mono">
-            <span className="text-white font-bold">TradeTech Systems Studio</span>
+            <span className="text-ink-primary font-bold">TradeTech Systems Studio</span>
             <span className="text-slate-400">•</span>
             <span className="text-cyan-400">Technical Whitepaper</span>
           </div>
@@ -68,7 +68,7 @@ export default function WhitepaperPage() {
             type="button"
             onClick={handlePrint}
             aria-label="Print or save technical whitepaper as PDF"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-ink-primary transition-all"
           >
             <Printer className="w-3.5 h-3.5 text-slate-400" />
             <span className="hidden sm:inline">Print / PDF</span>
@@ -155,12 +155,12 @@ export default function WhitepaperPage() {
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-ink-primary font-sans leading-tight">
               Deterministic Trade Compliance Engineering: Python Decimal Invariants, Fail-Closed Classification Gating, and Cycle-Safe Corporate Sanctions Graphs
             </h1>
 
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 pt-2 border-t border-[#1F2937]">
-              <div>Author: <span className="text-white font-bold">Samuel Rencken</span></div>
+              <div>Author: <span className="text-ink-primary font-bold">Samuel Rencken</span></div>
               <div>•</div>
               <div>Academic Foundation: <span className="text-cyan-400">BCom in Economic Sciences (International Trade), North-West University (NWU)</span></div>
               <div>•</div>
@@ -170,7 +170,7 @@ export default function WhitepaperPage() {
 
           {/* SECTION 1: ABSTRACT */}
           <section id="abstract" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">1.</span>
               <span>Abstract</span>
             </h2>
@@ -208,13 +208,13 @@ export default function WhitepaperPage() {
 
           {/* SECTION 2: ARITHMETIC DETERMINISM */}
           <section id="determinism" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">2.</span>
               <span>Arithmetic Determinism & Fail-Closed Input Contracts</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-              <h3 className="text-base font-bold text-white font-mono">2.1 Eliminating Floating-Point Drift Across the Wire</h3>
+              <h3 className="text-base font-bold text-ink-primary font-mono">2.1 Eliminating Floating-Point Drift Across the Wire</h3>
               <p>
                 In IEEE 754 double-precision floating-point arithmetic, binary approximations introduce silent representation drift:
               </p>
@@ -238,7 +238,7 @@ export default function WhitepaperPage() {
                 </div>
               </div>
 
-              <h3 className="text-base font-bold text-white font-mono pt-3">2.2 String-Serialized Python Decimal & Zero-Fabrication Guard</h3>
+              <h3 className="text-base font-bold text-ink-primary font-mono pt-3">2.2 String-Serialized Python Decimal & Zero-Fabrication Guard</h3>
               <p>
                 Every financial calculation in TradeTech Systems Studio runs exclusively in Python <code className="text-emerald-300">decimal.Decimal</code>, serializes monetary fields as exact decimal strings in JSON responses (preventing JavaScript IEEE-754 parse drift at the API boundary), and validates required fields before computing findings so empty inputs always return $0.00 exposure:
               </p>
@@ -261,7 +261,7 @@ def quantize_currency(value: Decimal) -> Decimal:
 
           {/* SECTION 3: WCO GRI 1-6 STATE MACHINE */}
           <section id="state-machine" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">3.</span>
               <span>Hierarchical WCO GRI 1 to 6 Classification & Broker Review Gate</span>
             </h2>
@@ -273,7 +273,7 @@ def quantize_currency(value: Decimal) -> Decimal:
 
               <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] font-mono text-xs space-y-2">
                 <div className="text-cyan-400 font-bold">Hierarchical Code Formulation:</div>
-                <div className="text-white text-sm">
+                <div className="text-ink-primary text-sm">
                   y = concat(c, h, s₁, s₂, t)
                 </div>
                 <div className="text-slate-400 text-[11px] leading-relaxed">
@@ -281,7 +281,7 @@ def quantize_currency(value: Decimal) -> Decimal:
                 </div>
               </div>
 
-              <h3 className="text-base font-bold text-white font-mono pt-3">3.2 Word-Boundary Matching & Fail-Closed Escalation</h3>
+              <h3 className="text-base font-bold text-ink-primary font-mono pt-3">3.2 Word-Boundary Matching & Fail-Closed Escalation</h3>
               <p>
                 The classifier enforces strict regex word boundaries (preventing substring collisions such as matching &quot;esc&quot; inside &quot;description&quot; or &quot;telescope&quot;). Any unrecognized product or multi-component article scoring below <code className="text-amber-400">Conf(e) &lt; 0.85</code> fails closed:
               </p>
@@ -305,13 +305,13 @@ def quantize_currency(value: Decimal) -> Decimal:
 
           {/* SECTION 4: OFAC 50% GRAPH */}
           <section id="sanctions-graph" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">4.</span>
               <span>Fail-Closed Multi-Hop Corporate Sanctions Graph (OFAC 50% Rule)</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-              <h3 className="text-base font-bold text-white font-mono">4.1 Statutory Mandate (31 CFR § 501) & Regime Separation</h3>
+              <h3 className="text-base font-bold text-ink-primary font-mono">4.1 Statutory Mandate (31 CFR § 501) & Regime Separation</h3>
               <p>
                 Under U.S. Treasury Office of Foreign Assets Control (OFAC) guidance, any entity owned <strong>50 percent or more in the aggregate</strong>, directly or indirectly, by one or more blocked persons is itself blocked by operation of law. Crucially, the engine models <strong>OFAC SDN blocking</strong> separately from <strong>BIS Entity List / Unverified List (UVL) export controls</strong> so distinct legal regimes are never conflated.
               </p>
@@ -339,13 +339,13 @@ def quantize_currency(value: Decimal) -> Decimal:
 
           {/* SECTION 5: CBP ASSISTS & PRIOR DISCLOSURE */}
           <section id="valuation-ledger" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">5.</span>
               <span>CBP Assist Valuation Ledger & DRAFT Prior Disclosure Worksheets</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-              <h3 className="text-base font-bold text-white font-mono">5.1 Statutory Valuation & Assist Apportionment (19 U.S.C. § 1401a / 19 CFR § 152.103)</h3>
+              <h3 className="text-base font-bold text-ink-primary font-mono">5.1 Statutory Valuation & Assist Apportionment (19 U.S.C. § 1401a / 19 CFR § 152.103)</h3>
               <p>
                 Under 19 U.S.C. § 1401a(h)(1)(A), buyer-provided assists (tools, dies, molds, components, and foreign engineering design supplied free of charge or at reduced cost) must be apportioned and added to transaction value. Simultaneously, under 19 U.S.C. § 1401a(b)(4)(A), separately identified international freight and marine insurance are excluded from US dutiable transaction value.
               </p>
@@ -361,7 +361,7 @@ def quantize_currency(value: Decimal) -> Decimal:
                 </div>
               </div>
 
-              <h3 className="text-base font-bold text-white font-mono pt-3">5.2 Watermarked DRAFT Prior Disclosure Worksheets (19 CFR § 162.74)</h3>
+              <h3 className="text-base font-bold text-ink-primary font-mono pt-3">5.2 Watermarked DRAFT Prior Disclosure Worksheets (19 CFR § 162.74)</h3>
               <p>
                 When unapportioned assists or valuation discrepancies are detected on US port entries, the register compiles an itemized <strong>DRAFT Prior Disclosure worksheet</strong> under 19 U.S.C. § 1592(c)(4) for review, verification, and filing by a licensed customs broker or trade attorney. Where all statutory conditions are met (timely submission prior to formal CBP investigation, accurate tender of lawful duty loss plus 19 U.S.C. § 1505 statutory interest, and verified scope), prior disclosure can mitigate negligence or gross negligence penalty exposure down to statutory interest.
               </p>
@@ -374,14 +374,14 @@ def quantize_currency(value: Decimal) -> Decimal:
 
           {/* SECTION 6: VERIFICATION & HARDENING */}
           <section id="benchmarks" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">6.</span>
               <span>Automated Verification, Security Hardening & CI Gates</span>
             </h2>
 
             <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-xs font-bold uppercase tracking-wider text-white font-mono">
+                <div className="text-xs font-bold uppercase tracking-wider text-ink-primary font-mono">
                   Enforced CI Quality & Security Matrix
                 </div>
                 <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded font-bold">
@@ -390,42 +390,42 @@ def quantize_currency(value: Decimal) -> Decimal:
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs font-mono">
+                <table className="w-full text-left type-mono-data tabular-nums">
                   <thead>
-                    <tr className="border-b border-[#1F2937] text-slate-400">
+                    <tr className="border-b border-terminal-subtle text-ink-muted">
                       <th className="py-2 pr-4">Verification Layer</th>
                       <th className="py-2 pr-4">Scope & Enforcement</th>
                       <th className="py-2">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1F2937] text-slate-300">
+                  <tbody className="divide-y divide-[#1F2937] text-ink-secondary">
                     <tr>
-                      <td className="py-2 pr-4 text-white font-bold">Pytest Suite (Py 3.11 &amp; 3.12)</td>
+                      <td className="py-2 pr-4 text-ink-primary font-bold">Pytest Suite (Py 3.11 &amp; 3.12)</td>
                       <td className="py-2 pr-4 text-cyan-300">{VERIFIED_PYTEST_COUNT} tests across 15 modules (unit, 37 Hypothesis fuzz tests, 92 E2E compliance tests)</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4 text-white font-bold">Static Analysis & Types</td>
+                      <td className="py-2 pr-4 text-ink-primary font-bold">Static Analysis & Types</td>
                       <td className="py-2 pr-4 text-cyan-300">Ruff lint (0 errors), Mypy strict (23 files), TypeScript strict (`tsc --noEmit`)</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4 text-white font-bold">API & Security Controls</td>
+                      <td className="py-2 pr-4 text-ink-primary font-bold">API & Security Controls</td>
                       <td className="py-2 pr-4 text-cyan-300">Strict CORS allowlist, Pydantic EmailStr + max_length + rate limiting, Next.js 15.5.29</td>
                       <td className="py-2 text-emerald-400 font-bold">VERIFIED</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4 text-white font-bold">Document & XML Provenance</td>
+                      <td className="py-2 pr-4 text-ink-primary font-bold">Document & XML Provenance</td>
                       <td className="py-2 pr-4 text-cyan-300">Byte-deterministic 2-page PDF fixtures, SHA-256 content-addressed CargoWise XML</td>
                       <td className="py-2 text-emerald-400 font-bold">VERIFIED</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4 text-white font-bold">Frontend Accessibility</td>
+                      <td className="py-2 pr-4 text-ink-primary font-bold">Frontend Accessibility</td>
                       <td className="py-2 pr-4 text-cyan-300">WCAG 2.2 AA contrast (6.96:1 to 7.47:1), ARIA landmarks, PII redaction toggle</td>
                       <td className="py-2 text-emerald-400 font-bold">VERIFIED</td>
                     </tr>
                     <tr>
-                      <td className="py-2 pr-4 text-white font-bold">Floating-Point Drift</td>
+                      <td className="py-2 pr-4 text-ink-primary font-bold">Floating-Point Drift</td>
                       <td className="py-2 pr-4 text-emerald-400 font-bold">0.0000000000000000 (Decimal string API contract)</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
@@ -440,7 +440,7 @@ def quantize_currency(value: Decimal) -> Decimal:
 
           {/* SECTION 7: CONCLUSION & SCOPE */}
           <section id="conclusion" className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
+            <h2 className="text-xl font-bold text-ink-primary font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">7.</span>
               <span>Scope, Governance & Architectural Summary</span>
             </h2>

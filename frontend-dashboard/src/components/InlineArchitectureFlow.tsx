@@ -103,7 +103,7 @@ export const InlineArchitectureFlow: React.FC = () => {
               {`${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Verified Automated Tests`}
             </span>
           </div>
-          <h2 className="text-lg sm:text-xl font-black text-slate-100 tracking-tight mt-1 font-sans">
+          <h2 className="type-display-md text-ink-primary mt-1 font-sans">
             Deterministic Pre-Ingest Verification Kernel
           </h2>
         </div>

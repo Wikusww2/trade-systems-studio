@@ -85,6 +85,53 @@ def run_e2e(capture_screenshots: bool = False) -> int:
             assert "200" in body_text, "Expected verified 200 test count to render on page"
             print("[PASS] Verified 200 test metric rendered on workbench")
 
+            # Verify Dual-Surface OKLCH Typography & Ergonomics Computed Styles
+            typo_audit = page.evaluate("""() => {
+                const rootStyle = getComputedStyle(document.documentElement);
+                const rootInkPrimary = rootStyle.getPropertyValue('--ink-primary').trim();
+                const rootFwMono = rootStyle.getPropertyValue('--fw-mono-data').trim();
+                const lensEl = document.querySelector('.lens-surface-light');
+                const lensInkPrimary = lensEl
+                    ? getComputedStyle(lensEl).getPropertyValue('--ink-primary').trim()
+                    : null;
+                const lensFwMono = lensEl
+                    ? getComputedStyle(lensEl).getPropertyValue('--fw-mono-data').trim()
+                    : null;
+                const tabEl = document.querySelector('.tabular-nums');
+                const tabStyle = tabEl ? getComputedStyle(tabEl) : null;
+                return {
+                    rootInkPrimary,
+                    rootFwMono,
+                    lensFound: Boolean(lensEl),
+                    lensInkPrimary,
+                    lensFwMono,
+                    tabVariant: tabStyle ? tabStyle.fontVariantNumeric : null,
+                    tabLetterSpacingPx: tabStyle ? parseFloat(tabStyle.letterSpacing) : null,
+                };
+            }""")
+            assert "oklch(0.98 0.01 240)" in typo_audit["rootInkPrimary"], (
+                f"Expected dark terminal --ink-primary oklch(0.98 0.01 240), got: {typo_audit}"
+            )
+            assert typo_audit["rootFwMono"] == "450", f"Expected dark --fw-mono-data=450, got: {typo_audit}"
+            if typo_audit["lensFound"]:
+                assert "oklch(0.18 0.03 260)" in (typo_audit["lensInkPrimary"] or ""), (
+                    f"Expected .lens-surface-light --ink-primary oklch(0.18 0.03 260), got: {typo_audit}"
+                )
+                assert typo_audit["lensFwMono"] == "500", (
+                    f"Expected light lens --fw-mono-data=500, got: {typo_audit}"
+                )
+            assert typo_audit["tabVariant"] == "tabular-nums", (
+                f"Expected font-variant-numeric: tabular-nums, got: {typo_audit}"
+            )
+            assert (typo_audit["tabLetterSpacingPx"] or 0) > 0, (
+                f"Expected positive letter-spacing on .tabular-nums, got: {typo_audit}"
+            )
+            print(
+                f"[PASS] Dual-surface OKLCH typography verified: root={typo_audit['rootInkPrimary']} "
+                f"(fw={typo_audit['rootFwMono']}), lens={typo_audit['lensInkPrimary']} "
+                f"(fw={typo_audit['lensFwMono']}), tabular-nums ls={typo_audit['tabLetterSpacingPx']}px"
+            )
+
             # Verify CargoWise XML tab if present
             cw_tab = page.locator("button:has-text('CargoWise XML')").first
             if cw_tab.is_visible():

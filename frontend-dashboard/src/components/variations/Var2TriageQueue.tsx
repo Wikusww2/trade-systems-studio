@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { usePreIngestFirewall, playPseudoHaptic } from "@/lib/firewall-core";
 import { ThreeWayResolutionBar } from "../ThreeWayResolutionBar";
+import { TabularAmount } from "../TabularAmount";
 import { ResolutionActionType } from "@/lib/types";
 import { resolveAssetPath } from "@/lib/assets";
 import {
@@ -335,22 +336,22 @@ export const Var2TriageQueue: React.FC = () => {
   }, [filteredRows, selectedIndex, isCommandBarOpen, rowVirtualizer]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4 font-sans text-slate-100">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4 font-sans text-ink-primary">
       {/* 1. TOP OPERATOR CONTROL BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-terminal-slate border border-terminal-subtle shadow-xl">
         {/* Live Carrier Cutoff Countdown Banner */}
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-red-950/60 border border-red-800/80 text-red-400 flex items-center justify-center shrink-0">
+          <div className="p-2.5 rounded-lg bg-red-950/60 border border-red-800/80 text-ink-crimson flex items-center justify-center shrink-0">
             <Clock className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase text-slate-400 font-bold tracking-wider">
+              <span className="type-caption-mono uppercase text-ink-muted font-medium">
                 CARRIER CUTOFF COUNTDOWN
               </span>
               <span className="inline-block w-2 h-2 rounded-full bg-red-400 animate-ping" />
             </div>
-            <div className="text-2xl font-mono font-black text-red-400 tabular-nums">
+            <div className="type-display-md font-mono text-ink-crimson tabular-nums">
               {formatCountdown(countdownSeconds)}
             </div>
           </div>
@@ -418,10 +419,10 @@ export const Var2TriageQueue: React.FC = () => {
                 setActiveOwnerFilter(chip.id as OwnerRoute);
                 setSelectedIndex(0);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono text-xs whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border type-mono-data whitespace-nowrap transition-colors ${
                 isActive
-                  ? "bg-blue-600 border-blue-400 text-white font-semibold shadow-md shadow-blue-600/20"
-                  : "bg-[#0F172A] border-[#1F2937] text-slate-400 hover:text-slate-200 hover:bg-[#1E293B]"
+                  ? "bg-cobalt-600 border-cobalt-400 text-canvas-stone font-medium shadow-md shadow-blue-600/20"
+                  : "bg-terminal-slate border-terminal-subtle text-ink-muted hover:text-ink-primary hover:bg-terminal-elevated"
               }`}
             >
               <span>{chip.label}</span>
@@ -498,41 +499,41 @@ export const Var2TriageQueue: React.FC = () => {
                     }`}
                   >
                     {/* Index */}
-                    <div className="col-span-1 text-slate-400 text-[11px] tabular-nums">
+                    <div className="col-span-1 text-ink-muted type-caption-mono tabular-nums">
                       {virtualRow.index + 1}
                     </div>
 
                     {/* Entry & Carrier */}
                     <div className="col-span-2 min-w-0">
-                      <div className="font-bold text-slate-200 truncate">{row.entryNumber}</div>
-                      <div className="text-[10px] text-slate-400 truncate">{row.carrier}</div>
+                      <div className="type-mono-data font-medium text-ink-primary truncate">{row.entryNumber}</div>
+                      <div className="type-caption-mono text-ink-muted truncate">{row.carrier}</div>
                     </div>
 
                     {/* Corridor */}
-                    <div className="col-span-2 text-[11px] text-slate-300 truncate">
+                    <div className="col-span-2 type-body-dense text-ink-secondary truncate">
                       {row.corridor}
                     </div>
 
                     {/* Statutory Finding */}
                     <div className="col-span-3 min-w-0">
-                      <div className="text-[11px] font-semibold text-slate-200 truncate">
+                      <div className="type-body-dense font-medium text-ink-primary truncate">
                         {row.discrepancyTitle}
                       </div>
-                      <div className="text-[10px] text-blue-400 truncate">{row.statutoryCode}</div>
+                      <div className="statutory-cite text-[12px] text-ink-cobalt truncate">{row.statutoryCode}</div>
                     </div>
 
                     {/* Exposure */}
-                    <div className="col-span-1 text-right font-bold tabular-nums text-red-400">
-                      ${row.exposureAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    <div className="col-span-1 text-right type-mono-data font-medium text-ink-crimson">
+                      <TabularAmount value={row.exposureAmount} />
                     </div>
 
                     {/* Confidence */}
                     <div className="col-span-1 text-center tabular-nums">
                       <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                        className={`px-1.5 py-0.5 rounded type-caption-mono font-medium ${
                           row.confidence < 0.85
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
-                            : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                            ? "bg-amber-500/10 text-ink-amber border border-amber-500/30"
+                            : "bg-emerald-500/10 text-ink-emerald border border-emerald-500/30"
                         }`}
                       >
                         {Math.round(row.confidence * 100)}%
@@ -542,15 +543,15 @@ export const Var2TriageQueue: React.FC = () => {
                     {/* Status & Action */}
                     <div className="col-span-2 flex items-center justify-center gap-1.5">
                       {resolution ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                        <span className="px-2 py-0.5 rounded type-caption-mono font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                           RESOLVED
                         </span>
                       ) : (
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded type-caption-mono font-medium ${
                             row.status === "QUARANTINED"
-                              ? "bg-red-500/10 text-red-400 border border-red-500/30"
-                              : "bg-slate-800 text-slate-300"
+                              ? "bg-red-500/10 text-ink-crimson border border-red-500/30"
+                              : "bg-slate-800 text-ink-secondary"
                           }`}
                         >
                           {row.status}
@@ -563,7 +564,7 @@ export const Var2TriageQueue: React.FC = () => {
                           playPseudoHaptic();
                           setInspectedRow(row);
                         }}
-                        className="px-2 py-1 text-[10px] bg-[#1E293B] hover:bg-blue-600 hover:text-white text-slate-300 rounded border border-[#334155] transition-colors"
+                        className="px-2 py-1 type-caption-mono bg-terminal-elevated hover:bg-cobalt-600 hover:text-canvas-stone text-ink-secondary rounded border border-terminal-border transition-colors"
                       >
                         Inspect
                       </button>
@@ -580,60 +581,60 @@ export const Var2TriageQueue: React.FC = () => {
 
       {/* 4. DISCREPANCY INSPECTION DRAWER / MODAL */}
       {inspectedRow && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0F172A] border border-[#1F2937] rounded-2xl w-full max-w-2xl p-6 shadow-2xl space-y-4 font-mono">
-            <div className="flex items-center justify-between border-b border-[#1F2937] pb-3">
+        <div className="fixed inset-0 z-50 bg-canvas-dark/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-terminal-slate border border-terminal-subtle rounded-2xl w-full max-w-2xl p-6 shadow-2xl space-y-4 font-mono">
+            <div className="flex items-center justify-between border-b border-terminal-subtle pb-3">
               <div>
-                <span className="text-[10px] uppercase text-blue-400 font-bold tracking-wider">
+                <span className="type-caption-mono uppercase text-ink-cobalt font-medium">
                   ENTRY INSPECTION
                 </span>
-                <h3 className="text-lg font-bold text-white">{inspectedRow.entryNumber}</h3>
+                <h3 className="type-heading-sm text-ink-primary">{inspectedRow.entryNumber}</h3>
               </div>
               <button
                 onClick={() => {
                   playPseudoHaptic();
                   setInspectedRow(null);
                 }}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-[#1E293B]"
+                className="p-1.5 text-ink-muted hover:text-ink-primary rounded-lg hover:bg-terminal-elevated"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-lg bg-[#0B0F19] border border-[#1F2937]">
-                <div className="text-slate-400 text-[10px]">CARRIER & CORRIDOR</div>
-                <div className="font-bold text-slate-200 mt-0.5">{inspectedRow.carrier}</div>
-                <div className="text-slate-400 text-[11px]">{inspectedRow.corridor}</div>
+            <div className="grid grid-cols-2 gap-3 type-mono-data">
+              <div className="p-3 rounded-lg bg-canvas-dark border border-terminal-subtle">
+                <div className="text-ink-muted type-caption-mono">CARRIER & CORRIDOR</div>
+                <div className="font-medium text-ink-primary mt-0.5">{inspectedRow.carrier}</div>
+                <div className="text-ink-muted type-caption-mono">{inspectedRow.corridor}</div>
               </div>
 
-              <div className="p-3 rounded-lg bg-[#0B0F19] border border-[#1F2937]">
-                <div className="text-slate-400 text-[10px]">STATUTORY EXPOSURE</div>
-                <div className="font-bold text-red-400 text-base mt-0.5 tabular-nums">
-                  ${inspectedRow.exposureAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              <div className="p-3 rounded-lg bg-canvas-dark border border-terminal-subtle">
+                <div className="text-ink-muted type-caption-mono">STATUTORY EXPOSURE</div>
+                <div className="font-semibold text-ink-crimson text-base mt-0.5 tabular-nums">
+                  <TabularAmount value={inspectedRow.exposureAmount} />
                 </div>
-                <div className="text-slate-400 text-[11px]">
+                <div className="text-ink-muted type-caption-mono tabular-nums">
                   Confidence: {Math.round(inspectedRow.confidence * 100)}%
                 </div>
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[#0B0F19] border border-[#1F2937] text-xs space-y-1">
-              <div className="font-bold text-blue-400">{inspectedRow.statutoryCode}</div>
-              <div className="font-semibold text-slate-200">{inspectedRow.discrepancyTitle}</div>
-              <p className="text-slate-300 leading-relaxed font-sans">{inspectedRow.discrepancyDescription}</p>
+            <div className="p-3 rounded-lg bg-canvas-dark border border-terminal-subtle type-mono-data space-y-1">
+              <div className="statutory-cite text-ink-cobalt">{inspectedRow.statutoryCode}</div>
+              <div className="font-medium text-ink-primary">{inspectedRow.discrepancyTitle}</div>
+              <p className="type-body-dense text-ink-secondary font-sans">{inspectedRow.discrepancyDescription}</p>
             </div>
 
             {/* Provenance & Real Multi-Page PDF Link */}
             {inspectedRow.pdfFilename && (
-              <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 type-mono-data">
                 <div>
-                  <div className="text-[10px] uppercase text-blue-400 font-bold tracking-wider">
+                  <div className="type-caption-mono uppercase text-ink-cobalt font-medium">
                     DOCUMENT PROVENANCE
                   </div>
-                  <div className="text-slate-200 font-semibold mt-0.5">{inspectedRow.pdfFilename}</div>
+                  <div className="text-ink-primary font-medium mt-0.5">{inspectedRow.pdfFilename}</div>
                   {inspectedRow.ownershipPath && (
-                    <div className="text-[11px] text-amber-400 font-mono mt-1">
+                    <div className="type-caption-mono text-ink-amber mt-1">
                       yente Graph: {inspectedRow.ownershipPath}
                     </div>
                   )}
@@ -642,7 +643,7 @@ export const Var2TriageQueue: React.FC = () => {
                   href={resolveAssetPath(`/nightmares/${inspectedRow.pdfFilename}`)}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold rounded-md transition-colors shrink-0"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-mono text-xs font-semibold rounded-md transition-colors shrink-0"
                 >
                   <span>Open Archival PDF</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -667,28 +668,28 @@ export const Var2TriageQueue: React.FC = () => {
 
       {/* 5. ⌘K COMMAND PALETTE MODAL */}
       {isCommandBarOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-20 p-4">
-          <div className="bg-[#0F172A] border border-[#1F2937] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden font-mono text-xs">
-            <div className="p-3 border-b border-[#1F2937] flex items-center gap-2 bg-[#0B0F19]">
-              <Command className="w-4 h-4 text-blue-400" />
+        <div className="fixed inset-0 z-50 bg-canvas-dark/80 backdrop-blur-md flex items-start justify-center pt-20 p-4">
+          <div className="bg-terminal-slate border border-terminal-subtle rounded-xl w-full max-w-lg shadow-2xl overflow-hidden type-mono-data">
+            <div className="p-3 border-b border-terminal-subtle flex items-center gap-2 bg-canvas-dark">
+              <Command className="w-4 h-4 text-ink-cobalt" />
               <input
                 type="text"
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type carrier name, corridor, statute, or entry number..."
-                className="w-full bg-transparent border-none text-white focus:outline-none placeholder:text-slate-400 text-xs font-mono"
+                className="w-full bg-transparent border-none text-ink-primary focus:outline-none placeholder:text-ink-muted type-mono-data"
               />
               <button
                 onClick={() => setIsCommandBarOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-ink-muted hover:text-ink-primary"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-2 max-h-72 overflow-y-auto space-y-1">
-              <div className="px-2 py-1 text-[10px] text-slate-400 uppercase font-semibold">
+              <div className="px-2 py-1 type-caption-mono text-ink-muted uppercase font-medium">
                 Filter by Queue Owner:
               </div>
               {[
@@ -704,7 +705,7 @@ export const Var2TriageQueue: React.FC = () => {
                     setActiveOwnerFilter(opt.id as OwnerRoute);
                     setIsCommandBarOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-blue-600 hover:text-white text-slate-300 flex items-center justify-between"
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-cobalt-600 hover:text-canvas-stone text-ink-secondary flex items-center justify-between"
                 >
                   <span>{opt.label}</span>
                   <ChevronRight className="w-3.5 h-3.5 opacity-60" />

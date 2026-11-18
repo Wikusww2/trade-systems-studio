@@ -168,17 +168,20 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
   const renderedWidth = baseWidth * scale;
   const renderedHeight = renderedWidth * pageAspectRatio;
+  // Canvas-relative annotation scaling locked to PDF zoom factor
+  const overlayBadgeFontSize = `${Math.max(10, Math.round(11 * scale))}px`;
+  const overlaySubFontSize = `${Math.max(9, Math.round(9.5 * scale))}px`;
 
   return (
-    <div className="flex flex-col h-full bg-slate-100 dark:bg-[#0B0F19] border border-slate-200 dark:border-[#1F2937] overflow-hidden">
+    <div className="flex flex-col h-full bg-slate-100 dark:bg-canvas-dark border border-slate-200 dark:border-terminal-subtle overflow-hidden">
       {/* Canvas Top Toolbar */}
-      <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-white dark:bg-[#0F172A] border-b border-slate-200 dark:border-[#1F2937] shrink-0 gap-2">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-canvas-stone dark:bg-terminal-slate border-b border-slate-200 dark:border-terminal-subtle shrink-0 gap-2">
         <div className="flex items-center gap-2 truncate">
-          <FileText className="w-4 h-4 text-cobalt-600 dark:text-cobalt-400 shrink-0" />
-          <span className="text-xs font-mono font-medium text-slate-800 dark:text-slate-200 truncate">
+          <FileText className="w-4 h-4 text-cobalt-600 dark:text-ink-cobalt shrink-0" />
+          <span className="type-mono-data text-slate-800 dark:text-ink-primary truncate">
             {filename}
           </span>
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-black/40 border border-slate-300 dark:border-[#1F2937] px-1.5 py-0.5 rounded-xs shrink-0 font-mono text-[10px]">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-canvas-dark/80 border border-slate-300 dark:border-terminal-subtle px-1.5 py-0.5 rounded-xs shrink-0 type-caption-mono">
             <button
               onClick={() => {
                 sound.playTick();
@@ -186,12 +189,12 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
               }}
               disabled={currentPage <= 1}
               aria-label="Previous Page"
-              className="px-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold"
+              className="px-1 text-slate-600 dark:text-ink-muted hover:text-slate-900 dark:hover:text-ink-primary disabled:opacity-30 disabled:cursor-not-allowed font-medium"
               title="Previous Page"
             >
               &lt;
             </button>
-            <span className="text-slate-700 dark:text-slate-300 font-semibold px-0.5">
+            <span className="text-slate-700 dark:text-ink-secondary font-medium px-0.5 tabular-nums">
               Page {currentPage} / {numPages}
             </span>
             <button
@@ -201,7 +204,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
               }}
               disabled={currentPage >= numPages}
               aria-label="Next Page"
-              className="px-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold"
+              className="px-1 text-slate-600 dark:text-ink-muted hover:text-slate-900 dark:hover:text-ink-primary disabled:opacity-30 disabled:cursor-not-allowed font-medium"
               title="Next Page"
             >
               &gt;
@@ -244,7 +247,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
-          <span className="text-xs font-mono text-slate-700 dark:text-slate-300 w-10 sm:w-12 text-center">
+          <span className="type-mono-data text-slate-700 dark:text-ink-numeric w-10 sm:w-12 text-center tabular-nums">
             {Math.round(scale * 100)}%
           </span>
           <button
@@ -307,7 +310,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
               href={resolveAssetPath(`/nightmares/${filename}`)}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-[#1E293B] hover:bg-slate-800 text-xs font-mono text-white border border-slate-700 transition-colors rounded-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-terminal-elevated hover:bg-slate-800 type-mono-data text-canvas-stone border border-slate-700 transition-colors rounded-sm"
             >
               <span>Inspect Raw Document</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -321,7 +324,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
               position: "relative",
               transition: "width 0.1s ease-out, height 0.1s ease-out",
             }}
-            className="shadow-xl shadow-slate-400/20 dark:shadow-2xl bg-white border border-slate-300 dark:border-slate-700 select-none shrink-0 rounded-xs overflow-hidden"
+            className="lens-surface-light shadow-xl shadow-slate-400/20 dark:shadow-2xl bg-canvas-stone text-ink-primary border border-slate-300 dark:border-slate-700 select-none shrink-0 rounded-xs overflow-hidden"
           >
             {/* Cybernetic Animated Laser Scanning Beam */}
             <DocumentScannerBeam
@@ -359,8 +362,9 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                       width: `${(210 / 1000) * renderedWidth}px`,
                       height: `${(28 / 1000) * renderedHeight}px`,
                       position: "absolute",
+                      fontSize: overlaySubFontSize,
                     }}
-                    className="bg-black border border-amber-500/80 z-30 flex items-center justify-center font-mono text-[8px] text-amber-400 font-bold tracking-wider select-none shadow-sm"
+                    className="bg-canvas-dark border border-amber-500/80 z-30 flex items-center justify-center font-mono text-amber-400 font-medium tracking-wider select-none shadow-sm"
                   >
                     [PII REDACTED]
                   </div>
@@ -371,8 +375,9 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                       width: `${(220 / 1000) * renderedWidth}px`,
                       height: `${(26 / 1000) * renderedHeight}px`,
                       position: "absolute",
+                      fontSize: overlaySubFontSize,
                     }}
-                    className="bg-black border border-amber-500/80 z-30 flex items-center justify-center font-mono text-[8px] text-amber-400 font-bold tracking-wider select-none shadow-sm"
+                    className="bg-canvas-dark border border-amber-500/80 z-30 flex items-center justify-center font-mono text-amber-400 font-medium tracking-wider select-none shadow-sm"
                   >
                     [EIN / TAX ID MASKED]
                   </div>
@@ -396,16 +401,16 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                 // Color schemes based on severity for Light & Dark
                 let borderColor = "border-red-600 dark:border-red-500";
                 let bgColor = isSelected ? "bg-red-500/25" : "bg-red-500/12";
-                let badgeBg = "bg-red-600 text-white dark:bg-red-600 dark:text-white";
+                let badgeBg = "bg-red-600 text-canvas-stone dark:bg-red-600 dark:text-canvas-stone";
 
                 if (disc.severity === "opportunity") {
                   borderColor = "border-emerald-600 dark:border-emerald-500";
                   bgColor = isSelected ? "bg-emerald-500/25" : "bg-emerald-500/12";
-                  badgeBg = "bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white";
+                  badgeBg = "bg-emerald-600 text-canvas-stone dark:bg-emerald-600 dark:text-canvas-stone";
                 } else if (disc.severity === "warning" || isUncertain) {
                   borderColor = "border-amber-600 dark:border-amber-500";
                   bgColor = isSelected ? "bg-amber-500/25" : "bg-amber-500/12";
-                  badgeBg = "bg-amber-600 text-white dark:bg-amber-600 dark:text-white";
+                  badgeBg = "bg-amber-600 text-canvas-stone dark:bg-amber-600 dark:text-canvas-stone";
                 }
 
                 return (
@@ -470,12 +475,14 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                       </div>
                     )}
 
-                    {/* Pin Badge on top left of bounding box */}
+                    {/* Pin Badge on top left of bounding box (canvas-relative zoom scaling) */}
                     <div
                       style={{
                         transform: "translateY(-100%)",
+                        fontSize: overlayBadgeFontSize,
+                        lineHeight: 1.25,
                       }}
-                      className={`absolute left-0 top-0 text-[9px] font-mono font-bold px-1.5 py-0.5 whitespace-nowrap flex items-center gap-1 ${badgeBg} shadow-sm rounded-xs`}
+                      className={`absolute left-0 top-0 font-mono font-medium tabular-nums px-1.5 py-0.5 whitespace-nowrap flex items-center gap-1 ${badgeBg} shadow-sm rounded-xs`}
                     >
                       {isUncertain && <AlertTriangle className="w-2.5 h-2.5" />}
                       <span>{disc.statutory_code}</span>
@@ -485,7 +492,10 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
                     {/* Biometric Target Locked Indicator when active */}
                     {isSelected && (
-                      <div className="absolute -bottom-5 right-0 bg-cobalt-950 text-cobalt-400 border border-cobalt-500 font-mono text-[8px] font-bold px-1 py-0.2 rounded-xs tracking-wider flex items-center gap-1 shadow-md">
+                      <div
+                        style={{ fontSize: overlaySubFontSize }}
+                        className="absolute -bottom-5 right-0 bg-cobalt-950 text-cobalt-400 border border-cobalt-500 font-mono font-medium px-1 py-0.5 rounded-xs tracking-wider flex items-center gap-1 shadow-md"
+                      >
                         <Crosshair className="w-2.5 h-2.5 animate-spin" />
                         <span>TARGET LOCKED</span>
                       </div>

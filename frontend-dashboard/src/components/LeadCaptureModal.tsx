@@ -113,7 +113,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="lead-capture-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-black/85 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-canvas-dark/85 backdrop-blur-sm animate-in fade-in duration-200"
     >
       <div
         ref={modalRef}
@@ -123,7 +123,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
         <button
           onClick={onClose}
           aria-label="Close dialog"
-          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border border-slate-200 dark:border-[#1F2937] hover:bg-slate-100 dark:hover:bg-[#1E293B] rounded-sm"
+          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-900 dark:text-slate-400 dark:hover:text-ink-primary transition-colors border border-slate-200 dark:border-[#1F2937] hover:bg-slate-100 dark:hover:bg-[#1E293B] rounded-sm"
         >
           <X className="w-4 h-4" />
         </button>
@@ -281,7 +281,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting || !privacyConsent}
-                  className="w-full py-3 px-4 bg-cobalt-600 hover:bg-cobalt-500 dark:bg-cobalt-500 dark:hover:bg-cobalt-400 text-white dark:text-slate-950 font-bold font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50 rounded-sm cursor-pointer disabled:cursor-not-allowed"
+                  className="w-full py-3 px-4 bg-cobalt-600 hover:bg-cobalt-500 dark:bg-cobalt-500 dark:hover:bg-cobalt-400 text-canvas-stone dark:text-slate-950 font-bold font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50 rounded-sm cursor-pointer disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
@@ -340,7 +340,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
 
             <button
               onClick={onClose}
-              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-xs font-mono text-white dark:text-slate-200 border border-slate-700 dark:border-[#334155] transition-colors rounded-sm"
+              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-xs font-mono text-canvas-stone dark:text-slate-200 border border-slate-700 dark:border-[#334155] transition-colors rounded-sm"
             >
               Return to Workbench
             </button>

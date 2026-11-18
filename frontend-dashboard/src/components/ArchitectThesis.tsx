@@ -41,20 +41,20 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
         </div>
 
         {/* First-Person Conversational Thesis */}
-        <div className="space-y-3.5 text-xs text-slate-300 leading-relaxed font-sans mb-8">
-          <h2 className="text-sm sm:text-base font-bold text-slate-100">
+        <div className="space-y-3.5 type-body-default text-ink-secondary font-sans mb-8">
+          <h2 className="type-heading-sm text-ink-primary">
             Why I Built Trade Systems Studio:
           </h2>
           <p>
             When I started auditing cross-border commercial invoices and carrier freight bills, I noticed a dangerous pattern: logistics teams were plugging raw LLM wrappers directly into customs workflows.
           </p>
           <p>
-            Holding a Bachelor of Commerce in Economic Sciences (International Trade) from North-West University (NWU), I approached this problem from statutory first principles: international trade compliance and customs valuation are strictly deterministic state machines, not probabilistic text completions. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic 19 U.S.C. § 1592 civil penalties up to 4.0x lawful duty loss.
+            Holding a Bachelor of Commerce in Economic Sciences (International Trade) from North-West University (NWU), I approached this problem from statutory first principles: international trade compliance and customs valuation are strictly deterministic state machines, not probabilistic text completions. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic <span className="statutory-cite">19 U.S.C. § 1592</span> civil penalties up to 4.0x lawful duty loss.
           </p>
           <p>
             I built Trade Systems Studio to prove a deterministic alternative: use spatial document vision (local pypdf / Docling layout extraction) strictly to extract bounding box coordinates, and use deterministic Python rules engines with Python Decimal to enforce 19 CFR valuation math, WCO GRI 1 to 6 classification hierarchies, and CargoWise UniversalShipment XML schemas with zero float drift.
           </p>
-          <p className="text-slate-400 font-mono text-[11px]">
+          <p className="text-ink-muted type-mono-data">
             Whether you want to deploy this pre-audit firewall in front of your CargoWise instance, or bring me in to architect autonomous trade systems for your engineering scale-up, you can test the exact production code right on this page.
           </p>
         </div>
@@ -62,10 +62,10 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
         {/* Conversion Action Bar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 bg-slate-900/90 rounded-xl border border-slate-800">
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block font-mono">
+            <span className="type-caption-mono uppercase text-ink-muted block">
               Next Step for Engineering Leaders &amp; Operators:
             </span>
-            <span className="text-xs text-slate-200 font-semibold">
+            <span className="type-body-dense text-ink-primary font-medium">
               Evaluate the production kernel with the engineer who built it.
             </span>
           </div>
@@ -73,7 +73,7 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={onOpenReview}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-mono text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5"
             >
               <span>Schedule Architecture Review</span>
               <ArrowRight className="w-3.5 h-3.5" />

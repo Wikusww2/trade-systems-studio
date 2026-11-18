@@ -158,26 +158,23 @@ trade-systems-studio/
 │       ├── nightmares/                  # 2-page archival demo PDF fixtures
 │       └── pdf.worker.min.mjs           # Local offline PDF.js worker
 │
-├── docs/                        # Executive Briefing & Architecture Dossiers
-│   ├── SAMUEL_EXECUTIVE_RESUME.md               # ATS-optimized Principal Architect resume
+├── docs/                        # Architecture Whitepaper, Benchmarks & ADRs
 │   ├── TRADETECH_SYSTEMS_ARCHITECTURE_WHITEPAPER.md # Technical deep dive across all 6 engines
 │   ├── PERFORMANCE_AND_SCALE_BENCHMARKS.md      # Latency benchmarks & scaling telemetry
-│   ├── SYSTEM_DESIGN_INTERVIEW_DEFENSE.md       # Technical interview defense & proofs
-│   ├── RECRUITER_SCREEN_ONE_PAGER.md            # Recruiter screen reference dashboard
-│   └── CONSOLIDATED_RESEARCH_BRIEF.md           # Distilled trade intelligence brief
+│   └── adr/                                     # Architecture Decision Records (ADR-001 to ADR-004)
 │
-├── scripts/                     # Automation, CI verification & playwright test scripts
+├── scripts/                     # Automation, CI verification & Playwright test scripts
 │   ├── check_em_dashes.py       # Automated zero em-dash / en-dash governance gate
 │   ├── sync_metrics.py          # Dynamic pytest-to-UI metric synchronization script
 │   ├── run_e2e_playwright.py    # Desktop and mobile end-to-end DOM test
-│   └── test_ultra_polish.py     # Live production verification script
+│   └── check_typography_tokens.py # Dual-surface OKLCH typography token gate
 │
 ├── .github/workflows/
 │   ├── ci.yml                   # Enterprise CI pipeline: 200-test matrix, ruff, mypy & Next.js build
 │   └── deploy-pages.yml         # Automated GitHub Actions Pages deployment
-├── LICENSE                      # MIT License
-├── AGENTS.md                    # Universal Agent Governance Contract
-└── GEMINI.md                    # Architecture and Invariants specification
+├── docker-compose.yml           # Single-command local stack orchestration
+├── GLOSSARY.md                  # International trade & customs statutory glossary
+└── LICENSE                      # MIT License
 ```
 
 ---

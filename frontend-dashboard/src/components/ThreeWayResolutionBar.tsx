@@ -173,7 +173,7 @@ export const ThreeWayResolutionBar: React.FC<ThreeWayResolutionBarProps> = ({
 
           <button
             onClick={handleConfirm}
-            className="w-full py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-semibold tracking-wide transition-all active:scale-[0.98]"
+            className="w-full py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-canvas-stone font-mono text-xs font-semibold tracking-wide transition-all active:scale-[0.98]"
           >
             Confirm & Log to AuditRunProvenance
           </button>

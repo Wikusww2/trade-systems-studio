@@ -65,7 +65,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="executive-dossier-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 dark:bg-canvas-dark/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
     >
       <div
         ref={modalRef}
@@ -85,7 +85,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
             <button
               onClick={handlePrint}
               aria-label="Print or save as PDF"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase rounded-sm transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-canvas-stone text-xs font-mono font-bold uppercase rounded-sm transition-all cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print / Save PDF</span>

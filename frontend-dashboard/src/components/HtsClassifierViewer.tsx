@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TabularAmount } from "./TabularAmount";
 import { motion, AnimatePresence } from "framer-motion";
 import { HTSClassificationResult, GRIDecisionNode } from "@/lib/types";
 import { fetchHtsPreset } from "@/lib/api";
@@ -77,11 +78,11 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                 className={`px-3 py-1.5 text-xs font-mono font-medium rounded transition-all flex items-center gap-2 border ${
                   isActive
                     ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-sm"
-                    : "bg-[#0F172A] text-[#94A3B8] border-[#1F2937] hover:border-slate-600 hover:text-white"
+                    : "bg-[#0F172A] text-[#94A3B8] border-[#1F2937] hover:border-slate-600 hover:text-ink-primary"
                 }`}
               >
                 <span>{opt.label}</span>
-                <span className="text-[10px] opacity-60 bg-black/40 px-1 py-0.5 rounded">
+                <span className="text-[10px] opacity-60 bg-canvas-dark/40 px-1 py-0.5 rounded">
                   {opt.code}
                 </span>
               </button>
@@ -106,7 +107,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                     ID: {data?.item_id}
                   </span>
                 </div>
-                <h3 className="text-base font-semibold text-white">
+                <h3 className="text-base font-semibold text-ink-primary">
                   {data?.product_title || "Loading..."}
                 </h3>
                 <p className="text-xs text-[#94A3B8] leading-relaxed">
@@ -189,7 +190,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                               {node.step_rule}
                             </span>
                             <span className="text-slate-400">|</span>
-                            <span className="text-xs font-mono font-semibold text-white">
+                            <span className="text-xs font-mono font-semibold text-ink-primary">
                               {node.heading_or_subheading}
                             </span>
                           </div>
@@ -274,7 +275,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
           <div className="p-5 rounded-lg border border-[#1F2937] bg-[#0F172A] space-y-5">
             <div className="flex items-center justify-between border-b border-[#1F2937] pb-3">
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-ink-primary">
                   Deterministic Landed Cost
                 </h4>
                 <div className="text-[11px] text-[#94A3B8]">
@@ -298,7 +299,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                     type="number"
                     value={enteredValue}
                     onChange={(e) => setEnteredValue(Math.max(100, Number(e.target.value) || 0))}
-                    className="w-full bg-[#0B0F19] border border-[#1F2937] rounded px-7 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#0B0F19] border border-[#1F2937] rounded px-7 py-1.5 text-xs font-mono text-ink-primary focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -315,49 +316,49 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
             </div>
 
             {/* Itemized Landed Cost Math */}
-            <div className="space-y-2.5 pt-2 border-t border-[#1F2937] text-xs font-mono">
-              <div className="flex justify-between items-center text-[#94A3B8]">
+            <div className="space-y-2.5 pt-2 border-t border-terminal-subtle type-mono-data">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Entered Value:</span>
-                <span className="text-white">${Number(data?.landed_cost.entered_value || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(data?.landed_cost.entered_value || 0)} className="text-ink-numeric" />
               </div>
 
-              <div className="flex justify-between items-center text-[#94A3B8]">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Customs Duty ({(Number(data?.landed_cost.duty_rate_ad_valorem || 0) * 100).toFixed(2)}%):</span>
-                <span className="text-emerald-400 font-semibold">${Number(data?.landed_cost.customs_duty || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(data?.landed_cost.customs_duty || 0)} className="text-ink-emerald font-medium" />
               </div>
 
-              <div className="flex justify-between items-center text-[#94A3B8]">
+              <div className="flex justify-between items-center text-ink-muted">
                 <div className="flex items-center gap-1">
                   <span>MPF (0.3464%):</span>
-                  <span className="text-[10px] text-slate-400">[$31.67–$614]</span>
+                  <span className="type-caption-mono text-ink-muted">[$31.67–$614]</span>
                 </div>
-                <span className="text-slate-200">${Number(data?.landed_cost.mpf_fee || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(data?.landed_cost.mpf_fee || 0)} className="text-ink-secondary" />
               </div>
 
-              <div className="flex justify-between items-center text-[#94A3B8]">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Harbor Maint. (0.125%):</span>
-                <span className="text-slate-200">${Number(data?.landed_cost.hmf_fee || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(data?.landed_cost.hmf_fee || 0)} className="text-ink-secondary" />
               </div>
 
-              <div className="flex justify-between items-center text-[#94A3B8]">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Freight & Insurance:</span>
-                <span className="text-slate-200">${Number(data?.landed_cost.freight_and_insurance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(data?.landed_cost.freight_and_insurance || 0)} className="text-ink-secondary" />
               </div>
 
-              <div className="pt-2 border-t border-[#1F2937] flex justify-between items-center font-bold">
+              <div className="pt-2 border-t border-terminal-subtle flex justify-between items-center font-medium">
                 <span className="text-cyan-400">Total Customs Fees:</span>
-                <span className="text-cyan-400 text-sm">${Number(data?.landed_cost.total_customs_cost || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(data?.landed_cost.total_customs_cost || 0)} className="text-cyan-400 text-sm" />
               </div>
 
-              <div className="p-3 rounded bg-[#0B0F19] border border-cyan-500/30 flex justify-between items-center font-bold">
-                <span className="text-white text-xs uppercase tracking-wider">Total Landed Cost:</span>
-                <span className="text-base text-emerald-400">${Number(data?.landed_cost.total_landed_cost || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+              <div className="p-3 rounded bg-canvas-dark border border-cyan-500/30 flex justify-between items-center font-medium">
+                <span className="text-ink-primary type-mono-data uppercase">Total Landed Cost:</span>
+                <TabularAmount value={Number(data?.landed_cost.total_landed_cost || 0)} className="text-base text-ink-emerald font-semibold" />
               </div>
             </div>
 
             {/* Enterprise CTA Card */}
-            <div className="p-4 rounded bg-gradient-to-br from-cyan-950/30 to-[#0B0F19] border border-cyan-500/30 space-y-2.5">
-              <div className="text-xs font-bold text-white flex items-center gap-1.5">
+            <div className="p-4 rounded bg-gradient-to-br from-cyan-950/30 to-canvas-dark border border-cyan-500/30 space-y-2.5">
+              <div className="type-mono-data font-medium text-ink-primary flex items-center gap-1.5">
                 <span>⚡</span>
                 <span>Automate 10,000+ SKU Classifications</span>
               </div>

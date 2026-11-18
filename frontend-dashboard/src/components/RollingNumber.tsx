@@ -44,7 +44,7 @@ export const RollingNumber: React.FC<RollingNumberProps> = ({
   }, [value, durationMs]);
 
   return (
-    <span>
+    <span className="font-mono tabular-nums">
       {prefix}
       {displayValue.toLocaleString("en-US", {
         minimumFractionDigits: decimals,

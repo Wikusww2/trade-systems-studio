@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TabularAmount } from "./TabularAmount";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AssistItem,
@@ -83,7 +84,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
           <title>19 CFR § 162.74 Formal Prior Disclosure - ${priorDisclosure?.filing_reference_id || "FILING"}</title>
           <style>
             body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; padding: 48px; color: #111; max-width: 800px; margin: 0 auto; }
-            .header { text-align: center; font-weight: bold; margin-bottom: 24px; border-bottom: 2px solid #000; padding-bottom: 12px; }
+            .header { text-align: center; font-weight: bold; margin-bottom: 24px; border-bottom: 2px solid #0F172A; padding-bottom: 12px; }
             .badge { font-size: 13pt; letter-spacing: 1px; }
             .sub { font-size: 9pt; font-weight: normal; margin-top: 4px; }
             .meta { font-family: monospace; font-size: 9pt; margin-bottom: 20px; color: #333; }
@@ -185,7 +186,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
           <div className="p-5 rounded-lg border border-[#1F2937] bg-[#0F172A] space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-bold text-ink-primary uppercase tracking-wider">
                   Active Assist Register (19 U.S.C. § 1401a(h))
                 </h3>
                 <p className="text-xs text-[#94A3B8] mt-0.5">
@@ -203,7 +204,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                   className={`px-2.5 py-1 rounded transition-all ${
                     selectedAmortization === "units_produced"
                       ? "bg-emerald-500/20 text-emerald-300 font-bold"
-                      : "text-[#94A3B8] hover:text-white"
+                      : "text-[#94A3B8] hover:text-ink-primary"
                   }`}
                 >
                   Units Produced (GAAP)
@@ -216,7 +217,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                   className={`px-2.5 py-1 rounded transition-all ${
                     selectedAmortization === "first_entry"
                       ? "bg-emerald-500/20 text-emerald-300 font-bold"
-                      : "text-[#94A3B8] hover:text-white"
+                      : "text-[#94A3B8] hover:text-ink-primary"
                   }`}
                 >
                   First Entry Method
@@ -241,7 +242,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                   {audit?.assists_audited.map((item: AssistItem) => (
                     <tr key={item.id} className="hover:bg-slate-800/20 transition-colors">
                       <td className="py-3 px-3">
-                        <div className="font-bold text-white">{item.id}</div>
+                        <div className="font-bold text-ink-primary">{item.id}</div>
                         <div className="text-[11px] text-[#94A3B8] font-sans mt-0.5">
                           {item.description}
                         </div>
@@ -254,7 +255,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                           {item.category.replace(/_/g, " ")}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-right text-white font-semibold">
+                      <td className="py-3 px-3 text-right text-ink-primary font-semibold">
                         ${Number(item.total_acquisition_cost).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="py-3 px-3 text-right text-cyan-400 font-semibold">
@@ -285,7 +286,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
           <div className="p-5 rounded-lg border border-[#1F2937] bg-[#0F172A] space-y-3">
             <div className="flex items-center justify-between border-b border-[#1F2937] pb-3">
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-ink-primary uppercase tracking-wider">
                   CIF Freight & Marine Insurance Statutory Deductions (19 CFR § 152.103 Ex. 4)
                 </h4>
                 <div className="text-[11px] text-[#94A3B8] mt-0.5">
@@ -300,7 +301,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 text-xs font-mono">
               <div className="p-3 rounded bg-[#0B0F19] border border-[#1F2937]">
                 <div className="text-[10px] text-[#64748B] uppercase">Invoiced Incoterm</div>
-                <div className="text-sm font-bold text-white mt-1">{audit?.invoice_incoterm}</div>
+                <div className="text-sm font-bold text-ink-primary mt-1">{audit?.invoice_incoterm}</div>
               </div>
               <div className="p-3 rounded bg-[#0B0F19] border border-[#1F2937]">
                 <div className="text-[10px] text-[#64748B] uppercase">Ocean Freight Deducted</div>
@@ -321,44 +322,44 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
         {/* Right Column: Statutory Reconciliation & Prior Disclosure Action */}
         <div className="lg:col-span-4 space-y-6">
           <div className="p-5 rounded-lg border border-[#1F2937] bg-[#0F172A] space-y-4">
-            <div className="border-b border-[#1F2937] pb-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+            <div className="border-b border-terminal-subtle pb-3">
+              <h4 className="type-mono-data font-medium uppercase text-ink-primary">
                 Statutory Valuation Reconciliation
               </h4>
-              <div className="text-[11px] text-[#94A3B8]">
+              <div className="type-caption-mono text-ink-muted">
                 100% Python Decimal Deterministic Math
               </div>
             </div>
 
-            <div className="space-y-2.5 text-xs font-mono">
-              <div className="flex justify-between items-center text-[#94A3B8]">
+            <div className="space-y-2.5 type-mono-data">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Declared Transaction Value:</span>
-                <span className="text-white">${Number(audit?.declared_transaction_value || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(audit?.declared_transaction_value || 0)} className="text-ink-numeric" />
               </div>
 
               <div className="flex justify-between items-center text-cyan-400">
                 <span>Less: CIF Freight/Insurance:</span>
-                <span>-${Number(audit?.improper_cif_overvaluation || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={-Math.abs(Number(audit?.improper_cif_overvaluation || 0))} className="text-cyan-400" />
               </div>
 
-              <div className="flex justify-between items-center text-red-400 font-semibold">
+              <div className="flex justify-between items-center text-ink-crimson font-medium">
                 <span>Plus: Omitted Assists:</span>
-                <span>+${Number(audit?.assists_omitted_cost || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Math.abs(Number(audit?.assists_omitted_cost || 0))} showPlusSign className="text-ink-crimson" />
               </div>
 
-              <div className="pt-2 border-t border-[#1F2937] flex justify-between items-center font-bold">
-                <span className="text-white">Adjusted Lawful Value:</span>
-                <span className="text-white text-sm">${Number(audit?.adjusted_lawful_dutiable_value || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+              <div className="pt-2 border-t border-terminal-subtle flex justify-between items-center font-medium">
+                <span className="text-ink-primary">Adjusted Lawful Value:</span>
+                <TabularAmount value={Number(audit?.adjusted_lawful_dutiable_value || 0)} className="text-ink-primary text-sm font-semibold" />
               </div>
 
-              <div className="flex justify-between items-center text-[#94A3B8]">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Duty Rate (Ad Valorem):</span>
-                <span>{(Number(audit?.duty_rate_ad_valorem || 0) * 100).toFixed(2)}%</span>
+                <span className="tabular-nums">{(Number(audit?.duty_rate_ad_valorem || 0) * 100).toFixed(2)}%</span>
               </div>
 
-              <div className="flex justify-between items-center text-[#94A3B8]">
+              <div className="flex justify-between items-center text-ink-muted">
                 <span>Lawful Customs Duty Due:</span>
-                <span className="text-slate-200">${Number(audit?.lawful_duty_due || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                <TabularAmount value={Number(audit?.lawful_duty_due || 0)} className="text-ink-secondary" />
               </div>
 
               <div className="flex justify-between items-center text-[#94A3B8]">
@@ -395,7 +396,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
       {/* Prior Disclosure Modal */}
       <AnimatePresence>
         {showDisclosureModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas-dark/80 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -404,7 +405,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
             >
               <div className="p-5 border-b border-[#1F2937] flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-ink-primary flex items-center gap-2">
                     <span>📜</span>
                     <span>19 CFR § 162.74 Formal Prior Disclosure Filing</span>
                   </h3>
@@ -414,7 +415,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                 </div>
                 <button
                   onClick={() => setShowDisclosureModal(false)}
-                  className="text-slate-400 hover:text-white text-lg p-1"
+                  className="text-slate-400 hover:text-ink-primary text-lg p-1"
                 >
                   ✕
                 </button>
@@ -434,7 +435,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                 <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     onClick={handleCopyLetter}
-                    className="px-3 sm:px-4 py-2 rounded border border-[#1F2937] bg-[#0F172A] text-xs font-mono font-medium hover:border-slate-500 text-white transition-all flex items-center gap-1.5"
+                    className="px-3 sm:px-4 py-2 rounded border border-[#1F2937] bg-[#0F172A] text-xs font-mono font-medium hover:border-slate-500 text-ink-primary transition-all flex items-center gap-1.5"
                   >
                     <span>{copied ? "✓ Copied!" : "📋 Copy"}</span>
                   </button>

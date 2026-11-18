@@ -41,8 +41,8 @@ export const IcpPersonaSwitcher: React.FC<IcpPersonaSwitcherProps> = ({
             aria-pressed={isActive}
             className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-md font-bold text-[11px] uppercase tracking-wider transition-colors duration-200 ${
               isActive
-                ? "bg-cobalt-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-[#1E293B]"
+                ? "bg-cobalt-600 text-canvas-stone shadow-sm"
+                : "text-slate-400 hover:text-ink-primary hover:bg-[#1E293B]"
             }`}
           >
             {lens.icon}
