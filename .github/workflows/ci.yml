@@ -46,7 +46,7 @@ jobs:
           python benchmark.py
 
   lint-and-governance:
-    name: Anti-Slop & Zero Em-Dash Governance Check
+    name: Anti-Slop, Lint & Type Governance Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -56,13 +56,24 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
       - name: Verify zero em-dash violations
         run: python scripts/check_em_dashes.py
 
-      - name: Install fixture dependencies
+      - name: Install dependencies
         working-directory: backend-engine
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt ruff mypy
+
+      - name: Run ruff lint check
+        working-directory: backend-engine
+        run: ruff check app tests
+
+      - name: Run mypy typecheck
+        working-directory: backend-engine
+        run: mypy app
 
       - name: Verify nightmare fixtures are byte-deterministic
         working-directory: backend-engine

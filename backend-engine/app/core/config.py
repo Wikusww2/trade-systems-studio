@@ -15,14 +15,20 @@ class Settings:
     SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
     YENTE_API_URL: str = os.getenv("YENTE_API_URL", "")
     
-    # CORS
+    # CORS (H4: Strictly restrict origins, never allow wildcard '*' with credentials)
+    _raw_origins = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001",
+    )
     ALLOWED_ORIGINS: list[str] = [
         origin.strip()
-        for origin in os.getenv(
-            "ALLOWED_ORIGINS",
-            "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001",
-        ).split(",")
-        if origin.strip()
+        for origin in _raw_origins.split(",")
+        if origin.strip() and origin.strip() != "*"
+    ] or [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
     ]
     
     # Directory paths

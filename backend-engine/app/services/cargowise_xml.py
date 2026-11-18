@@ -1,4 +1,4 @@
-import uuid
+import hashlib
 import xml.etree.ElementTree as ET
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
@@ -53,6 +53,14 @@ class CargoWiseExportService:
                 }
             ]
 
+        # Corridor jurisdiction check (H2):
+        # 19 U.S.C. § 1592 only applies to US import corridors (destination in US e.g. USLAX).
+        # Non-US destinations (e.g. NLRTM Rotterdam in the EU) are subject to EU UCC, not US CBP penalties.
+        # Never flag 19_USC_1592_PROTECTED on non-US shipments.
+        is_us_corridor = port_dest_code.upper().startswith("US")
+        if not is_us_corridor and penalty_status == "19_USC_1592_PROTECTED":
+            penalty_status = "EU_UCC_COMPLIANT"
+
         # Root UniversalInterchange Envelope
         root = ET.Element(
             "UniversalInterchange",
@@ -60,10 +68,14 @@ class CargoWiseExportService:
             version="1.1"
         )
 
+        # Content-addressed CorrelationID (M4)
+        corr_seed = f"{shipment_id}:{declaration_id}:{port_origin_code}:{port_dest_code}:{invoice_amount}"
+        correlation_id = f"CW-{hashlib.sha256(corr_seed.encode('utf-8')).hexdigest()[:16].upper()}"
+
         header = ET.SubElement(root, "Header")
         ET.SubElement(header, "SenderID").text = "TRADESYSTEMS_PREAUDIT"
         ET.SubElement(header, "RecipientID").text = "CW1_EADAPTOR_PRD"
-        ET.SubElement(header, "CorrelationID").text = str(uuid.uuid4())
+        ET.SubElement(header, "CorrelationID").text = correlation_id
 
         body = ET.SubElement(root, "Body")
         universal_shipment = ET.SubElement(
@@ -148,23 +160,48 @@ class CargoWiseExportService:
     def generate_diff_payload(self, concept_id: str) -> Dict[str, Any]:
         """
         Returns a side-by-side XML diff payload: Raw Unaudited vs. Reconciled Lawful XML.
+        Constructs both XML documents structurally via ElementTree rather than string replaces (M4).
         """
+        reconciled_items = [
+            {
+                "line_number": 1,
+                "description": "Industrial Controller Assembly with Integrated Circuitry",
+                "hts_code": "8542.31",
+                "value": Decimal("148500.00")
+            }
+        ]
         reconciled_xml = self.generate_universal_interchange_xml(
             shipment_id=f"S-{concept_id.upper()}",
+            port_origin_code="CNSZX",
+            port_origin_name="Shenzhen",
+            port_dest_code="USLAX",
+            port_dest_name="Los Angeles",
             invoice_amount=Decimal("148500.00"),
             insurance_amount=Decimal("1450.00"),
+            line_items=reconciled_items,
             audit_status="CLEARED_WITH_RECONCILIATION",
             penalty_status="19_USC_1592_PROTECTED"
         )
-        raw_xml = reconciled_xml.replace(
-            "<InsuranceAmount Currency=\"USD\">1450.00</InsuranceAmount>",
-            "<InsuranceAmount Currency=\"USD\">0.00</InsuranceAmount>"
-        ).replace(
-            "<HarmonizedCode>8542.31</HarmonizedCode>",
-            "<HarmonizedCode>8471.30</HarmonizedCode>"
-        ).replace(
-            "CLEARED_WITH_RECONCILIATION",
-            "UNVERIFIED_RAW_INGEST"
+
+        raw_items = [
+            {
+                "line_number": 1,
+                "description": "Industrial Controller Assembly with Integrated Circuitry",
+                "hts_code": "8471.30",
+                "value": Decimal("148500.00")
+            }
+        ]
+        raw_xml = self.generate_universal_interchange_xml(
+            shipment_id=f"S-{concept_id.upper()}",
+            port_origin_code="CNSZX",
+            port_origin_name="Shenzhen",
+            port_dest_code="USLAX",
+            port_dest_name="Los Angeles",
+            invoice_amount=Decimal("148500.00"),
+            insurance_amount=Decimal("0.00"),
+            line_items=raw_items,
+            audit_status="UNVERIFIED_RAW_INGEST",
+            penalty_status="UNAUDITED_DEFECT_EXPOSURE"
         )
 
         return {

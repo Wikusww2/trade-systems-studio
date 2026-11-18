@@ -151,7 +151,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
               OFAC 50% RULE RECURSIVE ENGINE
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">
             RapidFuzz C++ fuzzy string matching + OpenSanctions beneficial ownership graph traversal.
           </p>
         </div>
@@ -182,7 +182,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
 
       {/* 2. Preset Entity Switcher Tabs */}
       <div className="flex items-center gap-2 p-3 bg-slate-100/70 dark:bg-[#0F172A] border-b border-slate-200 dark:border-[#1F2937] overflow-x-auto">
-        <span className="font-mono text-[11px] text-slate-500 uppercase font-semibold mr-1 shrink-0">
+        <span className="font-mono text-[11px] text-slate-400 uppercase font-semibold mr-1 shrink-0">
           Target Entities:
         </span>
         {PRESET_ENTITIES.map((preset) => {
@@ -426,7 +426,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
         <div className="p-5 flex flex-col justify-between bg-white dark:bg-[#0F172A]">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#1F2937]">
-              <span className="font-mono text-[11px] font-bold text-slate-500 uppercase">
+              <span className="font-mono text-[11px] font-bold text-slate-400 uppercase">
                 ENTITY DOSSIER INSPECTOR
               </span>
               <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-[10px] font-mono rounded-xs font-semibold">
@@ -438,7 +438,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
               <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
                 {hoveredNode ? hoveredNode.label : targetNode.label}
               </h3>
-              <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs font-mono text-slate-400 dark:text-slate-400 mt-1">
                 ID: {hoveredNode ? hoveredNode.id : targetNode.id}
               </p>
             </div>
@@ -514,7 +514,7 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
             <span className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100">
               OFAC 50% RULE EVALUATION:
             </span>
-            <span className="font-mono text-xs text-slate-500">
+            <span className="font-mono text-xs text-slate-400">
               (Aggregated Blocked Ownership)
             </span>
           </div>

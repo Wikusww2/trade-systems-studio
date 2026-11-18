@@ -19,7 +19,7 @@ def test_concept_clean_fob_audit_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["concept_id"] == "concept_clean_fob"
-    assert data["metrics"]["penalty_exposure_avoided"] == 0.0
+    assert data["metrics"]["penalty_exposure_avoided"] == "0.00"
     assert len(data["discrepancies"]) == 0
 
 def test_customs_invoice_clean_no_errors():
@@ -77,7 +77,8 @@ def test_null_and_malformed_payload_handling():
         ]
     }
     m1, d1 = audit_customs_invoice(null_customs)
-    assert m1.penalty_exposure_avoided >= Decimal("0.00")
+    assert m1.penalty_exposure_avoided == Decimal("0.00")
+    assert len(d1) == 0
 
     null_freight = {
         "base_freight": None,
@@ -89,7 +90,8 @@ def test_null_and_malformed_payload_handling():
         "detention_billed": None
     }
     m2, d2 = audit_freight_bill(null_freight)
-    assert m2.carrier_overbilling_caught >= Decimal("0.00")
+    assert m2.carrier_overbilling_caught == Decimal("0.00")
+    assert len(d2) == 0
 
     null_drawback = {
         "dutiable_value": None,
@@ -98,7 +100,22 @@ def test_null_and_malformed_payload_handling():
         "is_timely_5yr_window": None
     }
     m3, d3 = audit_duty_drawback(null_drawback)
-    assert m3.drawback_unclaimed_unlocked >= Decimal("0.00")
+    assert m3.drawback_unclaimed_unlocked == Decimal("0.00")
+    assert len(d3) == 0
+
+def test_empty_dict_input_returns_zero_discrepancies():
+    """C2 requirement: passing {} must return KillShotMetrics() and 0 discrepancies."""
+    m1, d1 = audit_customs_invoice({})
+    assert m1.penalty_exposure_avoided == Decimal("0.00")
+    assert len(d1) == 0
+
+    m2, d2 = audit_freight_bill({})
+    assert m2.carrier_overbilling_caught == Decimal("0.00")
+    assert len(d2) == 0
+
+    m3, d3 = audit_duty_drawback({})
+    assert m3.drawback_unclaimed_unlocked == Decimal("0.00")
+    assert len(d3) == 0
 
 def test_duty_drawback_untimely_5yr_window():
     expired_drawback = {

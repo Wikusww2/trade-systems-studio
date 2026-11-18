@@ -75,3 +75,7 @@ class PriorDisclosurePackage(BaseModel):
     interest_tender_amount: Decimal
     total_tender_check: Decimal
     letter_text: str
+
+    @property
+    def statutory_letter_body(self) -> str:
+        return self.letter_text

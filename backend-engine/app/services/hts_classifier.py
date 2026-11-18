@@ -6,6 +6,7 @@ strict Python Decimal fee aggregation.
 """
 
 import os
+import re
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Dict
 
@@ -18,10 +19,26 @@ from app.models.hts_models import (
 
 # Statutory Constants
 MPF_RATE = Decimal("0.003464")
-MPF_MIN = Decimal("31.67")
-MPF_MAX = Decimal("614.35")
+MPF_CAPS = {
+    "FY2024": {"min": Decimal("31.67"), "max": Decimal("614.35")},
+    "FY2025": {"min": Decimal("32.71"), "max": Decimal("634.62")},
+}
+# Default to FY2025 caps (89 FR 60685) while supporting FY2024
+MPF_MIN = MPF_CAPS["FY2025"]["min"]
+MPF_MAX = MPF_CAPS["FY2025"]["max"]
 HMF_RATE = Decimal("0.00125")
 CONFIDENCE_THRESHOLD = 0.85
+
+# Non-apparatus exclusions under WCO GRI 1 to prevent polysemous keyword collisions (C3)
+NON_APPARATUS_EXCLUSIONS = [
+    r"\b(?:t-?shirts?|hoodies?|clothing|apparel|hats?|caps?|socks?|jackets?)\b",
+    r"\b(?:shaving\s+cream|cosmetics?|lotions?|soaps?|shampoos?)\b",
+    r"\b(?:paintings?|artwork|posters?|canvas(?:es)?|drawings?)\b",
+    r"\b(?:oils?|greases?|lubricants?|fuels?|additives?)\b",
+    r"\b(?:keycaps?|keyboard\s+keys?|novelty|stickers?|decals?|patch(?:es)?)\b",
+    r"\b(?:foods?|supplements?|vitamins?|powders?|capsules?|pills?)\b",
+    r"\b(?:books?|manuals?|magazines?|guides?|catalogs?)\b",
+]
 
 
 def calculate_landed_cost(
@@ -29,6 +46,7 @@ def calculate_landed_cost(
     duty_rate_ad_valorem: Decimal,
     is_ocean_freight: bool = True,
     freight_and_insurance: Decimal = Decimal("0.00"),
+    fiscal_year: str = "FY2025",
 ) -> LandedCostBreakdown:
     """Calculate US Customs Landed Cost using statutory formulas and Python Decimal."""
     # Ensure standard 2-decimal quantization for currency values
@@ -40,11 +58,15 @@ def calculate_landed_cost(
         Decimal("0.01"), rounding=ROUND_HALF_UP
     )
 
-    # Merchandise Processing Fee (19 CFR § 24.23): 0.3464%, min $31.67, max $614.35
+    # Merchandise Processing Fee (19 CFR § 24.23): 0.3464%
+    caps = MPF_CAPS.get(fiscal_year.upper(), MPF_CAPS["FY2025"])
+    mpf_min_cap = caps["min"]
+    mpf_max_cap = caps["max"]
+
     raw_mpf = (entered_val_quantized * MPF_RATE).quantize(
         Decimal("0.01"), rounding=ROUND_HALF_UP
     )
-    mpf_fee = min(max(raw_mpf, MPF_MIN), MPF_MAX)
+    mpf_fee = min(max(raw_mpf, mpf_min_cap), mpf_max_cap)
 
     # Harbor Maintenance Fee (19 CFR § 24.24): 0.125% for ocean freight, $0 for air/truck
     if is_ocean_freight:
@@ -62,8 +84,8 @@ def calculate_landed_cost(
         duty_rate_ad_valorem=duty_rate_ad_valorem,
         customs_duty=customs_duty,
         mpf_rate=MPF_RATE,
-        mpf_min_cap=MPF_MIN,
-        mpf_max_cap=MPF_MAX,
+        mpf_min_cap=mpf_min_cap,
+        mpf_max_cap=mpf_max_cap,
         mpf_fee=mpf_fee,
         hmf_rate=HMF_RATE if is_ocean_freight else Decimal("0.00"),
         hmf_fee=hmf_fee,
@@ -261,21 +283,75 @@ class HTSClassifierEngine:
 
     def classify(self, request: ClassificationRequest) -> HTSClassificationResult:
         """Classify a product description through the hierarchical WCO GRI decision tree."""
-        # Detect matching preset or keyword
+        # Detect matching preset or keyword using word boundaries (C3)
         text_lower = f"{request.product_title} {request.product_description} {request.commercial_attributes or ''}".lower()
 
+        patterns = {
+            "drone_motor": [
+                r"\b(?:brushless\s+(?:dc\s+)?(?:drone\s+)?motors?|bldc\s+motors?|drone\s+motors?|electric\s+(?:dc\s+)?motors?)\b",
+                r"\b(?:uav|drone)\s+propulsion\b",
+                r"\bmotors?\s+(?:with|for|incorporating)\s+(?:(?:integrated\s+)?esc|(?:agricultural\s+)?(?:uav|drone)s?)\b",
+                r"\bpermanent\s+magnet\s+brushless\s+dc\s+motors?\b",
+            ],
+            "server_accelerator": [
+                r"\b(?:ai|tensor|neural|inference|deep\s+learning)\s+accelerators?\b",
+                r"\b(?:pcie|server)\s+(?:ai\s+)?accelerators?\b",
+                r"\b(?:tensor\s+processing\s+units?|neural\s+processing\s+units?)\b",
+                r"\b(?:gpu|pcie)\s+(?:compute\s+)?(?:accelerators?|coprocessors?)\b",
+                r"\b(?:enterprise|datacenter)\s+(?:ai\s+)?gpus?\b",
+                r"\bhigh[- ]performance\s+neural\s+tensor\s+accelerators?\b",
+                r"\bneural\s+tensor\s+accelerators?\b",
+            ],
+            "ev_battery_pack": [
+                r"\b(?:ev|traction|automotive)\s+battery\s+packs?\b",
+                r"\b(?:lithium[\s-](?:iron\s+phosphate|ion)|lifepo4|lfp|nmc)\b.*?\b(?:battery\s+(?:pack|module)s?|accumulators?)\b",
+                r"\bbattery\s+modules?\s+(?:with|and|incorporating)\s+(?:(?:integrated\s+)?bms|(?:integrated\s+)?battery\s+management(?:\s+system)?)\b",
+                r"\belectric\s+vehicle\s+(?:storage\s+)?batter(?:y|ies)\b",
+                r"\blithium\s+accumulator\s+(?:pack|module|assembly)s?\b",
+                r"\blifepo4\s+battery\s+modules?\b",
+            ],
+            "smart_apparel_watch": [
+                r"\b(?:fitness\s+tracking\s+)?smartbands?\b",
+                r"\b(?:smart\s*watch(?:es)?|fitness\s+trackers?|activity\s+trackers?)\b",
+                r"\bwearable\s+(?:smartbands?|fitness|health|biometric|activity)\b",
+                r"\bheart\s+rate\s+tracking\s+(?:wristbands?|watch(?:es)?|smartbands?)\b",
+                r"\bmulti[- ]sensor\s+fitness\s+tracking\s+smartband\b",
+                r"\bwearable\s+device\s+with\s+(?:bluetooth|ble|heart\s+rate)\b",
+            ],
+        }
+
         matched_key = None
-        if "motor" in text_lower or "brushless" in text_lower or "esc" in text_lower:
-            matched_key = "drone_motor"
-        elif "accelerator" in text_lower or "gpu" in text_lower or "pcie" in text_lower or "tensor" in text_lower or "integrated circuit" in text_lower:
-            matched_key = "server_accelerator"
-        elif "battery" in text_lower or "lifepo4" in text_lower or "lithium" in text_lower or "accumulator" in text_lower:
-            matched_key = "ev_battery_pack"
-        elif "smartband" in text_lower or "wearable" in text_lower or "watch" in text_lower or "fitness" in text_lower:
-            matched_key = "smart_apparel_watch"
-        else:
-            # Default to drone_motor if no specific keyword matched
-            matched_key = "drone_motor"
+        if not any(re.search(exc, text_lower) for exc in NON_APPARATUS_EXCLUSIONS):
+            for key, regex_list in patterns.items():
+                if any(re.search(pat, text_lower, re.IGNORECASE) for pat in regex_list):
+                    matched_key = key
+                    break
+
+        # C3: On no match, DO NOT default to 'drone_motor' with 0.94 confidence!
+        # Return requires_human_review=True, confidence=0.0, classified_hts_code="REQUIRES_BROKER_REVIEW"
+        if matched_key is None:
+            landed = calculate_landed_cost(
+                entered_value=request.entered_value,
+                duty_rate_ad_valorem=Decimal("0.00"),
+                is_ocean_freight=request.is_ocean_freight,
+                freight_and_insurance=request.freight_and_insurance,
+            )
+            return HTSClassificationResult(
+                item_id="hts-unclassified",
+                product_title=request.product_title,
+                input_description=request.product_description,
+                country_of_origin=request.country_of_origin,
+                declared_hts_code=request.declared_hts_code,
+                classified_hts_code="REQUIRES_BROKER_REVIEW",
+                confidence=0.0,
+                requires_human_review=True,
+                gri_path=[],
+                chapter_notes_cited=[
+                    "Unclassified merchandise: product description does not match pre-computed GRI patterns.",
+                    "Mandatory review by licensed customs broker required under 19 CFR Part 111 before CBP entry filing."
+                ],
+                landed_cost=landed,
+            )
 
         preset = self.PRESETS[matched_key]
         landed = calculate_landed_cost(
@@ -305,7 +381,7 @@ class HTSClassifierEngine:
     def get_preset(self, preset_id: str, entered_value: Decimal = Decimal("25000.00")) -> HTSClassificationResult:
         """Fetch a specific pre-computed GRI reasoning tree."""
         if preset_id not in self.PRESETS:
-            preset_id = "drone_motor"
+            raise KeyError(f"Preset '{preset_id}' not found. Available presets: {list(self.PRESETS.keys())}")
         preset = self.PRESETS[preset_id]
 
         req = ClassificationRequest(

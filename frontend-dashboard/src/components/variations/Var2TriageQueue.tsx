@@ -49,14 +49,14 @@ export interface TriageInvoiceRow {
 
 // Deterministic generator of 500 realistic commercial invoice triage records
 const CARRIERS = [
-  "MAERSK LINE",
-  "MSC MEDITERRANEAN",
-  "COSCO SHIPPING",
-  "HAPAG-LLOYD",
-  "OCEAN NETWORK EXPRESS",
-  "CMA CGM",
-  "EVERGREEN MARINE",
-  "YANG MING",
+  "PACIFIC HORIZON LINES",
+  "ATLANTIC CREST OCEAN",
+  "BEACON GLOBAL FORWARDING",
+  "FICTIONAL PACIFIC LINES",
+  "ZENITH MARITIME LOGISTICS",
+  "NORDIC CARGO FREIGHT",
+  "SOLARIS SEAWAYS",
+  "VANGUARD CONTAINER LINES",
 ];
 
 const CORRIDORS = [
@@ -130,7 +130,7 @@ function generate500Invoices(): TriageInvoiceRow[] {
     {
       id: "DISC-ROW-0001",
       entryNumber: "CBP-7501-8841-01",
-      carrier: "MAERSK LINE",
+      carrier: "PACIFIC HORIZON LINES",
       corridor: "YTN -> LAX (Transpacific)",
       ownerRoute: "broker_desk",
       statutoryCode: "19 U.S.C. § 1592",
@@ -378,7 +378,7 @@ export const Var2TriageQueue: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search 500 invoices..."
-              className="pl-9 pr-4 py-2 bg-[#0B0F19] border border-[#1F2937] rounded-lg text-xs font-mono text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 w-48 sm:w-64"
+              className="pl-9 pr-4 py-2 bg-[#0B0F19] border border-[#1F2937] rounded-lg text-xs font-mono text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 w-48 sm:w-64"
             />
           </div>
           <button
@@ -398,7 +398,7 @@ export const Var2TriageQueue: React.FC = () => {
 
       {/* 2. OWNER-ROUTED FILTER CHIPS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        <span className="text-[10px] font-mono text-slate-500 uppercase font-bold shrink-0 mr-1 flex items-center gap-1">
+        <span className="text-[10px] font-mono text-slate-400 uppercase font-bold shrink-0 mr-1 flex items-center gap-1">
           <Filter className="w-3 h-3" />
           <span>ROUTING:</span>
         </span>
@@ -498,7 +498,7 @@ export const Var2TriageQueue: React.FC = () => {
                     }`}
                   >
                     {/* Index */}
-                    <div className="col-span-1 text-slate-500 text-[11px] tabular-nums">
+                    <div className="col-span-1 text-slate-400 text-[11px] tabular-nums">
                       {virtualRow.index + 1}
                     </div>
 
@@ -677,7 +677,7 @@ export const Var2TriageQueue: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type carrier name, corridor, statute, or entry number..."
-                className="w-full bg-transparent border-none text-white focus:outline-none placeholder:text-slate-500 text-xs font-mono"
+                className="w-full bg-transparent border-none text-white focus:outline-none placeholder:text-slate-400 text-xs font-mono"
               />
               <button
                 onClick={() => setIsCommandBarOpen(false)}

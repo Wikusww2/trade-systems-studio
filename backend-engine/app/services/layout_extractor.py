@@ -1,7 +1,10 @@
+import logging
 import os
 from typing import Any, Dict, List
 
 from app.models.schemas import BoundingBox
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentLayoutExtractor:
@@ -43,45 +46,81 @@ class DocumentLayoutExtractor:
                             if hasattr(prov, "bbox") and prov.bbox:
                                 b = prov.bbox
                                 # docling bounding box normalized to [0, 1000)
+                                x_val = max(0.0, min(1000.0, float(b.l)))
+                                y_val = max(0.0, min(1000.0, float(b.t)))
+                                w_val = max(0.0, min(1000.0 - x_val, float(b.r - b.l)))
+                                h_val = max(0.0, min(1000.0 - y_val, float(b.b - b.t)))
                                 boxes.append({
                                     "text": getattr(item, "text", ""),
                                     "bounding_box": BoundingBox(
-                                        x=float(b.l),
-                                        y=float(b.t),
-                                        width=float(b.r - b.l),
-                                        height=float(b.b - b.t),
+                                        x=x_val,
+                                        y=y_val,
+                                        width=w_val,
+                                        height=h_val,
                                         page_number=int(getattr(prov, "page_no", 1)),
                                         confidence=0.95
                                     )
                                 })
                 if boxes:
                     return boxes
-            except Exception:
-                pass  # Fallback to local pypdf parser
+            except Exception as e:
+                logger.warning("Docling extraction failed, falling back to pypdf: %s", e)
 
-        # Deterministic local fallback parser via pypdf
+        # Deterministic local fallback parser via pypdf visitor_text
         boxes = []
         try:
             import pypdf
             reader = pypdf.PdfReader(pdf_path)
             for page_idx, page in enumerate(reader.pages):
-                _page_width = float(page.mediabox.width)
-                _page_height = float(page.mediabox.height)
-                text = page.extract_text() or ""
-                # Normalize page boundaries to [0, 1000)
-                boxes.append({
-                    "text": text[:200],
-                    "bounding_box": BoundingBox(
-                        x=50.0,
-                        y=50.0,
-                        width=900.0,
-                        height=900.0,
-                        page_number=page_idx + 1,
-                        confidence=0.90
-                    )
-                })
-        except Exception:
-            pass
+                page_w = float(page.mediabox.width)
+                page_h = float(page.mediabox.height)
+
+                def _visitor(text, cm, tm, fontDict, fontSize):
+                    stripped = text.strip()
+                    if stripped:
+                        f_size = fontSize or 10.0
+                        x_val = max(0.0, min(990.0, (float(tm[4]) / page_w) * 1000.0))
+                        y_val = max(0.0, min(990.0, ((page_h - float(tm[5]) - f_size) / page_h) * 1000.0))
+                        w_val = max(5.0, min(1000.0 - x_val, (len(stripped) * f_size * 0.55 / page_w) * 1000.0))
+                        h_val = max(5.0, min(1000.0 - y_val, (f_size * 1.25 / page_h) * 1000.0))
+                        rx = round(x_val, 1)
+                        ry = round(y_val, 1)
+                        rw = round(min(1000.0 - rx, max(5.0, w_val)), 1)
+                        rh = round(min(1000.0 - ry, max(5.0, h_val)), 1)
+                        if rx + rw > 1000.0:
+                            rw = round(1000.0 - rx, 1)
+                        if ry + rh > 1000.0:
+                            rh = round(1000.0 - ry, 1)
+                        boxes.append({
+                            "text": stripped,
+                            "bounding_box": BoundingBox(
+                                x=rx,
+                                y=ry,
+                                width=rw,
+                                height=rh,
+                                page_number=page_idx + 1,
+                                confidence=0.95
+                            )
+                        })
+
+                page.extract_text(visitor_text=_visitor)
+
+            if not boxes:
+                for page_idx, page in enumerate(reader.pages):
+                    text = page.extract_text() or ""
+                    boxes.append({
+                        "text": text[:200],
+                        "bounding_box": BoundingBox(
+                            x=50.0,
+                            y=50.0,
+                            width=900.0,
+                            height=900.0,
+                            page_number=page_idx + 1,
+                            confidence=0.85
+                        )
+                    })
+        except Exception as e:
+            logger.error("pypdf extraction failed for %s: %s", pdf_path, e)
 
         return boxes
 

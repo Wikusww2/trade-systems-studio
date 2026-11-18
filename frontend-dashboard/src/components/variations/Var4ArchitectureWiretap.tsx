@@ -460,15 +460,15 @@ export const Var4ArchitectureWiretap: React.FC = () => {
 
               <div className="space-y-1.5 pt-2 border-t border-[#1F2937]/80 text-[11px]">
                 <div className="flex items-center gap-2 text-slate-400">
-                  <span className="text-slate-500 w-12 shrink-0">ADR:</span>
+                  <span className="text-slate-400 w-12 shrink-0">ADR:</span>
                   <span className="text-blue-400 font-mono truncate">{entry.adrPath}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-400">
-                  <span className="text-slate-500 w-12 shrink-0">CODE:</span>
+                  <span className="text-slate-400 w-12 shrink-0">CODE:</span>
                   <span className="text-emerald-400 font-mono truncate">{entry.codeLine}</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-400">
-                  <span className="text-slate-500 w-12 shrink-0">TEST:</span>
+                  <span className="text-slate-400 w-12 shrink-0">TEST:</span>
                   <span className="text-purple-400 font-mono truncate">
                     {entry.testFile}::{entry.testCase}
                   </span>

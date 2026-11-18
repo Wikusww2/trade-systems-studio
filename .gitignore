@@ -54,3 +54,9 @@ yarn-error.log*
 # Re-create the videos with the Veo prompts in docs/MASTER_PLAN.md.
 docs/reference/concepts/*.mp4
 
+# Debug screenshots and test artifacts
+artifacts/screenshots/
+frontend-dashboard/public/*.png
+!frontend-dashboard/public/film/
+
+

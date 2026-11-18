@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -152,14 +152,57 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
     setProgress(0);
   };
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements && focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+    const handleTabTrap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !focusableElements || focusableElements.length === 0) return;
+      const firstEl = focusableElements[0];
+      const lastEl = focusableElements[focusableElements.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    };
+    window.addEventListener("keydown", handleTabTrap);
+    return () => window.removeEventListener("keydown", handleTabTrap);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const activeScene = FILM_SCENES[currentSceneIdx];
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="film-theater-modal-title"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl"
+      >
         <motion.div
+          ref={modalRef}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -174,10 +217,10 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-slate-100 uppercase tracking-wider">
+                  <span id="film-theater-modal-title" className="font-mono text-xs font-bold text-slate-100 uppercase tracking-wider">
                     KEYNOTE FILM TEASER
                   </span>
-                  <span className="text-[10px] font-mono text-slate-500">•</span>
+                  <span className="text-[10px] font-mono text-slate-400">•</span>
                   <span className="font-mono text-[11px] text-cobalt-400 font-semibold uppercase">
                     30s BROADCAST CUT
                   </span>
@@ -188,7 +231,8 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-sm transition-colors"
+                aria-label="Close dialog"
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-sm transition-colors cursor-pointer"
                 title="Close Theater"
               >
                 <X className="w-5 h-5" />
@@ -291,7 +335,7 @@ export const FilmTheaterModal: React.FC<FilmTheaterModalProps> = ({
                 <div className="text-left ml-2">
                   <div className="font-mono text-xs font-bold text-slate-100 flex items-center gap-2">
                     <span>{activeScene.conceptNumber}</span>
-                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-400">•</span>
                     <span className="text-cobalt-400 font-semibold">{activeScene.title}</span>
                   </div>
                   <div className="text-[11px] text-slate-400 hidden sm:block">

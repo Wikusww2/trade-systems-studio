@@ -6,6 +6,7 @@ import {
   AssistItem,
   EntryValuationAudit,
   PriorDisclosurePackage,
+  LeadCapturePayload,
 } from "./types";
 import {
   MOCK_AUDIT_DATA,
@@ -218,3 +219,24 @@ export async function generatePriorDisclosurePackage(): Promise<PriorDisclosureP
     return MOCK_PRIOR_DISCLOSURE;
   }
 }
+
+export async function submitLeadApi(
+  payload: LeadCapturePayload
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  const targetBase = API_BASE || "http://localhost:8000";
+  try {
+    const res = await fetch(`${targetBase}/api/v1/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      return { success: false, error: `API error ${res.status}` };
+    }
+    const data = await res.json();
+    return { success: true, id: data.lead_id || data.id || `lead_${Date.now()}` };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "NETWORK_ERROR" };
+  }
+}
+

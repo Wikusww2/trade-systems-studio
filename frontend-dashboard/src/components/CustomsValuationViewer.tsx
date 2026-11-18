@@ -94,7 +94,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
         </head>
         <body>
           <div class="header">
-            <div class="badge">CONFIDENTIAL LEGAL SUBMISSION: 19 CFR § 162.74</div>
+            <div class="badge">PRELIMINARY COMPLIANCE DRAFT -- FOR BROKER / COUNSEL REVIEW</div>
             <div class="sub">UNITED STATES CUSTOMS AND BORDER PROTECTION • FORMAL PRIOR DISCLOSURE</div>
           </div>
           <div class="meta">FILING REF: ${priorDisclosure?.filing_reference_id} | PORT: ${priorDisclosure?.port_of_entry}</div>
@@ -245,7 +245,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                         <div className="text-[11px] text-[#94A3B8] font-sans mt-0.5">
                           {item.description}
                         </div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">
+                        <div className="text-[10px] text-slate-400 mt-0.5">
                           Supplier: {item.supplier_name} ({item.country_of_origin})
                         </div>
                       </td>
@@ -454,7 +454,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                     }}
                     className="px-4 py-2 rounded bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold uppercase tracking-wider transition-all"
                   >
-                    Engage Customs Counsel
+                    Export Legal Review Brief
                   </button>
                 </div>
               </div>

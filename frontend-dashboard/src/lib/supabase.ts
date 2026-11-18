@@ -11,9 +11,9 @@ export const supabase = isSupabaseConfigured
   : null;
 
 /**
- * Persists lead capture to Supabase or logs locally if unconfigured.
+ * Persists lead capture to Supabase if configured; returns error status if unavailable.
  */
-export async function submitLeadCapture(lead: LeadCapturePayload): Promise<{ success: boolean; id: string }> {
+export async function submitLeadCapture(lead: LeadCapturePayload): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     if (supabase) {
       const { data, error } = await supabase
@@ -32,20 +32,16 @@ export async function submitLeadCapture(lead: LeadCapturePayload): Promise<{ suc
 
       if (error) {
         console.warn("Supabase lead insertion warning:", error.message);
+        return { success: false, error: error.message };
       } else if (data && data[0]) {
         return { success: true, id: data[0].id };
       }
     }
 
-    // Local fallback persistence
-    const localId = `local_lead_${Date.now()}`;
-    const stored = JSON.parse(localStorage.getItem("audit_leads_cache") || "[]");
-    stored.push({ ...lead, id: localId, timestamp: new Date().toISOString() });
-    localStorage.setItem("audit_leads_cache", JSON.stringify(stored));
-    return { success: true, id: localId };
-  } catch (err) {
-    console.warn("Local storage lead fallback error:", err);
-    return { success: true, id: `fallback_${Date.now()}` };
+    return { success: false, error: "UNAVAILABLE" };
+  } catch (err: any) {
+    console.warn("Supabase lead submission error:", err);
+    return { success: false, error: err?.message || "UNAVAILABLE" };
   }
 }
 

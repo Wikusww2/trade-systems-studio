@@ -68,3 +68,17 @@ def test_sanctions_graph_api_endpoint():
     assert "evaluation" in data
     assert data["evaluation"]["total_blocked_ownership_pct"] == 55.0
     assert data["evaluation"]["is_blocked_by_50_percent_rule"] is True
+
+
+def test_unknown_entity_fails_closed_in_ownership_graph():
+    """
+    C5 Requirement: Unknown entity IDs must fail closed to COMPLIANCE_HOLD and
+    REQUIRES_MANUAL_REVIEW, never CLEAR_TRANSACTION.
+    """
+    graph_resp = sanctions_screener.get_ownership_graph("completely-unknown-foreign-entity-999")
+    eval_res = graph_resp.evaluation
+
+    assert eval_res.target_entity_id == "completely-unknown-foreign-entity-999"
+    assert eval_res.compliance_action == "REQUIRES_MANUAL_REVIEW"
+    assert eval_res.compliance_action != "CLEAR_TRANSACTION"
+    assert graph_resp.nodes[0].risk_level == "COMPLIANCE_HOLD"

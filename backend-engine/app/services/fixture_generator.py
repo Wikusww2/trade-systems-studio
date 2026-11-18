@@ -59,7 +59,7 @@ def generate_nightmare_01(output_path: str):
     c.drawString(146, 692, "April 12, 2024")
     c.drawString(146, 676, "CIF LOS ANGELES, CA (U.S.A.)")
     c.drawString(146, 660, "PORT 2704 - LOS ANGELES / LONG BEACH")
-    c.drawString(146, 646, "OOCL TAIPEI / V.042E (B/L: OOCLU7829104)")
+    c.drawString(146, 646, "PACIFIC HORIZON TAIPEI / V.042E (B/L: PHLU7829104)")
 
     c.setFont("Helvetica-Bold", 8)
     c.drawString(320, 708, "SHIPPER / EXPORTER:")
@@ -68,7 +68,7 @@ def generate_nightmare_01(output_path: str):
     c.setFont("Helvetica", 7.5)
     c.drawString(320, 696, "Shenzhen Shenzhou Semiconductors Ltd, Nanshan District, Shenzhen, CN")
     c.drawString(320, 664, "Pacific Crest Electronics Corp, 1420 Harbor Blvd, Long Beach, CA 90802")
-    c.drawString(320, 652, "EIN / IRS # 94-2849102 : CBP Customs Broker: Mallory Alexander #14902")
+    c.drawString(320, 652, "EIN / IRS # 94-2849102 : CBP Customs Broker: Apex Customs Brokerage LLC #14902")
 
     # Line Item Table Header
     c.setFillColor(colors.HexColor("#1E293B"))
@@ -189,8 +189,8 @@ def generate_nightmare_01(output_path: str):
     c.setFont("Helvetica", 8)
     c.drawString(160, 708, "PKL-89912-EXP")
     c.drawString(160, 692, "SSAC-2024-89912")
-    c.drawString(160, 676, "OOCU-9182049 (40' HC Container)")
-    c.drawString(160, 660, "OOCL-SEAL-892104 (High-Security Bolt Seal)")
+    c.drawString(160, 676, "PHLU-9182049 (40' HC Container)")
+    c.drawString(160, 660, "PHL-SEAL-892104 (High-Security Bolt Seal)")
     c.drawString(160, 646, "34 Palletized Cartons / 1,700 Standard Units")
 
     c.setFont("Helvetica-Bold", 8)
@@ -445,7 +445,7 @@ def generate_nightmare_02(output_path: str):
     c.drawString(160, 706, "PACLU-894102914 (Service Contract: SC-2024-PAC-0012)")
     c.drawString(160, 690, "Shenzhen Shenzhou Semiconductors Ltd / Apex Forwarding")
     c.drawString(160, 674, "Pacific Crest Electronics Corp, Long Beach, CA 90802")
-    c.drawString(160, 658, "Mallory Alexander Customs Brokerage LLC (Broker #14902)")
+    c.drawString(160, 658, "Apex Customs Brokerage LLC (Broker #14902)")
     c.drawString(160, 642, "Yantian Port CFS, Shenzhen, China")
     c.drawString(160, 628, "PACIFIC HORIZON / VOYAGE 102W : Flag: Panama")
 
@@ -574,8 +574,8 @@ def generate_nightmare_03(output_path: str):
     c.drawString(46, 396, "STATUTORY 99% DUTY DRAWBACK REFUND:")
 
     c.setFont("Helvetica", 8)
-    c.drawString(180, 472, "APL Logistics / CMA CGM (Vessel: APL SINGAPORE)")
-    c.drawString(180, 458, "APLU-0941824 (Export Declaration ITN: X20240310998)")
+    c.drawString(180, 472, "Beacon Global Forwarding / Fictional Pacific Lines (Vessel: PACIFIC HORIZON)")
+    c.drawString(180, 458, "BGFU-0941824 (Export Declaration ITN: X20240310998)")
     c.drawString(180, 444, "March 10, 2024 (Exported 55 Days Post-Import Entry)")
     c.drawString(180, 430, "Port of Los Angeles -> Rotterdam, Netherlands (NLRTM)")
     c.drawString(180, 416, "1,000 Units High-Density Solid-State Memory Modules (Matched)")
@@ -623,9 +623,9 @@ def generate_nightmare_03(output_path: str):
 
     c.setFillColor(colors.white)
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(46, 748, "APL LOGISTICS / CMA CGM (EXPORT BILL OF LADING)")
+    c.drawString(46, 748, "BEACON GLOBAL FORWARDING / FICTIONAL PACIFIC LINES (EXPORT BILL OF LADING)")
     c.setFont("Helvetica", 8)
-    c.drawString(46, 736, "OCEAN EXPORT MANIFEST & DIRECT IDENTIFICATION MATCHING PROOF : B/L: APLU-0941824")
+    c.drawString(46, 736, "OCEAN EXPORT MANIFEST & DIRECT IDENTIFICATION MATCHING PROOF : B/L: BGFU-0941824")
 
     # Export Spec Grid
     c.setStrokeColor(colors.HexColor("#334155"))
@@ -738,7 +738,7 @@ def generate_clean_01(output_path: str):
     c.drawString(146, 692, "May 18, 2024")
     c.drawString(146, 676, "FOB YANTIAN, CHINA (VERIFIED)")
     c.drawString(146, 660, "PORT 2704 - LOS ANGELES / LONG BEACH")
-    c.drawString(146, 646, "MAERSK MC-KINNEY MOLLER / V.2405")
+    c.drawString(146, 646, "PACIFIC HORIZON VOYAGER / V.2405")
 
     c.setFont("Helvetica-Bold", 8)
     c.drawString(320, 708, "SHIPPER / EXPORTER:")
@@ -844,10 +844,10 @@ def generate_clean_01(output_path: str):
     c.setFont("Helvetica", 8)
     c.drawString(180, 706, "34 Heat-Treated Wooden Pallets : ISPM-15 Certified")
     c.drawString(180, 690, "SSAC-2024-CLN-1048 (FOB Yantian Entry)")
-    c.drawString(180, 674, "MSKU-8921048 / Seal: ML-982104 (High Security)")
+    c.drawString(180, 674, "PHLU-8921048 / Seal: PH-982104 (High Security)")
     c.drawString(180, 658, "AST-2026-001 (Microcontroller Production Tooling)")
     c.drawString(180, 642, "Units Produced Method per 19 CFR Section 152.103(e)")
-    c.drawString(180, 628, "Mallory Alexander Customs Brokerage LLC (#14902)")
+    c.drawString(180, 628, "Apex Customs Brokerage LLC (#14902)")
 
     # Assist Ledger Table
     c.setFillColor(colors.HexColor("#065F46"))

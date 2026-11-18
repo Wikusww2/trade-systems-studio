@@ -6,18 +6,19 @@ Tests throughput, p50/p95/p99 latency, and floating-point zero-drift guarantees
 across 1,000 consecutive enterprise compliance audits.
 """
 
-import time
-import statistics
-from decimal import Decimal
+import argparse
 import os
+import statistics
+import time
+from decimal import Decimal
 
 from app.services.extractor import TradeDocumentExtractor
-from app.services.sanctions_screener import sanctions_screener
 from app.services.hts_classifier import HTSClassifierEngine
+from app.services.sanctions_screener import sanctions_screener
 from app.services.valuation_ledger import CustomsValuationService
 
 
-def run_comprehensive_benchmark(iterations: int = 500):
+def run_comprehensive_benchmark(iterations: int = 500, write_doc: bool = False):
     print(f"Executing enterprise benchmark suite across {iterations} iterations...")
     
     extractor = TradeDocumentExtractor()
@@ -144,17 +145,36 @@ Experience the sub-second audit viewer live at:
 👉 **[https://sssammyboyyy.github.io/trade-systems-studio/](https://sssammyboyyy.github.io/trade-systems-studio/)**
 """
 
-    report_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "docs",
-        "PERFORMANCE_AND_SCALE_BENCHMARKS.md",
-    )
-    with open(report_path, "w", encoding="utf-8") as f:
-        f.write(report_markdown)
+    print(report_markdown)
+
+    if write_doc:
+        report_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "docs",
+            "PERFORMANCE_AND_SCALE_BENCHMARKS.md",
+        )
+        with open(report_path, "w", encoding="utf-8") as f:
+            f.write(report_markdown)
+        print(f"Report written to: {report_path}")
 
     print(f"Benchmark completed in {total_duration:.2f}s ({throughput:,.1f} audits/sec).")
-    print(f"Report written to: {report_path}")
 
 
 if __name__ == "__main__":
-    run_comprehensive_benchmark(500)
+    parser = argparse.ArgumentParser(
+        description="TradeTech Systems Studio  -  Enterprise Concurrency & Latency Benchmark."
+    )
+    parser.add_argument(
+        "--iterations",
+        type=int,
+        default=500,
+        help="Number of iterations for the benchmark suite (default: 500)",
+    )
+    parser.add_argument(
+        "--write-doc",
+        action="store_true",
+        default=False,
+        help="Write report to docs/PERFORMANCE_AND_SCALE_BENCHMARKS.md",
+    )
+    args = parser.parse_args()
+    run_comprehensive_benchmark(iterations=args.iterations, write_doc=args.write_doc)

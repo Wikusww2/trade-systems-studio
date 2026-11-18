@@ -236,7 +236,7 @@ export const Var3KineticNarrative: React.FC<Var3KineticNarrativeProps> = ({ onOp
           <div className="text-slate-400">
             <span>Verified Author: </span>
             <span className="text-white font-bold">Samuel Rencken</span>
-            <span className="block text-[11px] text-slate-500">
+            <span className="block text-[11px] text-slate-400">
               Principal TradeTech AI Systems Architect · Candidate for Forward-Deployed AI Lead
             </span>
           </div>

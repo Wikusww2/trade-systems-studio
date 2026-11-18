@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { X, Printer, ShieldCheck, Download, ExternalLink } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { X, Printer, ShieldCheck } from "lucide-react";
 import { AuditResult } from "@/lib/types";
 import { sound } from "@/lib/audio";
 
@@ -16,6 +16,43 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
   onClose,
   auditData,
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements && focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+    const handleTabTrap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !focusableElements || focusableElements.length === 0) return;
+      const firstEl = focusableElements[0];
+      const lastEl = focusableElements[focusableElements.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    };
+    window.addEventListener("keydown", handleTabTrap);
+    return () => window.removeEventListener("keydown", handleTabTrap);
+  }, [isOpen]);
+
   if (!isOpen || !auditData) return null;
 
   const handlePrint = () => {
@@ -24,29 +61,39 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-white text-slate-900 border border-slate-300 p-6 sm:p-10 shadow-2xl rounded-sm my-auto font-sans">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="executive-dossier-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 dark:bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
+    >
+      <div
+        ref={modalRef}
+        className="relative w-full max-w-3xl bg-white text-slate-900 border border-slate-300 p-6 sm:p-10 shadow-2xl rounded-sm my-auto font-sans"
+      >
         {/* Top Control Bar */}
         <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 print:hidden">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-cobalt-100 text-cobalt-800 font-bold rounded-xs">
               Executive Briefing Paper
             </span>
-            <span className="text-xs text-slate-500 font-mono">
-              CONFIDENTIAL • ATTORNEY-CLIENT WORK PRODUCT
+            <span className="text-xs text-slate-600 font-mono">
+              CONFIDENTIAL TECHNICAL WORK PRODUCT • PREPARED FOR LICENSED BROKER OR COUNSEL REVIEW
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase rounded-sm transition-all"
+              aria-label="Print or save as PDF"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold uppercase rounded-sm transition-all cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print / Save PDF</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors"
+              aria-label="Close dialog"
+              className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -56,13 +103,13 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
         {/* Printable Letterhead */}
         <div className="flex items-start justify-between pb-6 mb-6 border-b-2 border-slate-900">
           <div>
-            <div className="text-xl font-black uppercase tracking-wider text-slate-900 font-mono">
+            <div id="executive-dossier-modal-title" className="text-xl font-black uppercase tracking-wider text-slate-900 font-mono">
               SAMUEL • TRADETECH SYSTEMS STUDIO
             </div>
             <div className="text-xs text-slate-600 font-mono mt-0.5">
               Autonomous Trade Intelligence & Customs Defense Systems
             </div>
-            <div className="text-[11px] text-slate-500 font-mono mt-1">
+            <div className="text-[11px] text-slate-600 font-mono mt-1">
               Engaged Practice: Principal AI Systems Architecture & Tariff Mitigation
             </div>
           </div>
@@ -80,7 +127,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
           </h3>
           <p className="text-xs text-slate-700 leading-relaxed">
             TradeTech Systems Studio executed an automated deterministic audit of{" "}
-            <strong>{auditData.document_filename}</strong> using localized Docling coordinate tokenization and Python Decimal precision arithmetic. The system identified{" "}
+            <strong>{auditData.document_filename}</strong> using localized coordinate tokenization and Python Decimal precision arithmetic. The system identified{" "}
             <strong>{auditData.discrepancies.length} material compliance defects</strong> representing a statutory financial exposure of{" "}
             <span className="font-bold text-red-600">
               ${auditData.discrepancies
@@ -146,9 +193,9 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
         </div>
 
         {/* Footer Signature */}
-        <div className="pt-4 border-t border-slate-200 flex items-center justify-between font-mono text-[10px] text-slate-500">
+        <div className="pt-4 border-t border-slate-200 flex items-center justify-between font-mono text-[10px] text-slate-600">
           <div>
-            <div>CERTIFIED BY: Samuel</div>
+            <div>ANALYSIS BY: Samuel</div>
             <div>Principal AI Systems Architect & Trade Compliance Lead</div>
           </div>
           <div className="text-right">

@@ -188,7 +188,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                             <span className="text-xs font-bold font-mono text-cyan-400">
                               {node.step_rule}
                             </span>
-                            <span className="text-slate-500">|</span>
+                            <span className="text-slate-400">|</span>
                             <span className="text-xs font-mono font-semibold text-white">
                               {node.heading_or_subheading}
                             </span>
@@ -229,7 +229,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                       {/* Competing Candidates Eliminated */}
                       {node.competing_candidates && node.competing_candidates.length > 0 && (
                         <div className="mt-2.5 flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-mono text-slate-500 uppercase">
+                          <span className="text-[10px] font-mono text-slate-400 uppercase">
                             Eliminated Candidates:
                           </span>
                           {node.competing_candidates.map((cand, cIdx) => (
@@ -293,7 +293,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
                   Entered FOB Value (USD)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2 text-xs font-mono text-slate-500">$</span>
+                  <span className="absolute left-3 top-2 text-xs font-mono text-slate-400">$</span>
                   <input
                     type="number"
                     value={enteredValue}
@@ -329,7 +329,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
               <div className="flex justify-between items-center text-[#94A3B8]">
                 <div className="flex items-center gap-1">
                   <span>MPF (0.3464%):</span>
-                  <span className="text-[10px] text-slate-500">[$31.67–$614]</span>
+                  <span className="text-[10px] text-slate-400">[$31.67–$614]</span>
                 </div>
                 <span className="text-slate-200">${Number(data?.landed_cost.mpf_fee || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>

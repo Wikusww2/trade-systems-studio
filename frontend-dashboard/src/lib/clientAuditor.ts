@@ -72,10 +72,10 @@ export async function auditUploadedPdf(file: File): Promise<AuditResult> {
         concept_id: "concept_1_customs",
         title: "CIF Destination Missing Mandatory Marine Insurance",
         description:
-          "Invoice declared under Incoterms 2020 CIF without separate marine insurance policy or explicit insurance cost line item, violating 19 CFR § 152.103 transaction value rules.",
+          "Invoice declared under Incoterms CIF without separate marine insurance policy or explicit insurance cost line item. Flagged for review under 19 CFR § 152.103 transaction value rules.",
         statutory_code: "19 CFR § 152.103 / 19 U.S.C. § 1401a",
         severity: "critical",
-        exposure_amount: 12500.0,
+        exposure_amount: 0.0,
         confidence: 0.94,
         bounding_box: {
           x: cifItem.x,
@@ -87,7 +87,7 @@ export async function auditUploadedPdf(file: File): Promise<AuditResult> {
         },
         metadata: {
           incoterm: "CIF",
-          remedy: "Provide marine cargo insurance policy certificate or recalculate FOB port base.",
+          remedy: "Provide marine cargo insurance policy certificate or recalculate FOB port base. Exposure amount indeterminate under browser heuristic inspection.",
         },
       });
     }
@@ -114,7 +114,7 @@ export async function auditUploadedPdf(file: File): Promise<AuditResult> {
   if (numbersFound.length > 0) {
     totalDeclaredValue = Math.max(...numbersFound);
   } else {
-    totalDeclaredValue = 125000.0;
+    totalDeclaredValue = 0.0;
   }
 
   // If arithmetic or freight overbilling indicators exist
@@ -126,12 +126,12 @@ export async function auditUploadedPdf(file: File): Promise<AuditResult> {
     discrepancies.push({
       id: "client-disc-freight-01",
       concept_id: "concept_2_freight",
-      title: "Unauthorized Accessorial Surcharge Detected",
+      title: "Potential Accessorial Surcharge Keyword Detected",
       description:
-        "Surcharge identified without matching bill-of-lading contract tariff approval, prohibited under FMC Docket 21-08 and Ocean Shipping Reform Act of 2022.",
+        "Surcharge keyword (chassis split / detention) identified by heuristic pattern scanner. Flagged for tariff verification under 46 U.S.C. § 41104(a).",
       statutory_code: "46 U.S.C. § 41104(a) / FMC Docket 21-08",
       severity: "critical",
-      exposure_amount: 850.0,
+      exposure_amount: 0.0,
       confidence: 0.91,
       bounding_box: {
         x: splitItem.x,
@@ -141,23 +141,23 @@ export async function auditUploadedPdf(file: File): Promise<AuditResult> {
         page_number: 1,
         confidence: 0.91,
       },
+      metadata: {
+        remedy: "Verify carrier contract tariff schedule. Exposure amount indeterminate without carrier contract rate sheets.",
+      },
     });
   }
 
-  // Calculate penalties if discrepancies exist
-  const penaltyExposure =
-    discrepancies.length > 0 ? (discrepancies.length === 1 ? 25000.0 : 75000.0) : 0.0;
-  const carrierOverbilling = discrepancies.some((d) => d.concept_id === "concept_2_freight")
-    ? 850.0
-    : 0.0;
+  // Heuristic scan does not fabricate statutory penalties
+  const penaltyExposure = 0.0;
+  const carrierOverbilling = 0.0;
 
   return {
     concept_id: "client_upload_audit",
-    title: `Local Audit: ${file.name}`,
+    title: `Demo Heuristic Inspection: ${file.name}`,
     subtitle:
       discrepancies.length === 0
-        ? "100% Pre-Clearance Certified • Zero Statutory Defects Found"
-        : `${discrepancies.length} Compliance Findings Intercepted On-Device`,
+        ? "Demo heuristic inspection: zero keyword pattern anomalies detected. Does not certify statutory compliance."
+        : `${discrepancies.length} heuristic pattern anomalies flagged for review (not a formal statutory audit)`,
     document_filename: file.name,
     document_url: blobUrl,
     metrics: {
@@ -171,7 +171,9 @@ export async function auditUploadedPdf(file: File): Promise<AuditResult> {
       file_size_bytes: file.size,
       incoterms_detected: detectedIncoterm,
       total_declared_value: totalDeclaredValue,
-      audit_environment: "100% On-Device Client Sandbox (Zero Cloud Leakage)",
+      declared_value_status: numbersFound.length > 0 ? "Extracted from text" : "Not Detected (Indeterminate)",
+      audit_environment: "Client Browser Heuristic Pattern Matcher (Demonstration Only - Not a Statutory Audit)",
+      inspection_type: "Demo heuristic inspection - not a formal statutory audit",
     },
     offline_fallback_active: true,
   };

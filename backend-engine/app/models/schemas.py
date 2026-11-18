@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_serializer, field_validator, model_validator
 
 
 class BoundingBox(BaseModel):
@@ -26,6 +26,18 @@ class BoundingBox(BaseModel):
     def clamp_confidence(cls, v: float) -> float:
         return max(0.0, min(1.0, float(v)))
 
+    @model_validator(mode="after")
+    def validate_bounds(self) -> "BoundingBox":
+        if self.x + self.width > 1000.0:
+            raise ValueError(
+                f"Bounding box extends beyond width limit: x ({self.x}) + width ({self.width}) = {self.x + self.width} > 1000.0"
+            )
+        if self.y + self.height > 1000.0:
+            raise ValueError(
+                f"Bounding box extends beyond height limit: y ({self.y}) + height ({self.height}) = {self.y + self.height} > 1000.0"
+            )
+        return self
+
 class Discrepancy(BaseModel):
     """
     Audit discrepancy flag with statutory legal grounding, deterministic exposure amount,
@@ -48,8 +60,8 @@ class Discrepancy(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional structured parameters")
 
     @field_serializer("exposure_amount")
-    def serialize_decimal(self, v: Decimal) -> float:
-        return float(v)
+    def serialize_decimal(self, v: Decimal) -> str:
+        return f"{v:.2f}"
 
 class KillShotMetrics(BaseModel):
     """
@@ -62,8 +74,8 @@ class KillShotMetrics(BaseModel):
     drawback_unclaimed_unlocked: Decimal = Field(default=Decimal("0.00"), description="Statutory 99% CBP duty refunds unlocked")
 
     @field_serializer("penalty_exposure_avoided", "carrier_overbilling_caught", "drawback_unclaimed_unlocked")
-    def serialize_decimal(self, v: Decimal) -> float:
-        return float(v)
+    def serialize_decimal(self, v: Decimal) -> str:
+        return f"{v:.2f}"
 
 class AuditResult(BaseModel):
     """
@@ -98,14 +110,38 @@ class AuditResult(BaseModel):
     )
 
 class LeadCaptureRequest(BaseModel):
-    email: str
-    company_name: str
-    phone: Optional[str] = None
-    monthly_import_volume: Optional[str] = None
-    source: str = "conversion_modal"
+    """
+    Validated lead capture request with strict email and length bounds (H5).
+    """
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    email: EmailStr = Field(..., description="Valid business email address")
+    company_name: str = Field(..., min_length=2, max_length=120, description="Legal company name")
+    phone: Optional[str] = Field(default=None, max_length=30, description="Contact phone number")
+    monthly_import_volume: Optional[str] = Field(default=None, max_length=50, description="Estimated monthly container or entry volume")
+    source: str = Field(default="conversion_modal", min_length=1, max_length=50, description="Lead acquisition source")
 
 class TelemetryEvent(BaseModel):
-    event_type: str
-    concept_id: Optional[str] = None
-    discrepancy_id: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    """
+    Validated telemetry event with bounded attributes and size constraints (H5).
+    """
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    event_type: str = Field(..., min_length=1, max_length=64, description="Telemetry event type identifier")
+    concept_id: Optional[str] = Field(default=None, max_length=64, description="Associated concept identifier")
+    discrepancy_id: Optional[str] = Field(default=None, max_length=64, description="Associated discrepancy identifier")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Event metadata attributes")
+
+    @field_validator("metadata")
+    @classmethod
+    def validate_metadata(cls, v: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(v, dict):
+            raise ValueError("Telemetry metadata must be a dictionary")
+        if len(v) > 50:
+            raise ValueError("Telemetry metadata cannot exceed 50 key-value pairs")
+        for k, val in v.items():
+            if not isinstance(k, str) or len(k) > 64:
+                raise ValueError("Telemetry metadata keys must be strings with length <= 64")
+            if isinstance(val, str) and len(val) > 2000:
+                raise ValueError("Telemetry metadata string values must have length <= 2000")
+        return v

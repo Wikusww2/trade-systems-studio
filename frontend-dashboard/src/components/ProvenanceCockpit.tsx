@@ -166,7 +166,7 @@ export const ProvenanceMetadataBar: React.FC<{ audit: AuditResult | null }> = ({
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-500 uppercase tracking-wider">Source:</span>
+          <span className="text-slate-400 uppercase tracking-wider">Source:</span>
           <span className="text-slate-300">{audit.document_filename}</span>
         </span>
 
@@ -175,41 +175,41 @@ export const ProvenanceMetadataBar: React.FC<{ audit: AuditResult | null }> = ({
           title="Copy full SHA-256 hash"
           className="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors"
         >
-          <span className="text-slate-500 uppercase tracking-wider">SHA-256:</span>
+          <span className="text-slate-400 uppercase tracking-wider">SHA-256:</span>
           <span className="text-cobalt-300 font-mono">
             {sha.slice(0, 8)}...{sha.slice(-6)}
           </span>
           {copiedSha ? (
             <Check className="w-2.5 h-2.5 text-emerald-400" />
           ) : (
-            <Copy className="w-2.5 h-2.5 text-slate-500" />
+            <Copy className="w-2.5 h-2.5 text-slate-400" />
           )}
         </button>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-500 uppercase tracking-wider">Layout:</span>
+          <span className="text-slate-400 uppercase tracking-wider">Layout:</span>
           <span className="text-slate-300">Docling [0,1000) AST</span>
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-500 uppercase tracking-wider">Kernel Latency:</span>
+          <span className="text-slate-400 uppercase tracking-wider">Kernel Latency:</span>
           <span className="text-emerald-400 font-bold">&lt; 0.09 ms</span>
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-500 uppercase tracking-wider">Runtime:</span>
+          <span className="text-slate-400 uppercase tracking-wider">Runtime:</span>
           <span className="text-slate-300">
             {audit.offline_fallback_active ? "Deterministic Local" : "Live ASGI"}
           </span>
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-slate-500 uppercase tracking-wider">Confidence Gate:</span>
+          <span className="text-slate-400 uppercase tracking-wider">Confidence Gate:</span>
           <span className="text-slate-300">{CONFIDENCE_GATE.toFixed(2)}</span>
         </span>
       </div>
 
-      <div className="text-[9px] text-slate-500 hidden sm:block">
+      <div className="text-[9px] text-slate-400 hidden sm:block">
         Statutes Cited: {statutes.size} | Findings: {audit.discrepancies.length}
       </div>
     </div>
@@ -230,32 +230,32 @@ export const DecisionProvenanceCard: React.FC<{ discrepancy: Discrepancy }> = ({
   return (
     <div className="p-3 space-y-2 text-[11px]">
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-500 uppercase tracking-wider">Extracted</span>
+        <span className="text-slate-400 uppercase tracking-wider">Extracted</span>
         <span className="text-slate-300">
           Page {bbox.page_number} · bbox x{bbox.x} y{bbox.y} w{bbox.width} h{bbox.height} ·{" "}
-          <span className="text-slate-500">[0,1000) normalized</span>
+          <span className="text-slate-400">[0,1000) normalized</span>
         </span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-500 uppercase tracking-wider">Rule</span>
+        <span className="text-slate-400 uppercase tracking-wider">Rule</span>
         <span className="text-cobalt-300 font-semibold">{discrepancy.statutory_code}</span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-500 uppercase tracking-wider">Finding</span>
+        <span className="text-slate-400 uppercase tracking-wider">Finding</span>
         <span className="text-slate-300">{discrepancy.title}</span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-500 uppercase tracking-wider">Exposure</span>
+        <span className="text-slate-400 uppercase tracking-wider">Exposure</span>
         <span className="text-red-400 font-bold tabular-nums">
           {USD.format(discrepancy.exposure_amount)}
         </span>
       </div>
 
       <div className="grid grid-cols-[74px_1fr] gap-2">
-        <span className="text-slate-500 uppercase tracking-wider">Confidence</span>
+        <span className="text-slate-400 uppercase tracking-wider">Confidence</span>
         <span
           className={`tabular-nums ${isGated ? "text-amber-400 font-bold" : "text-emerald-400"}`}
         >
@@ -291,11 +291,11 @@ export const DecisionProvenanceCard: React.FC<{ discrepancy: Discrepancy }> = ({
 
       {metadata.length > 0 && (
         <div className="grid grid-cols-[74px_1fr] gap-2 pt-1.5 mt-1.5 border-t border-[#1F2937]">
-          <span className="text-slate-500 uppercase tracking-wider">Operands</span>
+          <span className="text-slate-400 uppercase tracking-wider">Operands</span>
           <div className="space-y-0.5">
             {metadata.map(([key, value]) => (
               <div key={key} className="flex gap-1.5">
-                <span className="text-slate-500">{key}:</span>
+                <span className="text-slate-400">{key}:</span>
                 <span className="text-slate-300">
                   {Array.isArray(value) ? value.join(", ") : String(value)}
                 </span>
@@ -336,7 +336,7 @@ export const ContestableOverridePanel: React.FC<{
         <label className="block text-[10px] uppercase tracking-wider text-slate-400 font-bold">
           Corrected HTS (10-digit) *
         </label>
-        <span className="text-[9px] text-slate-500 font-mono">10-Digit Required</span>
+        <span className="text-[9px] text-slate-400 font-mono">10-Digit Required</span>
       </div>
       <input
         value={correctedCode}
@@ -428,7 +428,7 @@ export const ImmutableAuditTrailLog: React.FC<{
         <span className="flex items-center gap-1.5">
           <Lock className="w-3 h-3" /> Audit trail ({events.length})
         </span>
-        <span className="flex items-center gap-1.5 text-slate-500 normal-case tracking-normal">
+        <span className="flex items-center gap-1.5 text-slate-400 normal-case tracking-normal">
           session-scoped
           <ChevronDown
             className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -439,7 +439,7 @@ export const ImmutableAuditTrailLog: React.FC<{
       {isOpen && (
         <div className="px-3 pb-3 space-y-2">
           {events.length === 0 ? (
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-slate-400">
               No reviewer actions recorded on this finding yet.
             </p>
           ) : (
@@ -487,7 +487,7 @@ export const ImmutableAuditTrailLog: React.FC<{
                       >
                         {event.action}
                       </span>
-                      <span className="text-[9px] text-slate-500 tabular-nums">
+                      <span className="text-[9px] text-slate-400 tabular-nums">
                         {event.timestamp}
                       </span>
                     </div>
@@ -495,18 +495,18 @@ export const ImmutableAuditTrailLog: React.FC<{
                       {event.previousValue}
                       {event.newValue && (
                         <>
-                          <span className="text-slate-500"> → </span>
+                          <span className="text-slate-400"> → </span>
                           <span className="text-slate-200 font-bold">{event.newValue}</span>
                         </>
                       )}
                     </div>
                     {event.justification && (
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-slate-400">
                         Justification: {event.justification}
                       </div>
                     )}
                     {event.memo && (
-                      <div className="text-[10px] text-slate-500">Memo: {event.memo}</div>
+                      <div className="text-[10px] text-slate-400">Memo: {event.memo}</div>
                     )}
                   </div>
                 ))}

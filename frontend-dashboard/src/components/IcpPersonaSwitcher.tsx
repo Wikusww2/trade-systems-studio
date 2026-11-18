@@ -28,7 +28,7 @@ export const IcpPersonaSwitcher: React.FC<IcpPersonaSwitcherProps> = ({
 
   return (
     <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#0F172A] border border-[#1F2937] rounded-lg font-mono text-xs">
-      <span className="text-[10px] text-slate-500 uppercase px-2 font-semibold hidden md:inline">
+      <span className="text-[10px] text-slate-400 uppercase px-2 font-semibold hidden md:inline">
         Executive Lens:
       </span>
 

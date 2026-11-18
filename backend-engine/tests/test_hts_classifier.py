@@ -34,26 +34,44 @@ def test_landed_cost_mathematical_precision():
 
 
 def test_mpf_statutory_minimum_cap():
-    """Verify MPF is floored at statutory minimum ($31.67) for low value cargo."""
-    breakdown = calculate_landed_cost(
+    """Verify MPF is floored at statutory minimum ($32.71 for FY2025, $31.67 for FY2024)."""
+    # FY2025 default
+    breakdown_fy25 = calculate_landed_cost(
         entered_value=Decimal("1000.00"),
         duty_rate_ad_valorem=Decimal("0.05"),
         is_ocean_freight=False,
     )
-    # Raw MPF is 3.46, must be clamped to statutory min 31.67
-    assert breakdown.mpf_fee == Decimal("31.67")
-    assert breakdown.hmf_fee == Decimal("0.00")  # Air freight has no HMF
+    assert breakdown_fy25.mpf_fee == Decimal("32.71")
+    assert breakdown_fy25.hmf_fee == Decimal("0.00")  # Air freight has no HMF
+
+    # FY2024 backward compatibility
+    breakdown_fy24 = calculate_landed_cost(
+        entered_value=Decimal("1000.00"),
+        duty_rate_ad_valorem=Decimal("0.05"),
+        is_ocean_freight=False,
+        fiscal_year="FY2024",
+    )
+    assert breakdown_fy24.mpf_fee == Decimal("31.67")
 
 
 def test_mpf_statutory_maximum_cap():
-    """Verify MPF is capped at statutory maximum ($614.35) for high value cargo."""
-    breakdown = calculate_landed_cost(
+    """Verify MPF is capped at statutory maximum ($634.62 for FY2025, $614.35 for FY2024)."""
+    # FY2025 default
+    breakdown_fy25 = calculate_landed_cost(
         entered_value=Decimal("500000.00"),
         duty_rate_ad_valorem=Decimal("0.05"),
         is_ocean_freight=True,
     )
-    # Raw MPF is 1732.00, must be clamped to statutory max 614.35
-    assert breakdown.mpf_fee == Decimal("614.35")
+    assert breakdown_fy25.mpf_fee == Decimal("634.62")
+
+    # FY2024 backward compatibility
+    breakdown_fy24 = calculate_landed_cost(
+        entered_value=Decimal("500000.00"),
+        duty_rate_ad_valorem=Decimal("0.05"),
+        is_ocean_freight=True,
+        fiscal_year="FY2024",
+    )
+    assert breakdown_fy24.mpf_fee == Decimal("614.35")
 
 
 def test_wco_gri_drone_motor_classification():
@@ -99,3 +117,33 @@ def test_hts_api_endpoints():
     assert data["classified_hts_code"] == "8542.31.0001"
     assert data["landed_cost"]["entered_value"] == "50000.00"
     assert data["landed_cost"]["customs_duty"] == "0.00"  # ITA free duty
+
+
+def test_unclassified_product_requires_human_review():
+    """Verify unclassified merchandise does not default to drone motor and requires broker review (C3)."""
+    engine = HTSClassifierEngine()
+    req = ClassificationRequest(
+        product_title="Fresh Organic Honeycrisp Apples",
+        product_description="Grade A edible fresh apples packaged in crates.",
+        entered_value=Decimal("8000.00"),
+    )
+    result = engine.classify(req)
+    assert result.classified_hts_code == "REQUIRES_BROKER_REVIEW"
+    assert result.confidence == 0.0
+    assert result.requires_human_review is True
+    assert result.item_id == "hts-unclassified"
+
+
+def test_word_boundary_esc_does_not_match_telescope():
+    """Verify word boundary regex prevents substring false matches like 'esc' in 'telescope' (C3)."""
+    engine = HTSClassifierEngine()
+    req = ClassificationRequest(
+        product_title="High Precision Astronomical Telescope",
+        product_description="Optical astronomical observation telescope tube and mount.",
+        entered_value=Decimal("15000.00"),
+    )
+    result = engine.classify(req)
+    # Must not match 'drone_motor' via substring 'esc' in 'telescope'
+    assert result.classified_hts_code == "REQUIRES_BROKER_REVIEW"
+    assert result.requires_human_review is True
+    assert result.item_id != "hts-drone_motor"

@@ -59,6 +59,7 @@ import {
   Maximize2,
   LayoutList,
   Download,
+  AlertTriangle,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -393,7 +394,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 <span className="font-mono text-xs font-bold tracking-wider text-slate-100 uppercase truncate">
                   SAMUEL
                 </span>
-                <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">·</span>
+                <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">·</span>
                 <span className="font-mono text-[10px] tracking-wider text-blue-400 uppercase font-semibold truncate hidden sm:inline">
                   TRADE SYSTEMS STUDIO
                 </span>
@@ -556,7 +557,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
                   33,496 /sec
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">Audits per second</div>
+                <div className="text-[10px] text-slate-400 font-mono">Audits per second</div>
               </div>
 
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
@@ -566,7 +567,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 <div className="text-base sm:text-lg font-mono font-bold text-cobalt-400 tabular-nums">
                   &lt; 0.09 ms
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">Zero float drift</div>
+                <div className="text-[10px] text-slate-400 font-mono">Zero float drift</div>
               </div>
 
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
@@ -576,7 +577,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 <div className="text-base sm:text-lg font-mono font-bold text-emerald-400 tabular-nums">
                   100% Decimal
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">Zero LLM Calculations</div>
+                <div className="text-[10px] text-slate-400 font-mono">Zero LLM Calculations</div>
               </div>
 
               <div className="p-3 bg-[#0F172A] border border-[#1F2937] rounded-lg">
@@ -586,7 +587,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
                 <div className="text-base sm:text-lg font-mono font-bold text-red-400 tabular-nums">
                   5% to 15%
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">Pre-Payment Guard</div>
+                <div className="text-[10px] text-slate-400 font-mono">Pre-Payment Guard</div>
               </div>
             </div>
           </div>
@@ -606,7 +607,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
         {/* Workspace Tab Bar: the six engineering surfaces + Desktop Layout Mode */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-2 border-b border-[#1F2937] font-mono text-xs">
           <div className="flex items-center gap-2 overflow-x-auto max-w-full">
-            <span className="text-[10px] text-slate-500 uppercase font-bold shrink-0">
+            <span className="text-[10px] text-slate-400 uppercase font-bold shrink-0">
               Workspace:
             </span>
             {ALL_PILLARS.map((pillar) => {
@@ -699,7 +700,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <div className="text-base sm:text-xl font-bold text-red-400 tabular-nums">
               <RollingNumber value={displayedExposureAvoided} />
             </div>
-            <div className="text-[10px] text-slate-500">Statutory safe-harbor mitigation</div>
+            <div className="text-[10px] text-slate-400">Statutory safe-harbor mitigation</div>
           </div>
 
           <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
@@ -709,7 +710,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <div className="text-base sm:text-xl font-bold text-red-400 tabular-nums">
               <RollingNumber value={displayedCarrierOverbilling} />
             </div>
-            <div className="text-[10px] text-slate-500">Withheld prior to cash disbursement</div>
+            <div className="text-[10px] text-slate-400">Withheld prior to cash disbursement</div>
           </div>
 
           <div className="bg-[#0F172A] border border-[#1F2937] px-4 py-3 rounded-lg">
@@ -719,7 +720,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
             <div className="text-base sm:text-xl font-bold text-emerald-400 tabular-nums">
               <RollingNumber value={displayedDrawback} />
             </div>
-            <div className="text-[10px] text-slate-500">19 U.S.C. § 1313 direct cash refund</div>
+            <div className="text-[10px] text-slate-400">19 U.S.C. § 1313 direct cash refund</div>
           </div>
         </div>
 
@@ -856,6 +857,21 @@ const DualPaneAuditViewerInner: React.FC = () => {
               {/* Sub-Tab 1: Discrepancies Redline */}
               {rightTerminalTab === "discrepancies" && (
                 <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
+                  {/* Honest Disclaimer Banner for Uploaded Heuristic Scans */}
+                  {activeConceptId === "client_upload_audit" && (
+                    <div className="p-3 bg-amber-950/40 border border-amber-600/70 rounded-lg text-amber-200 text-xs font-mono flex items-start gap-2.5 shadow-sm">
+                      <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <div className="space-y-1">
+                        <div className="font-bold text-amber-300 uppercase tracking-wide text-[11px]">
+                          Demonstration Heuristic Inspection
+                        </div>
+                        <div className="text-[11px] leading-relaxed text-amber-200/90">
+                          Demonstration heuristic pattern matcher running in browser. Does not certify compliance or replace licensed customs broker review.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <ProvenanceCockpit discrepancy={activeDiscrepancy} />
 
                   <BilledVsLawfulDiff conceptId={activeConceptId} />
@@ -868,13 +884,13 @@ const DualPaneAuditViewerInner: React.FC = () => {
                         </div>
                         <div>
                           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                            <span>Pre-Clearance Certified</span>
+                            <span>Clean Commercial Baseline</span>
                             <span className="text-[10px] px-1.5 py-0.5 bg-emerald-900/60 border border-emerald-700 text-emerald-300 rounded-sm">
-                              100% PASSED
+                              BASELINE VERIFIED
                             </span>
                           </div>
                           <div className="text-[11px] text-slate-400 mt-0.5">
-                            Clean commercial invoice verified for automated CBP ACE transmission
+                            Standard FOB commercial invoice with verified non-dutiable terms and zero flagged defects.
                           </div>
                         </div>
                       </div>
@@ -896,6 +912,15 @@ const DualPaneAuditViewerInner: React.FC = () => {
                           <span className="text-slate-400">HTS Classification Match:</span>
                           <span className="font-bold text-emerald-400">8542.31.0001 (Microcontrollers)</span>
                         </div>
+                      </div>
+                    </div>
+                  ) : activeConceptId === "client_upload_audit" && auditData?.discrepancies.length === 0 ? (
+                    <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-lg font-mono text-center space-y-2">
+                      <div className="text-xs font-bold text-slate-300">
+                        Zero Keyword Anomalies Detected by Browser Scanner
+                      </div>
+                      <div className="text-[11px] text-slate-400 max-w-sm mx-auto">
+                        No common pattern triggers (such as CIF without marine insurance or detention surcharges) were flagged in this file. This heuristic check does not constitute a formal statutory audit.
                       </div>
                     </div>
                   ) : (

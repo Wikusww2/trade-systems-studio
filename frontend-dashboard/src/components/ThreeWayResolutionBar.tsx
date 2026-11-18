@@ -113,7 +113,7 @@ export const ThreeWayResolutionBar: React.FC<ThreeWayResolutionBarProps> = ({
             HOTL Gate • Conf(e) = {(confidence * 100).toFixed(1)}% • {statutoryCode}
           </span>
         </div>
-        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
           EU AI Act Art. 26
         </span>
       </div>
@@ -159,6 +159,7 @@ export const ThreeWayResolutionBar: React.FC<ThreeWayResolutionBarProps> = ({
           </div>
 
           <select
+            aria-label="Statutory Reason Code"
             value={selectedReason}
             onChange={(e) => setSelectedReason(e.target.value)}
             className="w-full text-xs font-mono bg-[#0F172A] border border-[#1F2937] rounded p-1.5 text-slate-200 focus:outline-none focus:border-blue-500"

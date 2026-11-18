@@ -1,0 +1,12 @@
+# Next.js and build outputs
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Debug screenshots (keep public/film/ tracked)
+public/*.png
+!public/film/

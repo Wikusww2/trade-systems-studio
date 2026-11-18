@@ -51,14 +51,15 @@ def test_assist_valuation_audit_math():
     # Gross negligence penalty (4.0x): 1,622.70 * 4 = 6,490.80
     assert audit.gross_negligence_penalty_exposure == Decimal("6490.80")
 
-    # Statutory interest (7% for 1 year): 1,622.70 * 0.07 * 1 = 113.59
-    assert audit.statutory_interest_19usc1505 == Decimal("113.59")
+    # Statutory interest under 19 U.S.C. § 1505(c) / 26 U.S.C. §§ 6621/6622 (7% compounded daily for 365 days):
+    # 1,622.70 * (((1 + 0.07/365)**365) - 1) = 117.65
+    assert audit.statutory_interest_19usc1505 == Decimal("117.65")
 
-    # Prior disclosure tender = 1,622.70 + 113.59 = 1,736.29
-    assert audit.prior_disclosure_tender_amount == Decimal("1736.29")
+    # Prior disclosure tender = 1,622.70 + 117.65 = 1,740.35
+    assert audit.prior_disclosure_tender_amount == Decimal("1740.35")
 
-    # Total liability avoided = 6,490.80 - 1,736.29 = 4,754.51
-    assert audit.total_liability_avoided == Decimal("4754.51")
+    # Total liability avoided = 6,490.80 - 1,740.35 = 4,750.45
+    assert audit.total_liability_avoided == Decimal("4750.45")
 
 
 def test_prior_disclosure_letter_generation():
@@ -72,6 +73,9 @@ def test_prior_disclosure_letter_generation():
     assert "TOTAL TENDER CHECK ENCLOSED" in pkg.letter_text
     assert pkg.actual_duty_loss == audit.duty_underpayment
     assert pkg.total_tender_check == audit.prior_disclosure_tender_amount
+    assert "Counsel of Record" not in pkg.letter_text
+    assert "Special Customs Counsel" not in pkg.letter_text
+    assert "DRAFT" in pkg.letter_text
 
 
 def test_valuation_api_endpoints():

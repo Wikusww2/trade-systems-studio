@@ -35,7 +35,20 @@ def test_cargowise_universal_interchange_schema():
     assert "<InsuranceAmount Currency=\"USD\">1450.00</InsuranceAmount>" in xml_str
     assert "<HarmonizedCode>8542.31</HarmonizedCode>" in xml_str
     assert "<Value>CLEARED_WITH_RECONCILIATION</Value>" in xml_str
-    assert "<Value>19_USC_1592_PROTECTED</Value>" in xml_str
+    # H2: Durban -> Rotterdam is EU corridor; 19 U.S.C. § 1592 must NOT apply
+    assert "<Value>19_USC_1592_PROTECTED</Value>" not in xml_str
+    assert "<Value>EU_UCC_COMPLIANT</Value>" in xml_str
+
+    # Verify US destination corridor applies 19 U.S.C. § 1592
+    us_xml = cargowise_exporter.generate_universal_interchange_xml(
+        port_origin_code="CNSZX",
+        port_origin_name="Shenzhen",
+        port_dest_code="USLAX",
+        port_dest_name="Los Angeles",
+        invoice_amount=Decimal("148500.00"),
+        insurance_amount=Decimal("1450.00")
+    )
+    assert "<Value>19_USC_1592_PROTECTED</Value>" in us_xml
 
 def test_cargowise_decimal_precision_no_float_drift():
     # Pass values requiring exact decimal rounding

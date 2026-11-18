@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
 [![Whitepaper](https://img.shields.io/badge/Whitepaper-Interactive%20Edition-8b5cf6?style=for-the-badge&logo=googledocs&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)
 [![Scale](https://img.shields.io/badge/Benchmark-33k%20audits%2Fsec-059669?style=for-the-badge&logo=speedtest&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/blob/main/docs/PERFORMANCE_AND_SCALE_BENCHMARKS.md)
-[![CI](https://img.shields.io/badge/CI-Passing-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml)
+[![CI](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/Pytest-87%2F87%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -32,7 +32,7 @@ Generic language model prompt wrappers fail in regulated international trade bec
 │ Statutory Accuracy      │ Modeled on CBP 1592, 19 CFR 152.103, FMC 21-08, 19 USC 1313  │
 │ Entity Resolution Graph │ OFAC 50% Rule recursive multi-tier ownership traversal       │
 │ WCO GRI State Machine   │ Path-dependent 10-digit HTS reasoning with confidence gating │
-│ Dual-Stack Boundary     │ UniversalShipment XML (SOAP) + eAdaptor Next (REST/OAuth)    │
+│ Ingest Boundary         │ CargoWise UniversalShipment XML v1.1 Schema Integration    │
 │ Nightmare Suite UI      │ High-contrast dark mode with React-PDF dynamic coordinate sync│
 │ Offline Demo Guarantee  │ Zero external API key dependencies for core review           │
 └─────────────────────────┴──────────────────────────────────────────────────────────────┘
@@ -45,7 +45,7 @@ Generic language model prompt wrappers fail in regulated international trade bec
 TradeTech Systems Studio acts as an **Upstream Pre-Ingest and Financial Exception Firewall** deployed ahead of your Transportation Management System (TMS).
 
 1. **Value Pack Fee Avoidance:** Intercepts accessorial overbilling and customs valuation discrepancies before shipment data enters CargoWise, mitigating downstream WiseTech Value Pack fees ($19.95 / $9.95 per transaction effective December 1, 2025).
-2. **Dual-Stack Boundary:** Supports both legacy UniversalShipment XML (SOAP) and eAdaptor Next (REST / OAuth 2.0 / JWT) formats without requiring legacy system deprecation.
+2. **Standardized Ingest Boundary:** Supports CargoWise UniversalShipment XML v1.1 schema validation and extraction without requiring legacy system deprecation.
 3. **Audit-Ready Provenance:** Every finding binds directly to its legal statute and normalized bounding box, giving operations teams defensible evidence before releasing carrier disbursements or customs filings.
 
 ---

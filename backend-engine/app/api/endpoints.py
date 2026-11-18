@@ -1,9 +1,11 @@
 import asyncio
 import os
+import time
+from collections import defaultdict
 from decimal import Decimal
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
@@ -27,17 +29,89 @@ from app.services.valuation_ledger import CustomsValuationService
 
 router = APIRouter()
 
-# In-memory storage fallback for leads & telemetry when Supabase is not configured
+# In-memory storage with bounded capacity fallback for leads & telemetry when Supabase is not configured
+MAX_LEADS_CAPACITY = 1000
+MAX_TELEMETRY_CAPACITY = 5000
 IN_MEMORY_LEADS: list[dict] = []
 IN_MEMORY_TELEMETRY: list[dict] = []
 
-# Expose 'app' ASGI callable on endpoints module for uvicorn compatibility
-class _ASGIAppProxy:
-    async def __call__(self, scope, receive, send):
-        from main import app as _root_app
-        await _root_app(scope, receive, send)
+# Sliding-window rate limiters per client IP (H5)
+class InMemoryRateLimiter:
+    """
+    Sliding window in-memory rate limiter tracking client requests per minute.
+    """
+    def __init__(self, requests_per_minute: int = 60):
+        self.requests_per_minute = requests_per_minute
+        self.window_seconds = 60.0
+        self._requests: dict[str, list[float]] = defaultdict(list)
 
-app = _ASGIAppProxy()
+    def check(self, client_ip: str) -> bool:
+        now = time.monotonic()
+        cutoff = now - self.window_seconds
+        timestamps = [t for t in self._requests[client_ip] if t > cutoff]
+        if len(timestamps) >= self.requests_per_minute:
+            self._requests[client_ip] = timestamps
+            return False
+        timestamps.append(now)
+        self._requests[client_ip] = timestamps
+        return True
+
+    def reset(self):
+        self._requests.clear()
+
+leads_rate_limiter = InMemoryRateLimiter(requests_per_minute=60)
+telemetry_rate_limiter = InMemoryRateLimiter(requests_per_minute=300)
+
+MAX_LEAD_PAYLOAD_BYTES = 16 * 1024       # 16 KB
+MAX_TELEMETRY_PAYLOAD_BYTES = 32 * 1024  # 32 KB
+
+async def check_lead_payload(request: Request):
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > MAX_LEAD_PAYLOAD_BYTES:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"Payload size exceeds maximum allowed limit of {MAX_LEAD_PAYLOAD_BYTES} bytes."
+                )
+        except ValueError:
+            pass
+    body = await request.body()
+    if len(body) > MAX_LEAD_PAYLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Payload size exceeds maximum allowed limit of {MAX_LEAD_PAYLOAD_BYTES} bytes."
+        )
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not leads_rate_limiter.check(client_ip):
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded for lead capture. Please try again shortly."
+        )
+
+async def check_telemetry_payload(request: Request):
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > MAX_TELEMETRY_PAYLOAD_BYTES:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"Payload size exceeds maximum allowed limit of {MAX_TELEMETRY_PAYLOAD_BYTES} bytes."
+                )
+        except ValueError:
+            pass
+    body = await request.body()
+    if len(body) > MAX_TELEMETRY_PAYLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Payload size exceeds maximum allowed limit of {MAX_TELEMETRY_PAYLOAD_BYTES} bytes."
+        )
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not telemetry_rate_limiter.check(client_ip):
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded for telemetry events. Please try again shortly."
+        )
 
 class SanctionsScreenRequest(BaseModel):
     shipper: Optional[str] = Field(default=None, description="Shipper / Exporter legal entity name")
@@ -90,12 +164,6 @@ async def get_aggregate_metrics(
 def get_document(filename: str):
     safe_name = os.path.basename(filename)
     filepath = os.path.join(settings.NIGHTMARES_DIR, safe_name)
-    
-    if not os.path.exists(filepath):
-        # Auto-generate if missing
-        from app.services.fixture_generator import generate_all_nightmares
-        generate_all_nightmares()
-        
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="Document fixture not found")
         
@@ -140,9 +208,11 @@ async def get_sanctions_ownership_graph(entity_id: str):
     """
     return await sanctions_screener.get_ownership_graph_async(entity_id)
 
-@router.post("/leads")
+@router.post("/leads", dependencies=[Depends(check_lead_payload)])
 def capture_lead(lead: LeadCaptureRequest):
     record = lead.model_dump()
+    if len(IN_MEMORY_LEADS) >= MAX_LEADS_CAPACITY:
+        IN_MEMORY_LEADS.pop(0)
     IN_MEMORY_LEADS.append(record)
     return {
         "status": "success",
@@ -151,9 +221,11 @@ def capture_lead(lead: LeadCaptureRequest):
         "offline_storage": True
     }
 
-@router.post("/telemetry")
+@router.post("/telemetry", dependencies=[Depends(check_telemetry_payload)])
 def record_telemetry(event: TelemetryEvent):
     payload = event.model_dump()
+    if len(IN_MEMORY_TELEMETRY) >= MAX_TELEMETRY_CAPACITY:
+        IN_MEMORY_TELEMETRY.pop(0)
     IN_MEMORY_TELEMETRY.append(payload)
     return {
         "status": "success",
@@ -242,8 +314,8 @@ async def get_scenarios():
             "name": "Port of Durban to Rotterdam Electronics Shipment",
             "corridor": "ZADUR -> NLRTM",
             "risk_type": "CIF Marine Insurance Omission & GRI 3(b) Reclassification",
-            "statute": "19 U.S.C. § 1592 & 19 CFR § 152.103",
-            "default_exposure_usd": 36000.00,
+            "statute": "EU Union Customs Code (Regulation (EU) No 952/2013) & WCO GRI 3(b)",
+            "default_exposure_usd": "36000.00",
         },
         {
             "id": "scenario_long_beach_battery",
@@ -251,7 +323,7 @@ async def get_scenarios():
             "corridor": "CNSZX -> USLAX",
             "risk_type": "Section 301 Secondary Tariff & Chassis Split Surcharge",
             "statute": "19 U.S.C. § 1592 & FMC Docket 21-08",
-            "default_exposure_usd": 48200.00,
+            "default_exposure_usd": "48200.00",
         },
         {
             "id": "scenario_steel_drawback",
@@ -259,7 +331,7 @@ async def get_scenarios():
             "corridor": "KRINC -> USHOU",
             "risk_type": "Unclaimed 99% Section 1313 Duty Drawback",
             "statute": "19 U.S.C. § 1313",
-            "default_exposure_usd": 18400.00,
+            "default_exposure_usd": "18400.00",
         }
     ]
 

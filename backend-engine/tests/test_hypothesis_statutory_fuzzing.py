@@ -68,17 +68,21 @@ def test_fuzz_mpf_statutory_bounds(entered_val: Decimal) -> None:
 
 
 def test_fuzz_mpf_boundary_exact_minimum() -> None:
-    """Entered value below ~$9,142.61 triggers statutory minimum MPF of $31.67."""
+    """Entered value below ~$9,142.61 triggers statutory minimum MPF ($32.71 FY25, $31.67 FY24)."""
     low_val = Decimal("5000.00")
     result = calculate_landed_cost(entered_value=low_val, duty_rate_ad_valorem=Decimal("0.00"))
-    assert result.mpf_fee == Decimal("31.67")
+    assert result.mpf_fee == Decimal("32.71")
+    result_fy24 = calculate_landed_cost(entered_value=low_val, duty_rate_ad_valorem=Decimal("0.00"), fiscal_year="FY2024")
+    assert result_fy24.mpf_fee == Decimal("31.67")
 
 
 def test_fuzz_mpf_boundary_exact_maximum() -> None:
-    """Entered value above ~$177,352.77 triggers statutory maximum MPF of $614.35."""
+    """Entered value above ~$177,352.77 triggers statutory maximum MPF ($634.62 FY25, $614.35 FY24)."""
     high_val = Decimal("250000.00")
     result = calculate_landed_cost(entered_value=high_val, duty_rate_ad_valorem=Decimal("0.00"))
-    assert result.mpf_fee == Decimal("614.35")
+    assert result.mpf_fee == Decimal("634.62")
+    result_fy24 = calculate_landed_cost(entered_value=high_val, duty_rate_ad_valorem=Decimal("0.00"), fiscal_year="FY2024")
+    assert result_fy24.mpf_fee == Decimal("614.35")
 
 
 @given(entered_val=st.decimals(min_value=Decimal("100.00"), max_value=Decimal("1000000.00"), places=2))

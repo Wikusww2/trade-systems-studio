@@ -185,6 +185,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                 setCurrentPage((p) => Math.max(1, p - 1));
               }}
               disabled={currentPage <= 1}
+              aria-label="Previous Page"
               className="px-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold"
               title="Previous Page"
             >
@@ -199,6 +200,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                 setCurrentPage((p) => Math.min(numPages, p + 1));
               }}
               disabled={currentPage >= numPages}
+              aria-label="Next Page"
               className="px-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold"
               title="Next Page"
             >
@@ -236,6 +238,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
           <button
             onClick={handleZoomOut}
+            aria-label="Zoom Out"
             title="Zoom Out"
             className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1E293B] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#1F2937] rounded-sm"
           >
@@ -246,6 +249,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
           </span>
           <button
             onClick={handleZoomIn}
+            aria-label="Zoom In"
             title="Zoom In"
             className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1E293B] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#1F2937] rounded-sm"
           >
@@ -253,6 +257,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
           </button>
           <button
             onClick={handleResetZoom}
+            aria-label="Fit Scale"
             title="Fit Scale"
             className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1E293B] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border border-slate-300 dark:border-[#1F2937] rounded-sm"
           >
@@ -407,6 +412,15 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
                   <div
                     key={disc.id}
                     id={`bbox-${disc.id}`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Inspect finding: ${disc.title}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleBlockClick(disc.id);
+                      }
+                    }}
                     onMouseEnter={() => {
                       sound.playTick();
                       onHoverDiscrepancy(disc.id);

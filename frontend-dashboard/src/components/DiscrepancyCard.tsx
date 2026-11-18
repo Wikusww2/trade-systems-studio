@@ -85,6 +85,19 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
     >
       <div
         id={`card-${discrepancy.id}`}
+        role="button"
+        tabIndex={0}
+        aria-selected={isActive}
+        aria-label={`Discrepancy: ${discrepancy.title}, exposure: ${
+          discrepancy.exposure_amount > 0 ? `$${discrepancy.exposure_amount}` : "Valuation defect"
+        }`}
+        onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick(discrepancy.id);
+          }
+        }}
         onMouseEnter={() => onHover(discrepancy.id)}
         onMouseLeave={() => onHover(null)}
         onClick={() => onClick(discrepancy.id)}
@@ -159,11 +172,13 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
         <div className="relative z-10 mt-2.5 pt-2 border-t border-slate-800/60">
           <button
             type="button"
+            aria-expanded={showCitation}
+            aria-controls={`citation-${discrepancy.id}`}
             onClick={(e) => {
               e.stopPropagation();
               setShowCitation(!showCitation);
             }}
-            className="w-full flex items-center justify-between text-[11px] font-mono text-blue-400 hover:text-blue-300 transition-colors"
+            className="w-full flex items-center justify-between text-[11px] font-mono text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
           >
             <span className="flex items-center gap-1.5 font-medium">
               <Scale className="w-3 h-3" />
@@ -177,7 +192,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
           </button>
 
           {showCitation && (
-            <div className="mt-2 p-2.5 bg-slate-950/80 border border-slate-800 text-[11px] text-slate-300 leading-relaxed rounded-md space-y-2">
+            <div id={`citation-${discrepancy.id}`} className="mt-2 p-2.5 bg-slate-950/80 border border-slate-800 text-[11px] text-slate-300 leading-relaxed rounded-md space-y-2">
               <p className="font-serif italic text-slate-400 border-l-2 border-blue-500 pl-2">
                 {discrepancy.description}
               </p>

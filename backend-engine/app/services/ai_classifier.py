@@ -1,8 +1,11 @@
+import logging
 from typing import List, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -75,8 +78,8 @@ class TradeAIClassifier:
                         temperature=0.0,
                     )
                     return routed_doc
-                except Exception:
-                    pass  # Fall through to native client
+                except Exception as e:
+                    logger.warning("Instructor routing failed, falling back to native client: %s", e)
 
             from google.genai import types
             response = self.client.models.generate_content(
@@ -93,7 +96,8 @@ class TradeAIClassifier:
             )
             if response.text:
                 return DocumentRoute.model_validate_json(response.text)
-        except Exception:
+        except Exception as e:
+            logger.error("GenAI document routing failed: %s", e)
             return None
         return None
 
@@ -126,8 +130,8 @@ class TradeAIClassifier:
                         temperature=0.0,
                     )
                     return gri_result
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Instructor GRI analysis failed, falling back to native client: %s", e)
 
             from google.genai import types
             response = self.client.models.generate_content(
@@ -145,7 +149,8 @@ class TradeAIClassifier:
             )
             if response.text:
                 return GRIReasoningResult.model_validate_json(response.text)
-        except Exception:
+        except Exception as e:
+            logger.error("GenAI GRI classification analysis failed: %s", e)
             return None
         return None
 

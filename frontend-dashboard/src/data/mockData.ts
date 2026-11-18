@@ -277,7 +277,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
   concept_clean_fob: {
     concept_id: "concept_clean_fob",
     title: "Clean Production Invoice: Verified FOB Terms",
-    subtitle: "100% Pre-Clearance Certified • Zero 19 U.S.C. § 1592 Exposure",
+    subtitle: "Clean Baseline Inspection: Zero 19 U.S.C. § 1592 Exposure Flagged",
     document_filename: "clean_01_customs_fob.pdf",
     document_url: "/nightmares/clean_01_customs_fob.pdf",
     metrics: {
@@ -289,7 +289,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     extracted_data: {
       incoterms: "FOB YANTIAN",
       total_value: 145250.0,
-      compliance_status: "100% CERTIFIED",
+      compliance_status: "VERIFIED_BASELINE",
       assist_declared: "$27,750.00",
       arithmetic_error: "$0.00",
     },
@@ -898,7 +898,9 @@ export const MOCK_PRIOR_DISCLOSURE: PriorDisclosurePackage = {
   actual_duty_loss: "1622.70",
   interest_tender_amount: "85.19",
   total_tender_check: "1707.89",
-  letter_text: `FORMAL PRIOR DISCLOSURE UNDER 19 CFR § 162.74
+  letter_text: `*** DRAFT -- PREPARED FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***
+
+FORMAL PRIOR DISCLOSURE UNDER 19 CFR § 162.74
 AND 19 U.S.C. § 1592(c)(4)
 
 DATE: November 14, 2026
@@ -910,8 +912,8 @@ Fines, Penalties, and Forfeitures Officer
 Port of Los Angeles / Long Beach (2704)
 
 FROM:
-TradeTech Systems Studio / Special Customs Counsel
-On Behalf of Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
+TradeTech Systems Studio / Automated Compliance Service
+Prepared on Behalf of Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
 
 SUBJECT: Prior Disclosure of Inadvertent Valuation Understatement Pertaining to Assists
          Under 19 U.S.C. § 1401a and 19 CFR § 152.103 on Entry #CBP-7501-84920184
@@ -959,5 +961,7 @@ $6,490.80) are statutorily barred.
 
 Respectfully submitted,
 TradeTech Systems Studio Compliance Automation Engine
-Counsel of Record for Pacific Tech Imports LLC (EIN 94-8291048)`,
+Prepared on Behalf of Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
+
+*** DRAFT -- PREPARED FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***`,
 };

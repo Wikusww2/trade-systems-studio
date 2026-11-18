@@ -60,6 +60,12 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Global Accessible Focus Ring (WCAG 2.4.7) */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
 /* Strict Tabular Numbers for Metrics, Codes, and Currency */
 .tabular-nums {
   font-variant-numeric: tabular-nums;

@@ -1,6 +1,8 @@
 import asyncio
 import json
+import logging
 import os
+import re
 from typing import Any, Dict, List, Optional, Set
 
 import httpx
@@ -14,6 +16,8 @@ from app.models.sanctions_graph import (
     GraphNode,
     OFAC50PercentEvaluation,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class SanctionsEntity(BaseModel):
@@ -132,19 +136,19 @@ CORPORATE_OWNERSHIP_NETWORKS: Dict[str, Dict[str, Any]] = {
             "id": "bis-el-cn-0941",
             "label": "Global Micro Electronics Ltd",
             "country": "CN",
-            "is_blocked": True,
-            "risk_level": "SDN_BLOCKED",
+            "is_blocked": False,
+            "risk_level": "EAR_EXPORT_RESTRICTION",
             "programs": ["BIS Entity List (15 CFR Part 744)", "EAR Military End-User"],
             "sanction_authority": "BIS",
-            "notes": "Direct military end-user and prohibited semiconductor export entity."
+            "notes": "Direct military end-user and prohibited semiconductor export entity under EAR; blocked under OFAC 50% Rule via 55% aggregated ownership."
         },
         "nodes": [
             {
                 "id": "bis-el-cn-0941",
                 "label": "Global Micro Electronics Ltd",
                 "country": "CN",
-                "is_blocked": True,
-                "risk_level": "SDN_BLOCKED",
+                "is_blocked": False,
+                "risk_level": "EAR_EXPORT_RESTRICTION",
                 "programs": ["BIS Entity List", "EAR Military End-User"],
                 "sanction_authority": "BIS"
             },
@@ -350,8 +354,8 @@ class SanctionsScreener:
                                         description=(props.get("description") or [None])[0],
                                     )
                                 )
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("Failed to load yente_ofac_ftm.jsonl: %s", e)
 
         if not entities:
             entities = [SanctionsEntity(**entry) for entry in EMBEDDED_SANCTIONS_DATASET]
@@ -514,12 +518,14 @@ class SanctionsScreener:
     def calculate_effective_blocked_ownership(
         self,
         target_id: str,
-        visited: Optional[Set[str]] = None
+        visited: Optional[Set[str]] = None,
+        current_network: Optional[Dict[str, Any]] = None
     ) -> float:
         """
         Recursively calculates aggregate blocked ownership percentage under OFAC 50% Rule.
         Handles direct and multi-hop indirect equity holdings with cycle prevention.
         """
+        is_root = visited is None
         if visited is None:
             visited = set()
         if target_id in visited:
@@ -527,6 +533,11 @@ class SanctionsScreener:
         visited.add(target_id)
 
         network = self.networks.get(target_id)
+        if not network and current_network:
+            node_ids = {n.get("id") for n in current_network.get("nodes", [])}
+            if target_id in node_ids:
+                network = current_network
+
         if not network:
             ent = next((e for e in self.entities if e.id == target_id), None)
             if ent and any("OFAC" in p or "SDN" in p or "sanction" in ent.topics for p in ent.programs):
@@ -534,10 +545,12 @@ class SanctionsScreener:
             return 0.0
 
         target_info = network.get("target", {})
-        if target_info.get("is_blocked"):
+        nodes = {n["id"]: n for n in network.get("nodes", [])}
+        target_node = nodes.get(target_id) or target_info
+        # For intermediate nodes (not root target being evaluated): if directly blocked, return 100.0
+        if not is_root and target_node.get("is_blocked"):
             return 100.0
 
-        nodes = {n["id"]: n for n in network.get("nodes", [])}
         edges = network.get("edges", [])
 
         total_blocked_pct = 0.0
@@ -549,7 +562,9 @@ class SanctionsScreener:
                 if owner_node.get("is_blocked"):
                     total_blocked_pct += pct
                 else:
-                    indirect_pct = self.calculate_effective_blocked_ownership(owner_id, visited.copy())
+                    indirect_pct = self.calculate_effective_blocked_ownership(
+                        owner_id, visited.copy(), current_network=network
+                    )
                     if indirect_pct >= 50.0:
                         total_blocked_pct += pct
 
@@ -558,22 +573,28 @@ class SanctionsScreener:
     def match_entity(self, query_name: Optional[str], threshold: float = 85.0) -> EntityMatch:
         """
         Fuzzy matches entity query name against canonical names and aliases using rapidfuzz.
-        Enforces strict threshold >= 85.0.
+        Uses normalized token matching to handle punctuation and casing variations strictly.
         """
         if not query_name or not query_name.strip():
             return EntityMatch(query_name="", matched=False)
 
         clean_query = query_name.strip()
+
+        def _normalize_tokens(text: str) -> str:
+            cleaned = re.sub(r"[,\.\(\)\-\–\/\"']", " ", text.lower())
+            return " ".join(cleaned.split())
+
+        norm_query = _normalize_tokens(clean_query)
         best_match: Optional[SanctionsEntity] = None
         best_score: float = 0.0
         best_candidate: Optional[str] = None
 
         for entity in self.entities:
-            # Check canonical name
             candidates = [entity.name] + entity.aliases
             for cand in candidates:
-                # rapidfuzz token_sort_ratio handles token reordering and punctuation
-                score = float(rapidfuzz.fuzz.token_sort_ratio(clean_query, cand))
+                raw_score = float(rapidfuzz.fuzz.token_sort_ratio(clean_query, cand))
+                norm_score = float(rapidfuzz.fuzz.token_sort_ratio(norm_query, _normalize_tokens(cand)))
+                score = max(raw_score, norm_score)
                 if score > best_score:
                     best_score = score
                     best_match = entity
@@ -607,7 +628,7 @@ class SanctionsScreener:
     ) -> Optional[EntityMatch]:
         """
         Queries live yente instance (/match endpoint) if YENTE_API_URL is configured.
-        Falls back gracefully if unreachable.
+        Falls back gracefully if unreachable with structured logging (M12).
         """
         if not self.yente_url or not query_name.strip():
             return None
@@ -647,9 +668,8 @@ class SanctionsScreener:
                                 topics=top.get("topics", []),
                                 screening_engine="yente_api"
                             )
-        except Exception:
-            # Fall back to embedded engine without failure
-            pass
+        except Exception as e:
+            logger.warning("Yente API screening call failed, falling back to embedded screener: %s", e)
 
         return None
 
@@ -728,60 +748,116 @@ class SanctionsScreener:
     def get_ownership_graph(self, target_id: str) -> CorporateGraphResponse:
         """
         Traverses corporate ownership graph and evaluates the OFAC 50% Rule.
+        Performs cycle-safe transitive multi-hop traversal and fails closed on unknown entities (C5).
+        Distinguishes BIS Entity List from OFAC property blocking (M5).
         """
         data = self.networks.get(target_id) or CORPORATE_OWNERSHIP_NETWORKS.get(target_id)
         if not data:
             match = next((e for e in self.entities if e.id == target_id), None)
-            target_name = match.name if match else target_id
-            is_direct = bool(match)
+            if not match:
+                # C5: Fail closed on unknown entity! Never return CLEAR_TRANSACTION.
+                return CorporateGraphResponse(
+                    target_id=target_id,
+                    nodes=[
+                        GraphNode(
+                            id=target_id,
+                            label=target_id,
+                            country="UNKNOWN",
+                            is_blocked=False,
+                            risk_level="COMPLIANCE_HOLD"
+                        )
+                    ],
+                    edges=[],
+                    evaluation=OFAC50PercentEvaluation(
+                        target_entity_id=target_id,
+                        target_entity_name=target_id,
+                        total_blocked_ownership_pct=0.0,
+                        is_blocked_by_50_percent_rule=False,
+                        direct_sdn_status=False,
+                        compliance_action="REQUIRES_MANUAL_REVIEW"
+                    )
+                )
+
+            # Known entity in dataset without a pre-computed graph
+            target_name = match.name
+            is_ofac_sdn = any("OFAC" in p or "SDN" in p for p in match.programs)
+            is_bis_el = any("BIS" in p or "EAR" in p for p in match.programs)
+
+            if is_ofac_sdn:
+                risk_level = "SDN_BLOCKED"
+                compliance_action = "BLOCK_AND_REPORT"
+                is_blocked = True
+            elif is_bis_el:
+                risk_level = "EAR_EXPORT_RESTRICTION"
+                compliance_action = "LICENSE_REQUIRED_EAR"
+                is_blocked = False
+            else:
+                risk_level = "CLEAN_COMMERCIAL"
+                compliance_action = "CLEAR_TRANSACTION"
+                is_blocked = False
+
             return CorporateGraphResponse(
                 target_id=target_id,
                 nodes=[
                     GraphNode(
                         id=target_id,
                         label=target_name,
-                        country="UNKNOWN",
-                        is_blocked=is_direct,
-                        risk_level="SDN_BLOCKED" if is_direct else "CLEAN_COMMERCIAL"
+                        country=match.country[0] if match.country else "UNKNOWN",
+                        is_blocked=is_blocked,
+                        risk_level=risk_level
                     )
                 ],
                 edges=[],
                 evaluation=OFAC50PercentEvaluation(
                     target_entity_id=target_id,
                     target_entity_name=target_name,
-                    total_blocked_ownership_pct=100.0 if is_direct else 0.0,
-                    is_blocked_by_50_percent_rule=is_direct,
-                    direct_sdn_status=is_direct,
-                    compliance_action="BLOCK_AND_REPORT" if is_direct else "CLEAR_TRANSACTION"
+                    total_blocked_ownership_pct=100.0 if is_blocked else 0.0,
+                    is_blocked_by_50_percent_rule=is_blocked,
+                    direct_sdn_status=is_ofac_sdn,
+                    compliance_action=compliance_action
                 )
             )
 
         nodes = [GraphNode(**n) for n in data["nodes"]]
         edges = [GraphEdge(**e) for e in data["edges"]]
         target_info = data["target"]
-
         node_lookup = {n.id: n for n in nodes}
-        blocked_ownership = 0.0
-        blocking_entities = []
 
+        # Multi-hop transitive cycle-safe blocked ownership calculation (C5)
+        blocked_ownership = self.calculate_effective_blocked_ownership(target_id)
+
+        # Gather blocking entities (both direct and indirect owners with >=50% effective blocked interest)
+        blocking_entities = []
         for edge in edges:
             if edge.target_id == target_id:
                 owner = node_lookup.get(edge.source_id)
-                if owner and owner.is_blocked:
-                    blocked_ownership += edge.ownership_pct
-                    blocking_entities.append({
-                        "owner_id": owner.id,
-                        "owner_name": owner.label,
-                        "country": owner.country,
-                        "ownership_pct": edge.ownership_pct,
-                        "programs": owner.programs
-                    })
+                if owner:
+                    if owner.is_blocked:
+                        blocking_entities.append({
+                            "owner_id": owner.id,
+                            "owner_name": owner.label,
+                            "country": owner.country,
+                            "ownership_pct": edge.ownership_pct,
+                            "programs": owner.programs
+                        })
+                    else:
+                        owner_effective = self.calculate_effective_blocked_ownership(owner.id)
+                        if owner_effective >= 50.0:
+                            blocking_entities.append({
+                                "owner_id": owner.id,
+                                "owner_name": owner.label,
+                                "country": owner.country,
+                                "ownership_pct": edge.ownership_pct,
+                                "programs": owner.programs or ["OFAC 50% Rule Subsidiary (Indirect)"]
+                            })
 
-        direct_sdn = target_info.get("is_blocked", False)
+        direct_sdn = (target_info.get("sanction_authority") == "OFAC" or any("OFAC" in str(p) or "SDN" in str(p) for p in target_info.get("programs", []))) and target_info.get("is_blocked", False)
         is_blocked_50 = blocked_ownership >= 50.0
 
         if direct_sdn or is_blocked_50:
             action = "BLOCK_AND_REPORT"
+        elif target_info.get("sanction_authority") == "BIS" or any("BIS" in str(p) or "EAR" in str(p) for p in target_info.get("programs", [])):
+            action = "LICENSE_REQUIRED_EAR"
         elif blocked_ownership > 0.0:
             action = "ENHANCED_DUE_DILIGENCE"
         else:

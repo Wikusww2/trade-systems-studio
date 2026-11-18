@@ -7,5 +7,9 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <DualPaneAuditViewer />;
+  return (
+    <main id="main-content" role="main">
+      <DualPaneAuditViewer />
+    </main>
+  );
 }

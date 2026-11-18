@@ -60,9 +60,9 @@ const TOUR_STEPS: TourStep[] = [
     id: "step-4",
     targetId: "audit-workspace",
     title: "3-Way Document Fixture Switcher",
-    badge: "04 / PRE-CLEARANCE AUDIT",
-    description: "Experience both sides of the coin: test 'Corrupted Nightmare Mode' to intercept $24k in penalties, switch to 'Clean Production Mode' for 100% Pre-Clearance certification, or drop your own PDF for an on-device audit.",
-    statute: "100% On-Device Client Audit (Zero Cloud Byte Leakage)",
+    badge: "04 / BASELINE VERIFICATION",
+    description: "Experience both sides of the coin: test 'Corrupted Nightmare Mode' to intercept statutory penalties, switch to 'Clean Production Mode' to verify a clean FOB commercial baseline, or drop your own PDF for a local browser heuristic inspection.",
+    statute: "Local Client-Side Pattern Matcher (Demonstration Heuristic Inspection)",
     actionHint: "Use the top mode pills to test Nightmare vs Clean FOB vs Client Upload.",
   },
   {
@@ -143,7 +143,7 @@ export const ExecutiveTourOverlay: React.FC<ExecutiveTourOverlayProps> = ({
             <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
               60-Second Executive Walkthrough
             </span>
-            <span className="text-slate-500 text-xs">•</span>
+            <span className="text-slate-400 text-xs">•</span>
             <span className="text-xs text-slate-300 font-semibold">
               Step {currentStepIdx + 1} of {TOUR_STEPS.length}
             </span>

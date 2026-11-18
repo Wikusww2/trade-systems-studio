@@ -16,6 +16,7 @@ from app.models.valuation_models import (
     EntryValuationAudit,
     PriorDisclosurePackage,
 )
+from app.services.utils import quantize_currency
 
 # Statutory Interest Rate under 19 U.S.C. § 1505 (Current benchmark ~7.0% APR)
 STATUTORY_INTEREST_RATE = Decimal("0.0700")
@@ -141,12 +142,14 @@ class CustomsValuationService:
             Decimal("0.01"), rounding=ROUND_HALF_UP
         ))
 
-        # 5. Statutory Interest under 19 U.S.C. § 1505
-        # Interest = Duty Underpayment * Annual Rate * (Months / 12)
-        annual_fraction = (Decimal(months_elapsed) / Decimal(12)).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
-        interest_owed = (duty_underpayment * STATUTORY_INTEREST_RATE * annual_fraction).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
+        # 5. Statutory Interest under 19 U.S.C. § 1505(c) & 26 U.S.C. §§ 6621/6622
+        # Statutory interest is compounded daily: P * ((1 + r/365)**days - 1)
+        days = int(round(Decimal(str(months_elapsed)) * Decimal("365") / Decimal("12")))
+        if days > 0 and duty_underpayment > Decimal("0.00"):
+            compounded_factor = ((Decimal("1") + STATUTORY_INTEREST_RATE / Decimal("365")) ** days) - Decimal("1")
+            interest_owed = quantize_currency(duty_underpayment * compounded_factor)
+        else:
+            interest_owed = Decimal("0.00")
 
         # 6. Penalty Exposures under 19 U.S.C. § 1592
         negligence_penalty = (duty_underpayment * Decimal("2.0")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
@@ -186,7 +189,9 @@ class CustomsValuationService:
         now_str = datetime.now(timezone.utc).strftime("%B %d, %Y")
         ref_id = f"PD-{audit.entry_number[-8:]}-{datetime.now(timezone.utc).strftime('%Y%m%d')}"
 
-        letter_text = f"""FORMAL PRIOR DISCLOSURE UNDER 19 CFR § 162.74
+        letter_text = f"""*** DRAFT -- PREPARED FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***
+
+FORMAL PRIOR DISCLOSURE UNDER 19 CFR § 162.74
 AND 19 U.S.C. § 1592(c)(4)
 
 DATE: {now_str}
@@ -198,8 +203,8 @@ Fines, Penalties, and Forfeitures Officer
 Port of {port_of_entry}
 
 FROM:
-TradeTech Systems Studio / Special Customs Counsel
-On Behalf of Importer of Record: {audit.importer_of_record}
+TradeTech Systems Studio / Automated Compliance Service
+Prepared on Behalf of Importer of Record: {audit.importer_of_record}
 
 SUBJECT: Prior Disclosure of Inadvertent Valuation Understatement Pertaining to Assists
          Under 19 U.S.C. § 1401a and 19 CFR § 152.103 on Entry #{audit.entry_number}
@@ -247,7 +252,9 @@ ${audit.gross_negligence_penalty_exposure:,.2f}) are statutorily barred.
 
 Respectfully submitted,
 TradeTech Systems Studio Compliance Automation Engine
-Counsel of Record for {audit.importer_of_record}
+Prepared on Behalf of Importer of Record: {audit.importer_of_record}
+
+*** DRAFT -- PREPARED FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***
 """
 
         return PriorDisclosurePackage(

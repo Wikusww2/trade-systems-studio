@@ -54,7 +54,7 @@ export default function WhitepaperPage() {
           <div className="h-4 w-px bg-slate-700 hidden sm:block" />
           <div className="hidden sm:flex items-center gap-2 text-xs font-mono">
             <span className="text-white font-bold">TradeTech Systems Studio</span>
-            <span className="text-slate-500">•</span>
+            <span className="text-slate-400">•</span>
             <span className="text-cyan-400">Technical Whitepaper</span>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function WhitepaperPage() {
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-cyan-400" : "text-slate-500"}`} />
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-cyan-400" : "text-slate-400"}`} />
                       <span className="truncate">{item.label}</span>
                     </div>
                     <ChevronRight className={`w-3 h-3 transition-transform ${isActive ? "text-cyan-400 translate-x-0.5" : "text-transparent"}`} />
@@ -121,7 +121,7 @@ export default function WhitepaperPage() {
               })}
             </nav>
 
-            <div className="pt-3 border-t border-[#1F2937] text-[11px] font-mono text-slate-500 space-y-1">
+            <div className="pt-3 border-t border-[#1F2937] text-[11px] font-mono text-slate-400 space-y-1">
               <div>Author: <span className="text-slate-300 font-semibold">Samuel</span></div>
               <div>Role: <span className="text-slate-300">Principal AI Systems Architect</span></div>
               <div>Status: <span className="text-emerald-400 font-semibold">87/87 Tests Verified</span></div>
@@ -130,7 +130,7 @@ export default function WhitepaperPage() {
         </aside>
 
         {/* Right Article Body */}
-        <main className="lg:col-span-9 space-y-12">
+        <main id="main-content" className="lg:col-span-9 space-y-12">
           {/* Paper Title Block */}
           <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-[#0F172A] to-[#0B0F19] border border-[#1F2937] space-y-4">
             <div className="flex flex-wrap items-center gap-2">
@@ -394,25 +394,25 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                     <tr>
                       <td className="py-2 text-white font-bold">p50 Latency</td>
                       <td className="py-2 text-cyan-400">0.024 ms</td>
-                      <td className="py-2 text-slate-500">&lt; 5.0 ms</td>
+                      <td className="py-2 text-slate-400">&lt; 5.0 ms</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
                       <td className="py-2 text-white font-bold">p95 Latency</td>
                       <td className="py-2 text-cyan-400">0.048 ms</td>
-                      <td className="py-2 text-slate-500">&lt; 20.0 ms</td>
+                      <td className="py-2 text-slate-400">&lt; 20.0 ms</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
                       <td className="py-2 text-white font-bold">p99 Latency</td>
                       <td className="py-2 text-cyan-400">0.089 ms</td>
-                      <td className="py-2 text-slate-500">&lt; 50.0 ms</td>
+                      <td className="py-2 text-slate-400">&lt; 50.0 ms</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
                       <td className="py-2 text-white font-bold">Floating-Point Drift</td>
                       <td className="py-2 text-emerald-400 font-bold">0.0000000000000000</td>
-                      <td className="py-2 text-slate-500">Exact 0.00</td>
+                      <td className="py-2 text-slate-400">Exact 0.00</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                   </tbody>
