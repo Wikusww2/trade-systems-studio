@@ -84,9 +84,9 @@ def generate_nightmare_01(output_path: str):
 
     # Line Items
     items = [
-        ("001", "8471.30.0100", "ARM Cortex-M4 Microcontroller Core Boards", "500", "$45.00", "$25,500.00"),
-        ("002", "8542.31.0000", "High-Performance Neural Tensor Accelerators", "200", "$350.00", "$70,000.00"),
-        ("003", "8504.40.9580", "High-Efficiency Switching Power Supplies", "1,000", "$25.00", "$25,000.00")
+        ("001", "8542.31.0000", "DSP Sub-System Controllers", "500", "$45.00", "$25,500.00"),
+        ("002", "8471.30.0100", "High-Speed AI Core Processors", "1,000", "$125.00", "$125,000.00"),
+        ("003", "8542.39.0000", "Bus Interface Transceiver ICs", "1,000", "$15.00", "$15,000.00")
     ]
 
     y = 586
@@ -117,11 +117,11 @@ def generate_nightmare_01(output_path: str):
     c.drawString(46, 420, "TOTAL DECLARED CIF INVOICE VALUE:")
 
     c.setFont("Helvetica", 8)
-    c.drawRightString(566, 470, "$120,500.00")
+    c.drawRightString(566, 470, "$165,500.00")
     c.drawRightString(566, 454, "$4,500.00")
     c.drawRightString(566, 438, "$0.00  (OMITTED)")
     c.setFont("Helvetica-Bold", 9)
-    c.drawRightString(566, 420, "$125,000.00 USD")
+    c.drawRightString(566, 420, "$170,000.00 USD")
 
     # Statutory Discrepancy Warnings & Legal Audit Footnotes
     c.setFillColor(colors.HexColor("#991B1B"))
@@ -132,8 +132,8 @@ def generate_nightmare_01(output_path: str):
     c.setFillColor(colors.HexColor("#7F1D1D"))
     c.drawString(46, 366, "1. INCOTERM MISMATCH: Invoiced CIF Los Angeles with $0.00 Marine Insurance distorting transaction value.")
     c.drawString(46, 354, "2. ARITHMETIC ANOMALY: Line 001 (500 pcs @ $45.00) calculates to $22,500.00, not invoiced $25,500.00.")
-    c.drawString(46, 342, "3. HTS MISCLASSIFICATION: Line 001 misdeclared under 8471.30 (0% duty) rather than 8542.31 (25% Section 301).")
-    c.drawString(46, 330, "Statutory Penalty Exposure under 19 U.S.C. Section 1592: 2.0x lawful duty loss (Negligence) or 4.0x (Gross Negligence).")
+    c.drawString(46, 342, "3. HTS MISCLASSIFICATION: Line 002 misdeclared under 8471.30 ($125,000 at 0% duty) rather than 8542.31 (25% Section 301).")
+    c.drawString(46, 330, "Statutory Penalty Exposure under 19 U.S.C. Section 1592: 2.0x lawful duty loss (Negligence) or 4.0x (Gross Negligence: $125,000.00).")
 
     # CBP Filer Certification & Importer Signature
     c.setStrokeColor(colors.HexColor("#94A3B8"))
@@ -330,7 +330,7 @@ def generate_nightmare_02(output_path: str):
     c.setFont("Helvetica", 7.5)
     c.drawString(340, 696, "Pacific Crest Electronics Corp : Long Beach, CA 90802")
     c.drawString(340, 664, "40' High Cube # PACU-9182049 : Seal: US984102")
-    c.drawString(340, 652, "Vessel Discharge Date: March 24, 2024 : Free Time: 5 Days")
+    c.drawString(340, 652, "Vessel Discharge Date: March 24, 2024 : Free Time: 4 Days")
 
     # Line Item Table Header
     c.setFillColor(colors.HexColor("#0F172A"))
@@ -345,11 +345,11 @@ def generate_nightmare_02(output_path: str):
 
     # Freight Charges
     charges = [
-        ("BAS", "Base Ocean Freight (40' HC Container)", "$3,200.00", "$3,200.00", "$0.00"),
-        ("BAF/FSC", "Bunker / Fuel Surcharge (Index 28.5% vs 22.1%)", "$707.20", "$912.00", "+$204.80 OVER"),
+        ("BAS", "Base Ocean Freight (40' HC Container)", "$4,500.00", "$4,500.00", "$0.00"),
+        ("BAF/FSC", "Bunker / Fuel Surcharge (Index 32.5% vs 24.0%)", "$1,080.00", "$1,462.50", "+$382.50 OVER"),
         ("THC", "Terminal Handling Charges (Origin/Destination)", "$450.00", "$450.00", "$0.00"),
-        ("CHS", "Chassis Split & Repositioning Surcharge (Unauthorized)", "$0.00", "$175.00", "+$175.00 UNWARRANTED"),
-        ("DET/DEM", "Container Detention (Billed Day 4 inside 5-day free time)", "$0.00", "$880.00", "+$880.00 UNLAWFUL")
+        ("CHS", "Chassis Split & Repositioning Surcharge (Unauthorized)", "$0.00", "$285.00", "+$285.00 UNWARRANTED"),
+        ("DET/DEM", "Container Detention (Billed Day 4 inside 4-day free time)", "$0.00", "$880.00", "+$880.00 UNLAWFUL")
     ]
 
     y = 586
@@ -389,12 +389,12 @@ def generate_nightmare_02(output_path: str):
     c.drawString(46, 436, "TOTAL CARRIER INVOICED AMOUNT (PAYABLE):")
 
     c.setFont("Helvetica", 8)
-    c.drawRightString(566, 470, "$4,357.20")
+    c.drawRightString(566, 470, "$6,030.00")
     c.setFillColor(colors.HexColor("#DC2626"))
-    c.drawRightString(566, 454, "+$1,259.80 (28.9% OVERBILLING)")
+    c.drawRightString(566, 454, "+$1,547.50 (25.7% OVERBILLING)")
     c.setFillColor(colors.HexColor("#0F172A"))
     c.setFont("Helvetica-Bold", 9)
-    c.drawRightString(566, 436, "$5,617.00 USD")
+    c.drawRightString(566, 436, "$7,577.50 USD")
 
     # FMC Dispute & OSRA Notice
     c.setFillColor(colors.HexColor("#991B1B"))
@@ -404,9 +404,9 @@ def generate_nightmare_02(output_path: str):
     c.setFont("Helvetica", 7.5)
     c.setFillColor(colors.HexColor("#7F1D1D"))
     c.drawString(46, 381, "1. CHASSIS SPLIT: Intermodal chassis split fees billed without prior shipper consent violate FMC Docket 21-08.")
-    c.drawString(46, 369, "2. INFLATED FSC: Billed fuel surcharge index (28.5%) exceeds the published weekly DOE/EIA benchmark (22.1%).")
-    c.drawString(46, 357, "3. OSRA 2022 DETENTION VIOLATION: Detention assessed on Day 4; gate records confirm delivery within 5-day free time.")
-    c.drawString(46, 345, "STATUTORY ACTION: Withholding $1,259.80 in unauthorized billing pending carrier charge dispute filing.")
+    c.drawString(46, 369, "2. INFLATED FSC: Billed fuel surcharge index (32.5%) exceeds the published weekly DOE/EIA benchmark (24.0%).")
+    c.drawString(46, 357, "3. OSRA 2022 DETENTION VIOLATION: Detention assessed on Day 4; gate records confirm delivery within 4-day free time.")
+    c.drawString(46, 345, "STATUTORY ACTION: Withholding $1,547.50 in unauthorized billing pending carrier charge dispute filing.")
 
     # Page 1 Footer
     c.setFont("Helvetica", 7)
@@ -516,7 +516,7 @@ def generate_nightmare_03(output_path: str):
     """
     nightmare_03_duty_drawback.pdf (2 Pages):
     Page 1: Paired CBP Form 7501 Import Summary + 19 U.S.C. Section 1313 Drawback Claim.
-    Page 2: Paired Export Bill of Lading (B/L APLU-0941824) with Direct Identification Proof.
+    Page 2: Paired Export Bill of Lading (B/L BGFU-0941824) with Direct Identification Proof.
     """
     c = canvas.Canvas(output_path, pagesize=letter, invariant=1)
     _width, _height = letter
@@ -553,7 +553,7 @@ def generate_nightmare_03(output_path: str):
     c.drawString(180, 663, "Pacific Crest Electronics Corp (IRS # 94-2849102)")
     c.drawString(180, 649, "8542.31.0001 (Electronic Integrated Circuits - Processors)")
     c.setFont("Helvetica-Bold", 8)
-    c.drawString(180, 631, "$20,000.00 Customs Duty (10% General Duty on $200,000 Entered Value)")
+    c.drawString(180, 631, "$27,600.00 Customs Duty (General Duty on $240,000 Entered Value)")
 
     # Export Match Section
     c.setStrokeColor(colors.HexColor("#047857"))
@@ -581,12 +581,12 @@ def generate_nightmare_03(output_path: str):
     c.drawString(180, 416, "1,000 Units High-Density Solid-State Memory Modules (Matched)")
 
     c.setFont("Helvetica-Bold", 9)
-    c.drawRightString(566, 396, "$19,800.00 CASH REFUND")
+    c.drawRightString(566, 396, "$27,324.00 CASH REFUND")
     c.line(46, 408, 566, 408)
 
     c.setFont("Helvetica-Oblique", 7.5)
     c.setFillColor(colors.HexColor("#475569"))
-    c.drawString(46, 376, "Statutory Formula: Lawful Duties Paid ($20,000.00) x 99% Drawback Allowance = $19,800.00 Net Refund.")
+    c.drawString(46, 376, "Statutory Formula: Lawful Duties Paid ($27,600.00) x 99% Drawback Allowance = $27,324.00 Net Refund.")
     c.drawString(46, 362, "Claim is fully authenticated within the 5-year statutory filing deadline under 19 U.S.C. Section 1313(r).")
     c.drawString(46, 350, "CBP ACE Drawback Entry Type 41 ready for automated liquidation.")
 
@@ -642,12 +642,12 @@ def generate_nightmare_03(output_path: str):
     c.drawString(46, 628, "FINAL DESTINATION:")
 
     c.setFont("Helvetica", 8)
-    c.drawString(180, 706, "APLU-0941824 (Ocean Export Bill of Lading)")
+    c.drawString(180, 706, "BGFU-0941824 (Ocean Export Bill of Lading)")
     c.drawString(180, 690, "Pacific Crest Electronics Corp, Long Beach, CA (IRS 94-2849102)")
     c.drawString(180, 674, "EuroTech Micro Distributie B.V., Rotterdam, Netherlands")
     c.drawString(180, 658, "X20240310998 (Electronic Export Information Automated Filing)")
     c.drawString(180, 642, "Port of Los Angeles (Port Code 2704)")
-    c.drawString(180, 628, "Port of Rotterdam (NLRTM) : On Board APL SINGAPORE")
+    c.drawString(180, 628, "Port of Rotterdam (NLRTM) : On Board PACIFIC HORIZON")
 
     # Line Item Drawback Traceability
     c.setFillColor(colors.HexColor("#065F46"))
@@ -661,8 +661,8 @@ def generate_nightmare_03(output_path: str):
     c.drawString(480, 586, "DUTY REFUND (99%)")
 
     trace_items = [
-        ("001", "SSD-M4-00100 to 00599", "CBP-7501-84920184 (Line 1)", "500 PCS", "$9,900.00"),
-        ("002", "SSD-M4-00600 to 01099", "CBP-7501-84920184 (Line 2)", "500 PCS", "$9,900.00")
+        ("001", "SSD-M4-00100 to 00599", "CBP-7501-84920184 (Line 1)", "500 PCS", "$13,662.00"),
+        ("002", "SSD-M4-00600 to 01099", "CBP-7501-84920184 (Line 2)", "500 PCS", "$13,662.00")
     ]
 
     y4 = 556
@@ -687,15 +687,15 @@ def generate_nightmare_03(output_path: str):
     c.setFont("Helvetica-Bold", 8)
     c.drawString(46, 514, "CBP ACE DRAWBACK SUMMARY & LIQUIDATION CERTIFICATE:")
     c.setFont("Helvetica", 7.5)
-    c.drawString(46, 498, "Total Lawful General Duties Tendered on Import: $20,000.00 USD.")
+    c.drawString(46, 498, "Total Lawful General Duties Tendered on Import: $27,600.00 USD.")
     c.drawString(46, 484, "Total Direct Identification Matched Export Quantity: 1,000 / 1,000 Units (100% Correlation).")
-    c.drawString(46, 470, "19 U.S.C. Section 1313 Net Duty Drawback Payable: $19,800.00 USD (99.00% Statutory Standard).")
+    c.drawString(46, 470, "19 U.S.C. Section 1313 Net Duty Drawback Payable: $27,324.00 USD (99.00% Statutory Standard).")
     c.drawString(46, 454, "Status: Certified for Accelerated Payment by Licensed Customs Broker #21904.")
 
     # Page 2 Footer
     c.setFont("Helvetica", 7)
     c.setFillColor(colors.HexColor("#64748B"))
-    c.drawString(46, 400, "APLU-0941824 : Export Ocean B/L & Drawback Match (Page 2 of 2) : 19 U.S.C. Section 1313")
+    c.drawString(46, 400, "BGFU-0941824 : Export Ocean B/L & Drawback Match (Page 2 of 2) : 19 U.S.C. Section 1313")
 
     c.save()
 
@@ -803,7 +803,7 @@ def generate_clean_01(output_path: str):
     # Green Clean Badge
     c.setFillColor(colors.HexColor("#065F46"))
     c.setFont("Helvetica-Bold", 8)
-    c.drawString(46, 380, "ZERO STATUTORY DEFECTS DETECTED : 100% CBP PRE-CLEARANCE CERTIFIED")
+    c.drawString(46, 380, "ZERO STATUTORY DEFECTS DETECTED : BASELINE CLEAN FIXTURE (DEMO)")
     c.setFont("Helvetica", 7.5)
     c.drawString(46, 366, "1. Arithmetic cross-multiplication verified: 100% exact match ($22,500.00 + $70,000.00 + $25,000.00 = $117,500.00).")
     c.drawString(46, 354, "2. FOB terms strictly segregated from ocean freight; zero risk of double taxation on international logistics overhead.")
@@ -936,7 +936,7 @@ def generate_nightmare_04(output_path: str):
     c.drawString(46, 628, "SCREENING STATUS:")
 
     c.setFont("Helvetica", 8)
-    c.drawString(180, 706, "Global Micro Electronics Ltd (GME Shenzhen Electronics)")
+    c.drawString(180, 706, "Global Micro Electronics Ltd (GME Shenzhen) [FICTITIOUS DEMO ENTITY]")
     c.drawString(180, 690, "bis-el-cn-0941 (OpenSanctions FollowTheMoney v3 Schema)")
     c.drawString(180, 674, "Building 4, High-Tech Industrial Zone, Nanshan District, Shenzhen, CN")
     c.drawString(180, 658, "BIS Entity List (15 CFR Part 744, Supp. No. 4) : EAR Military End-User")
@@ -956,10 +956,10 @@ def generate_nightmare_04(output_path: str):
     c.drawString(450, 586, "CONFIDENCE")
 
     matches = [
-        ("EXACT", "Global Micro Electronics Ltd", "BIS Entity List (15 CFR Part 744)", "100.0% MATCH"),
-        ("ALIAS", "GME Shenzhen Electronics", "EAR Military End-User Restriction", "92.4% MATCH"),
-        ("50% RULE", "Victor Petrov (SDN Oligarch Holding)", "OFAC SDN / E.O. 14024", "25.0% EQUITY"),
-        ("50% RULE", "Rosoboronexport JSC Holding", "CAATSA Section 231 / EU Reg", "30.0% EQUITY")
+        ("EXACT", "Global Micro Electronics Ltd [DEMO]", "BIS Entity List (15 CFR Part 744)", "100.0% MATCH"),
+        ("ALIAS", "GME Shenzhen [DEMO]", "EAR Military End-User Restriction", "92.4% MATCH"),
+        ("50% RULE", "Victor Petrov (SDN Oligarch Holding) [DEMO]", "OFAC SDN / E.O. 14024", "25.0% EQUITY"),
+        ("50% RULE", "Rosoboronexport JSC Holding [DEMO]", "CAATSA Section 231 / EU Reg", "30.0% EQUITY")
     ]
 
     y6 = 556
@@ -1029,10 +1029,10 @@ def generate_nightmare_04(output_path: str):
     c.drawString(46, 628, "AGGREGATE BLOCKED EQUITY:")
 
     c.setFont("Helvetica", 8)
-    c.drawString(180, 706, "bis-el-cn-0941 (Global Micro Electronics Ltd)")
+    c.drawString(180, 706, "bis-el-cn-0941 (Global Micro Electronics Ltd) [FICTITIOUS DEMO ENTITY]")
     c.drawString(180, 690, "3 Beneficial Owners identified via FollowTheMoney corporate ownership edges")
-    c.drawString(180, 674, "Victor Petrov (SDN Oligarch : E.O. 14024) : 25.0% Direct Equity")
-    c.drawString(180, 658, "Rosoboronexport JSC (CAATSA Section 231) : 30.0% Direct Equity")
+    c.drawString(180, 674, "Victor Petrov [DEMO] (SDN Oligarch : E.O. 14024) : 25.0% Direct Equity")
+    c.drawString(180, 658, "Rosoboronexport JSC [DEMO] (CAATSA Section 231) : 30.0% Direct Equity")
     c.drawString(180, 642, "Shenzhen Advanced Components Ltd (Unsanctioned Commercial) : 45.0% Equity")
     c.setFont("Helvetica-Bold", 8)
     c.setFillColor(colors.HexColor("#DC2626"))

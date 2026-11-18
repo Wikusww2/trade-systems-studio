@@ -59,65 +59,81 @@ def audit_customs_invoice(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[D
     # Omitting insurance deduction results in entered value overstatement / duty overpayment, not an underpayment penalty.
     incoterms = str(data.get("incoterms") or "").upper()
     insurance_charge = safe_decimal(data.get("insurance_charge"), "0.00")
-    if "CIF" in incoterms and insurance_charge == Decimal("0.00"):
-        freight_charge = safe_decimal(data.get("freight_charge"), "0.00")
-        if freight_charge > Decimal("0.00"):
-            cif_exposure = freight_charge
-            estimation_method = "declared_freight_charge"
-        else:
-            items_for_cif = data.get("items") or []
-            total_invoice_val = safe_decimal(
-                data.get("dutiable_value") or data.get("misclassified_value") or data.get("total_value"),
-                "0.00"
-            )
-            if total_invoice_val == Decimal("0.00") and items_for_cif:
-                total_invoice_val = sum(
-                    [
-                        (safe_decimal(it.get("stated_total")) or (safe_decimal(it.get("quantity")) * safe_decimal(it.get("unit_price"))))
-                        for it in items_for_cif if isinstance(it, dict)
-                    ],
-                    Decimal("0.00")
-                )
-            if total_invoice_val > Decimal("0.00"):
-                cif_exposure = quantize_currency(total_invoice_val * Decimal("0.010"))
-                estimation_method = "statutory_commercial_marine_rate_1pct"
-            else:
-                cif_exposure = Decimal("0.00")
-                estimation_method = "zero_baseline"
-
-        # Uncertainty demo: confidence 0.82 (< 0.85 triggers dashed amber border in UI)
-        discrepancies.append(
-            Discrepancy(
-                id="disc-c1-01",
-                concept_id="concept_1_customs",
-                title="Missing Marine Insurance Deduction on CIF Entry",
-                description=f"Transaction value declared CIF requires deduction of seller-provided international freight and marine insurance under 19 U.S.C. § 1401a(b)(4)(A) and 19 CFR § 152.103. Declaring CIF with $0.00 insurance overstates customs dutiable transaction value by ${cif_exposure:,.2f}, resulting in excess duty payment rather than a 19 U.S.C. § 1592 penalty.",
-                statutory_code="19 CFR § 152.103 / 19 U.S.C. § 1401a",
-                severity="warning",
-                exposure_amount=cif_exposure,
-                confidence=0.82,  # < 0.85 triggers visual uncertainty dashed amber
-                executive_summary="Omitted marine cargo insurance deduction on CIF entry causes entered value overstatement under 19 U.S.C. § 1401a.",
-                financial_blast_radius=f"Entered value overstatement (${cif_exposure:,.2f}) results in duty overpayment, eligible for Post-Summary Correction (PSC) duty refund.",
-                statutory_defense="Submit Post-Summary Correction (PSC) or protest under 19 U.S.C. § 1514 to deduct actual insurance and recover excess duty.",
-                bounding_box=BoundingBox(
-                    x=58.0,
-                    y=125.0,
-                    width=880.0,
-                    height=55.0,
-                    page_number=1,
-                    confidence=0.82
-                ),
-                metadata={
-                    "rule": "19_CFR_152_103",
-                    "incoterm": incoterms,
-                    "declared_insurance": str(insurance_charge),
-                    "freight_charge": str(freight_charge),
-                    "cif_deduction_exposure": str(cif_exposure),
-                    "estimation_method": estimation_method,
-                    "valuation_effect": "overstatement_duty_overpayment"
-                }
-            )
+    freight_charge = safe_decimal(data.get("freight_charge"), "0.00")
+    if "CIF" in incoterms:
+        items_for_cif = data.get("items") or []
+        total_invoice_val = safe_decimal(
+            data.get("dutiable_value") or data.get("misclassified_value") or data.get("total_value"),
+            "0.00"
         )
+        if total_invoice_val == Decimal("0.00") and items_for_cif:
+            total_invoice_val = sum(
+                [
+                    (safe_decimal(it.get("stated_total")) or (safe_decimal(it.get("quantity")) * safe_decimal(it.get("unit_price"))))
+                    for it in items_for_cif if isinstance(it, dict)
+                ],
+                Decimal("0.00")
+            )
+
+        if freight_charge > Decimal("0.00"):
+            cif_overstatement = freight_charge
+            estimation_method = "unitemized_declared_freight"
+        elif insurance_charge == Decimal("0.00") and total_invoice_val > Decimal("0.00"):
+            cif_overstatement = quantize_currency(total_invoice_val * Decimal("0.010"))
+            estimation_method = "statutory_commercial_marine_rate_1pct"
+        else:
+            cif_overstatement = Decimal("0.00")
+            estimation_method = "zero_baseline"
+
+        if cif_overstatement > Decimal("0.00"):
+            applicable_duty_rate = (
+                safe_decimal(data.get("lawful_duty_rate"))
+                or safe_decimal(data.get("declared_duty_rate"))
+                or Decimal("0.25")
+            )
+            excess_duty_paid = quantize_currency(cif_overstatement * applicable_duty_rate)
+
+            # Uncertainty demo: confidence 0.82 (< 0.85 triggers dashed amber border in UI)
+            discrepancies.append(
+                Discrepancy(
+                    id="disc-c1-01",
+                    concept_id="concept_1_customs",
+                    title="Unitemized CIF International Freight / Marine Insurance Deduction",
+                    description=(
+                        f"Transaction value declared CIF requires statutory deduction of seller-provided international freight and "
+                        f"marine insurance under 19 U.S.C. § 1401a(b)(4)(A) and 19 CFR § 152.103. Inclusion of unitemized logistics charges "
+                        f"overstates customs dutiable transaction value by ${cif_overstatement:,.2f}, resulting in estimated excess duty payment "
+                        f"of ${excess_duty_paid:,.2f} rather than a 19 U.S.C. § 1592 underpayment penalty."
+                    ),
+                    statutory_code="19 CFR § 152.103 / 19 U.S.C. § 1401a",
+                    severity="warning",
+                    exposure_amount=cif_overstatement,
+                    confidence=0.82,  # < 0.85 triggers visual uncertainty dashed amber
+                    executive_summary=f"Unitemized CIF freight/insurance overstates entered dutiable value by ${cif_overstatement:,.2f}, causing estimated duty overpayment of ${excess_duty_paid:,.2f}.",
+                    financial_blast_radius=f"Entered value overstatement (${cif_overstatement:,.2f}) creates estimated ${excess_duty_paid:,.2f} duty overpayment, recoverable via Post-Summary Correction (PSC).",
+                    statutory_defense="Submit Post-Summary Correction (PSC) or 19 U.S.C. § 1514 protest to itemize international freight/insurance and recover overpaid duties.",
+                    bounding_box=BoundingBox(
+                        x=58.0,
+                        y=125.0,
+                        width=880.0,
+                        height=55.0,
+                        page_number=1,
+                        confidence=0.82
+                    ),
+                    metadata={
+                        "rule": "19_CFR_152_103",
+                        "incoterm": incoterms,
+                        "declared_insurance": str(insurance_charge),
+                        "freight_charge": str(freight_charge),
+                        "overstated_dutiable_value": str(cif_overstatement),
+                        "estimated_excess_duty": str(excess_duty_paid),
+                        "applicable_duty_rate": str(applicable_duty_rate),
+                        "cif_deduction_exposure": str(cif_overstatement),
+                        "estimation_method": estimation_method,
+                        "valuation_effect": "overstatement_duty_overpayment"
+                    }
+                )
+            )
 
     # 2. Line Item Arithmetic Extension Check
     items = data.get("items") or []
@@ -127,7 +143,7 @@ def audit_customs_invoice(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[D
             continue
         qty = safe_decimal(item.get("quantity"), "0")
         unit_price = safe_decimal(item.get("unit_price"), "0.00")
-        stated_total = safe_decimal(item.get("stated_total"), "0.00")
+        stated_total = safe_decimal(item.get("stated_total") or item.get("total_price"), "0.00")
         calculated_total = quantize_currency(qty * unit_price)
         
         diff = stated_total - calculated_total
@@ -164,11 +180,32 @@ def audit_customs_invoice(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[D
             )
 
     # 3. HTS Misclassification & 19 U.S.C. § 1592 Penalties
-    # High-Speed DSP Processors declared under 8471.30 (0%) vs 8542.31 (25% Section 301)
     dutiable_value = safe_decimal(data.get("misclassified_value"), "0.00")
     declared_rate = safe_decimal(data.get("declared_duty_rate"), "0.00")
     lawful_rate = safe_decimal(data.get("lawful_duty_rate"), "0.00")
     
+    # Extract dynamic HTS codes and product description from data or line items
+    declared_hts = str(data.get("declared_hts") or data.get("declared_hts_code") or "")
+    lawful_hts = str(data.get("lawful_hts") or data.get("lawful_hts_code") or "")
+    product_desc = str(data.get("product_description") or data.get("product_title") or "")
+
+    if not declared_hts or not lawful_hts or not product_desc:
+        for it in items:
+            if isinstance(it, dict):
+                if not declared_hts and (it.get("declared_hts") or it.get("declared_hts_code") or it.get("hts_code")):
+                    declared_hts = str(it.get("declared_hts") or it.get("declared_hts_code") or it.get("hts_code"))
+                if not lawful_hts and (it.get("lawful_hts") or it.get("lawful_hts_code")):
+                    lawful_hts = str(it.get("lawful_hts") or it.get("lawful_hts_code"))
+                if not product_desc and (it.get("description") or it.get("product_title") or it.get("name")):
+                    product_desc = str(it.get("description") or it.get("product_title") or it.get("name"))
+
+    if not declared_hts:
+        declared_hts = "8471.30.0100"
+    if not lawful_hts:
+        lawful_hts = "8542.31.0000"
+    if not product_desc:
+        product_desc = "AI neural processor accelerators"
+
     lawful_duty_loss = quantize_currency(dutiable_value * (lawful_rate - declared_rate))
     domestic_value_raw = data.get("domestic_value")
     domestic_value = safe_decimal(domestic_value_raw) if domestic_value_raw is not None else None
@@ -188,26 +225,31 @@ def audit_customs_invoice(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[D
             statutory_code = "19 U.S.C. § 1592(c)(1)"
             disc_title = "19 U.S.C. § 1592(c)(1) Fraud Penalty Exposure (100% Domestic Value)"
             disc_desc = (
-                f"Fraudulent tariff evasion under 19 U.S.C. § 1592(c)(1). Lawful duty underpaid: ${lawful_duty_loss:,.2f}. "
-                f"Statutory civil penalty capped at 100% of domestic value: ${exposure_amount:,.2f}."
+                f"Fraudulent tariff evasion under 19 U.S.C. § 1592(c)(1) on {product_desc} declared under HTS {declared_hts}. "
+                f"Lawful duty underpaid: ${lawful_duty_loss:,.2f}. Statutory civil penalty capped at 100% of domestic value: ${exposure_amount:,.2f}."
             )
-            exec_summary = "Intentional tariff evasion triggers 19 U.S.C. § 1592(c)(1) civil fraud penalty up to 100% domestic value."
+            exec_summary = f"Intentional tariff evasion on {product_desc} triggers 19 U.S.C. § 1592(c)(1) civil fraud penalty up to 100% domestic value."
             protected_capital = exposure_amount - estimated_interest
         else:
             exposure_amount = max_gross_neg_exposure
             statutory_code = "19 U.S.C. § 1592"
             disc_title = "HTS Misclassification & 19 U.S.C. § 1592 Penalty Exposure"
             disc_desc = (
-                f"Merchandise declared under HTS 8471.30.0100 (Duty {declared_rate * 100:.1f}%) instead of lawful HTS 8542.31.0000 "
-                f"(Section 301 Duty {lawful_rate * 100:.1f}%). Lawful duty underpaid: ${lawful_duty_loss:,.2f}. "
+                f"Merchandise ({product_desc}) declared under HTS {declared_hts} (Duty {declared_rate * 100:.1f}%) "
+                f"instead of lawful HTS {lawful_hts} (Duty {lawful_rate * 100:.1f}%). "
+                f"Lawful duty underpaid: ${lawful_duty_loss:,.2f}. "
                 f"Statutory penalty exposure under 19 U.S.C. § 1592 reaches up to ${max_gross_neg_exposure:,.2f} (Gross Negligence 4.0x)."
             )
-            exec_summary = f"Neural accelerators misclassified as general computers, evading {lawful_rate * 100:.1f}% Section 301 tariffs and triggering 19 U.S.C. § 1592 gross negligence exposure."
+            exec_summary = (
+                f"{product_desc} misclassified under HTS {declared_hts}, evading {lawful_rate * 100:.1f}% statutory tariffs "
+                f"and triggering 19 U.S.C. § 1592 gross negligence exposure."
+            )
             protected_capital = max_gross_neg_exposure - estimated_interest
 
         disc_metadata = {
-            "declared_hts": "8471.30.0100",
-            "lawful_hts": "8542.31.0000",
+            "declared_hts": declared_hts,
+            "lawful_hts": lawful_hts,
+            "product_description": product_desc,
             "dutiable_base": str(dutiable_value),
             "duty_loss": str(lawful_duty_loss),
             "negligence_range": [str(penalties["negligence"][0]), str(penalties["negligence"][1])],

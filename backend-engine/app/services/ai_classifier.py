@@ -33,6 +33,8 @@ class TradeAIClassifier:
     """
     def __init__(self):
         self.api_key = settings.GEMINI_API_KEY.strip() if settings.GEMINI_API_KEY else ""
+        self.router_model = settings.GEMINI_ROUTER_MODEL
+        self.classifier_model = settings.GEMINI_CLASSIFIER_MODEL
         self.client = None
         self.instructor_client = None
         if self.api_key:
@@ -42,9 +44,11 @@ class TradeAIClassifier:
                 try:
                     import instructor
                     self.instructor_client = instructor.from_genai(self.client)
-                except Exception:
+                except Exception as exc:
+                    logger.warning("Instructor GenAI wrapper unavailable, using native google-genai client: %s", exc)
                     self.instructor_client = None
-            except Exception:
+            except Exception as exc:
+                logger.warning("Failed to initialize google-genai client; falling back to deterministic local mode: %s", exc)
                 self.client = None
                 self.instructor_client = None
 
@@ -54,7 +58,7 @@ class TradeAIClassifier:
 
     def route_document(self, text_content: str) -> Optional[DocumentRoute]:
         """
-        Routes document using gemini-3.5-flash-lite with Structured Outputs.
+        Routes document using configured GEMINI_ROUTER_MODEL with Structured Outputs.
         Supports instructor or native google-genai structured generation.
         """
         if not self.client:
@@ -64,7 +68,7 @@ class TradeAIClassifier:
             if self.instructor_client is not None:
                 try:
                     routed_doc: DocumentRoute = self.instructor_client.chat.completions.create(
-                        model="gemini-3.5-flash-lite",
+                        model=self.router_model,
                         response_model=DocumentRoute,
                         messages=[
                             {
@@ -83,7 +87,7 @@ class TradeAIClassifier:
 
             from google.genai import types
             response = self.client.models.generate_content(
-                model="gemini-3.5-flash-lite",
+                model=self.router_model,
                 contents=(
                     "You are a trade document router. Analyze the following document text and route "
                     "it to the matching compliance workflow:\n\n" + text_content
@@ -107,7 +111,7 @@ class TradeAIClassifier:
         declared_hts: str
     ) -> Optional[GRIReasoningResult]:
         """
-        Evaluates WCO General Rules of Interpretation (GRI 1-6) using gemini-3.8-flash.
+        Evaluates WCO General Rules of Interpretation (GRI 1-6) using configured GEMINI_CLASSIFIER_MODEL.
         """
         if not self.client:
             return None
@@ -115,7 +119,7 @@ class TradeAIClassifier:
             if self.instructor_client is not None:
                 try:
                     gri_result: GRIReasoningResult = self.instructor_client.chat.completions.create(
-                        model="gemini-3.8-flash",
+                        model=self.classifier_model,
                         response_model=GRIReasoningResult,
                         messages=[
                             {
@@ -135,7 +139,7 @@ class TradeAIClassifier:
 
             from google.genai import types
             response = self.client.models.generate_content(
-                model="gemini-3.8-flash",
+                model=self.classifier_model,
                 contents=(
                     f"Perform a strict WCO GRI 1-6 customs classification review for item: "
                     f"'{item_description}', which was declared under HTS '{declared_hts}'. "

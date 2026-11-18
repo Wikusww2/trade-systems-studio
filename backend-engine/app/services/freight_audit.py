@@ -97,43 +97,44 @@ def audit_freight_bill(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Disc
         )
 
     # 3. Port Free Time Detention / Demurrage Check (FMC 46 CFR § 545.5)
-    # Fix M2: Preserve 0 as 0 when port_free_days_allowed or actual_days_held is explicitly 0
+    # Only evaluate detention when free-time parameters are explicitly provided
     free_days_val = data.get("port_free_days_allowed")
-    free_days = int(free_days_val) if free_days_val is not None else 4
     actual_days_val = data.get("actual_days_held")
-    actual_days = int(actual_days_val) if actual_days_val is not None else 4
     detention_billed = safe_decimal(data.get("detention_billed"), "0.00")
 
-    if actual_days <= free_days and detention_billed > Decimal("0.00"):
-        total_overbilling += detention_billed
-        discrepancies.append(
-            Discrepancy(
-                id="disc-c2-03",
-                concept_id="concept_2_freight",
-                title="Unlawful Detention Billed Inside Port Free Time",
-                description=f"Carrier billed container detention (${detention_billed:,.2f}) on container. Gate out occurred on Day {actual_days} of {free_days} allowed business days. Violates FMC OSRA 46 CFR § 545.5.",
-                statutory_code="FMC 46 CFR § 545.5 (OSRA)",
-                severity="critical",
-                exposure_amount=detention_billed,
-                confidence=0.97,
-                executive_summary=f"Demurrage assessed despite in-gate pickup occurring on Day {actual_days} of terminal-mandated {free_days}-day free time window under OSRA 2022.",
-                financial_blast_radius=f"Illegal port detention penalty: ${detention_billed:,.2f}.",
-                statutory_defense="Invoke OSRA 2022 § 41104 mandatory billing dispute; carrier must produce certified terminal clock logs within 30 days.",
-                bounding_box=BoundingBox(
-                    x=58.0,
-                    y=485.0,
-                    width=880.0,
-                    height=45.0,
-                    page_number=1,
-                    confidence=0.97
-                ),
-                metadata={
-                    "free_days_allowed": free_days,
-                    "days_held": actual_days,
-                    "illegal_detention": str(detention_billed)
-                }
+    if free_days_val is not None and actual_days_val is not None:
+        free_days = int(free_days_val)
+        actual_days = int(actual_days_val)
+        if actual_days <= free_days and detention_billed > Decimal("0.00"):
+            total_overbilling += detention_billed
+            discrepancies.append(
+                Discrepancy(
+                    id="disc-c2-03",
+                    concept_id="concept_2_freight",
+                    title="Unlawful Detention Billed Inside Port Free Time",
+                    description=f"Carrier billed container detention (${detention_billed:,.2f}) on container. Gate out occurred on Day {actual_days} of {free_days} allowed business days. Violates FMC OSRA 46 CFR § 545.5.",
+                    statutory_code="FMC 46 CFR § 545.5 (OSRA)",
+                    severity="critical",
+                    exposure_amount=detention_billed,
+                    confidence=0.97,
+                    executive_summary=f"Demurrage assessed despite in-gate pickup occurring on Day {actual_days} of terminal-mandated {free_days}-day free time window under OSRA 2022.",
+                    financial_blast_radius=f"Illegal port detention penalty: ${detention_billed:,.2f}.",
+                    statutory_defense="Invoke OSRA 2022 § 41104 mandatory billing dispute; carrier must produce certified terminal clock logs within 30 days.",
+                    bounding_box=BoundingBox(
+                        x=58.0,
+                        y=485.0,
+                        width=880.0,
+                        height=45.0,
+                        page_number=1,
+                        confidence=0.97
+                    ),
+                    metadata={
+                        "free_days_allowed": free_days,
+                        "days_held": actual_days,
+                        "illegal_detention": str(detention_billed)
+                    }
+                )
             )
-        )
 
     metrics = KillShotMetrics(
         penalty_exposure_avoided=Decimal("0.00"),

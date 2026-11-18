@@ -3,12 +3,13 @@
 
 class SoundEngine {
   private ctx: AudioContext | null = null;
-  private isMuted: boolean = false;
+  // Muted by default (opt-in audio haptics per WCAG 2.2 AA / M10)
+  private isMuted: boolean = true;
 
   constructor() {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("audio_muted");
-      this.isMuted = saved === "true";
+      this.isMuted = saved !== "false";
     }
   }
 
@@ -127,8 +128,15 @@ class SoundEngine {
   // 18ms dual-stage physical pseudo-haptic recoil engine
   // Simulates Leica mechanical shutter recoil / Sony camera dial tactile pulse
   public playPseudoHaptic() {
-    // Real mobile device haptic vibration if supported
-    if (typeof window !== "undefined" && typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    if (this.isMuted) return;
+
+    // Real mobile device haptic vibration strictly after explicit user gesture
+    if (
+      typeof window !== "undefined" &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function" &&
+      (navigator as unknown as { userActivation?: { hasBeenActive?: boolean } }).userActivation?.hasBeenActive
+    ) {
       try {
         navigator.vibrate([16, 32, 16]);
       } catch {
@@ -136,7 +144,6 @@ class SoundEngine {
       }
     }
 
-    if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
 

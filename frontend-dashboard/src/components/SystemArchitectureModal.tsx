@@ -27,49 +27,103 @@ interface EndpointDef {
 const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
   {
     id: "hts_classify",
-    name: "HTS Classify & Landed Cost",
+    name: "HTS Classify (Match)",
     method: "POST",
     path: "/api/v1/hts/classify",
     category: "Pillar 05 • HTS Classifier",
     statute: "WCO GRI 1 to 6 • 19 CFR § 24.23 (MPF) • 19 CFR § 24.24 (HMF)",
-    description: "Evaluates WCO General Rules of Interpretation state machine with element-wise confidence scoring ($Conf(e) < 0.85$ broker escalation) and Python Decimal landed cost calculation.",
+    description: "Evaluates WCO General Rules of Interpretation state machine with element-wise confidence scoring (Conf(e) < 0.85 broker escalation) and Python Decimal landed cost calculation.",
     defaultPayload: JSON.stringify(
       {
-        product_title: "Lithium-Ion Flight Battery",
-        product_description: "Lithium-ion drone flight battery 5000mAh 4S 14.8V with integrated power management circuit",
-        country_of_origin: "CN",
+        product_title: "Industrial Brushless DC Drone Motor with Integrated ESC",
+        product_description: "480W brushless DC UAV propulsion motor with electronic speed controller",
+        country_of_origin: "TW",
         entered_value: "45000.00",
         is_ocean_freight: true,
-        freight_and_insurance: "1200.00"
+        freight_and_insurance: "1500.00"
       },
       null,
       2
     ),
     mockResponse: {
-      hts_code: "8507.60.0000",
-      description: "Lithium-ion accumulators (other than of a kind used for starting piston engines)",
-      duty_rate: 0.034,
-      calculated_duty: 1530.00,
-      merchandise_processing_fee: 155.88,
-      harbor_maintenance_fee: 56.25,
-      total_landed_cost: 46742.13,
-      gri_rule_applied: "GRI 1 (Terms of Heading 8507 & Section XVI Note 3)",
-      confidence_score: 0.985,
-      escalate_to_broker: false,
-      statutory_citations: {
-        mpf_statute: "19 CFR § 24.23 (0.3464% ad valorem, min $31.67, max $614.35)",
-        hmf_statute: "19 CFR § 24.24 (0.125% ocean cargo ad valorem)",
-        wco_statute: "Harmonized Commodity Description and Coding System (2024 Edition)"
-      },
-      audit_trail: [
-        "Analyzed technical descriptors against Chapter 85 (Electrical Machinery).",
-        "Classified under Heading 8507 (Electric accumulators) via GRI 1.",
-        "Applied statutory MPF ad valorem rate bounded within statutory caps.",
-        "Apportioned statutory HMF for ocean freight mode."
+      item_id: "hts-drone_motor",
+      product_title: "Industrial Brushless DC Drone Motor with Integrated ESC",
+      input_description: "480W brushless DC UAV propulsion motor with electronic speed controller",
+      country_of_origin: "TW",
+      declared_hts_code: null,
+      classified_hts_code: "8501.31.8000",
+      confidence: 0.94,
+      requires_human_review: false,
+      chapter_notes_cited: [
+        "Section XVI Note 2 (Classification of Parts of Machines)",
+        "Chapter 85 Note 2 (Electric Motors & Generators)",
+        "WCO Explanatory Notes to Heading 85.01"
       ],
-      execution_metrics: {
-        latency_ms: 0.042,
-        floating_point_drift: "0.0000000000000000 (Python Decimal)"
+      landed_cost: {
+        entered_value: "45000.00",
+        duty_rate_ad_valorem: "0.024",
+        customs_duty: "1080.00",
+        section_301_rate: "0.00",
+        section_301_duty: "0.00",
+        section_301_subheading: null,
+        mpf_rate: "0.003464",
+        mpf_min_cap: "34.58",
+        mpf_max_cap: "670.86",
+        mpf_fee: "155.88",
+        hmf_rate: "0.00125",
+        hmf_fee: "56.25",
+        freight_and_insurance: "1500.00",
+        total_customs_cost: "1292.13",
+        total_landed_cost: "47792.13",
+        fiscal_year: "FY2027"
+      }
+    }
+  },
+  {
+    id: "hts_fail_closed",
+    name: "HTS Fail-Closed Gate",
+    method: "POST",
+    path: "/api/v1/hts/classify",
+    category: "Pillar 05 • Fail-Closed Guardrail",
+    statute: "19 CFR Part 111 • Conf(e) < 0.85 Broker Escalation",
+    description: "Demonstrates fail-closed safety gating: unrecognized goods or non-apparatus items return REQUIRES_BROKER_REVIEW with confidence 0.0 instead of hallucinating a tariff heading.",
+    defaultPayload: JSON.stringify(
+      {
+        product_title: "Cotton T-Shirt",
+        product_description: "100% ring-spun cotton crewneck tee",
+        country_of_origin: "VN",
+        entered_value: "12000.00",
+        is_ocean_freight: true,
+        freight_and_insurance: "500.00"
+      },
+      null,
+      2
+    ),
+    mockResponse: {
+      item_id: "hts-unclassified",
+      product_title: "Cotton T-Shirt",
+      input_description: "100% ring-spun cotton crewneck tee",
+      country_of_origin: "VN",
+      declared_hts_code: null,
+      classified_hts_code: "REQUIRES_BROKER_REVIEW",
+      confidence: 0.0,
+      requires_human_review: true,
+      gri_path: [],
+      chapter_notes_cited: [
+        "Unclassified merchandise: product description does not match pre-computed GRI patterns.",
+        "Mandatory review by licensed customs broker required under 19 CFR Part 111 before CBP entry filing."
+      ],
+      landed_cost: {
+        entered_value: "12000.00",
+        duty_rate_ad_valorem: "0.00",
+        customs_duty: "0.00",
+        section_301_rate: "0.00",
+        section_301_duty: "0.00",
+        mpf_fee: "41.57",
+        hmf_fee: "15.00",
+        total_customs_cost: "56.57",
+        total_landed_cost: "12556.57",
+        fiscal_year: "FY2027"
       }
     }
   },
@@ -80,36 +134,44 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
     path: "/api/v1/sanctions/screen",
     category: "Pillar 04 • Sanctions Graph",
     statute: "31 CFR § 501 • OFAC 50% Rule • BIS Entity List",
-    description: "RapidFuzz C++ fuzzy screening against OpenSanctions dataset with recursive OFAC 50% Rule multi-tier corporate graph traversal.",
+    description: "RapidFuzz C++ multi-scorer fuzzy screening against FollowTheMoney OpenSanctions dataset with recursive OFAC 50% Rule multi-tier corporate graph traversal.",
     defaultPayload: JSON.stringify(
       {
-        shipper: "Global Micro Electronics Shenzhen Co.",
-        buyer: "Apex Ocean Logistics Corp",
-        consignee: "Pacific Apex Supply Chain LLC",
+        shipper: "Global Micro Electronics Ltd, Shenzhen",
+        buyer: "Pacific Apex Corp",
         threshold: 85.0
       },
       null,
       2
     ),
     mockResponse: {
-      status: "FLAGGED",
-      highest_risk_score: 96.4,
-      blocked_parties_detected: 1,
-      ofac_50_percent_rule_triggered: true,
-      findings: [
-        {
-          entity: "Global Micro Electronics Shenzhen Co.",
-          match_target: "GLOBAL MICROELECTRONICS SHENZHEN LTD",
-          sanctions_program: "OFAC NS-CMIC / BIS Entity List",
-          indirect_ownership_percentage: 52.5,
-          statutory_rule: "31 CFR § 501.801 (OFAC 50% Blocking Rule)",
-          action_required: "IMMEDIATE WIRE STOP: Prohibited Transaction"
-        }
-      ],
-      execution_metrics: {
-        traversal_latency_ms: 0.019,
-        database_hops: 3
-      }
+      shipper: {
+        query_name: "Global Micro Electronics Ltd, Shenzhen",
+        matched: true,
+        entity_id: "bis-el-cn-0941",
+        matched_name: "Global Micro Electronics Ltd, Shenzhen",
+        schema_type: "Company",
+        match_score: 100.0,
+        programs: [
+          "BIS Entity List (15 CFR Part 744, Supp. No. 4)",
+          "EAR Military End-User"
+        ],
+        country: ["CN"],
+        topics: ["sanction", "export.control", "military"],
+        screening_engine: "rapidfuzz_embedded"
+      },
+      buyer: {
+        query_name: "Pacific Apex Corp",
+        matched: false,
+        entity_id: null,
+        matched_name: null,
+        match_score: 79.07,
+        programs: [],
+        screening_engine: "rapidfuzz_embedded"
+      },
+      consignee: null,
+      has_violations: true,
+      highest_score: 100.0
     }
   },
   {
@@ -137,19 +199,21 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
     ),
     mockResponse: {
       entry_number: "CBP-7501-84920184",
-      unreported_assists_detected: 1,
-      assist_description: "CNC Injection Mold Tooling (Shenzhen Precision Ltd)",
-      apportioned_assist_value: 75000.00,
-      adjusted_customs_value: 525000.00,
-      actual_duty_loss: 4050.00,
-      penalty_exposure_without_disclosure: 16200.00,
-      mitigated_tender_amount: 4262.63,
-      penalty_savings_unlocked: 11937.37,
-      statutory_authority: "19 U.S.C. § 1592(c)(4) & 19 CFR § 162.74 Prior Disclosure",
-      execution_metrics: {
-        latency_ms: 0.038,
-        interest_benchmark: "19 U.S.C. § 1505 (7% APR accrued)"
-      }
+      importer_of_record: "Pacific Tech Imports LLC",
+      declared_transaction_value: "450000.00",
+      duty_rate_ad_valorem: "0.054",
+      invoice_incoterm: "CIF Los Angeles",
+      improper_cif_overvaluation: "27700.00",
+      assists_omitted_cost: "57750.00",
+      adjusted_lawful_dutiable_value: "480050.00",
+      lawful_duty_due: "25922.70",
+      declared_duty_paid: "24300.00",
+      duty_underpayment: "1622.70",
+      statutory_interest_19usc1505: "87.21",
+      negligence_penalty_exposure: "3245.40",
+      gross_negligence_penalty_exposure: "6490.80",
+      prior_disclosure_tender_amount: "1709.91",
+      total_liability_avoided: "4780.89"
     }
   },
   {
@@ -161,33 +225,35 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
     statute: "FMC Docket 21-08 • OSRA 2022 • 46 CFR § 541",
     description: "Inspects ocean and drayage carrier freight bills before AP wire release, catching 5% to 15% billing leakage under FMC Docket 21-08 and OSRA 2022.",
     mockResponse: {
-      document_id: "CARRIER-INV-2024-9102",
-      carrier_name: "Pacific Star Logistics Ltd",
-      billed_amount: 18450.00,
-      verified_amount: 15875.00,
-      overbilling_detected: 2575.00,
-      overbilling_percentage: 13.96,
-      violations: [
+      concept_id: "concept_2_freight",
+      title: "Pre-Payment Freight Audit",
+      document_filename: "nightmare_02_freight_bill.pdf",
+      quarantine_status: "QUARANTINED",
+      metrics: {
+        penalty_exposure_avoided: "0.00",
+        carrier_overbilling_caught: "1547.50",
+        drawback_unclaimed_unlocked: "0.00"
+      },
+      discrepancies: [
         {
-          code: "CHASSIS_SPLIT_UNAUTHORIZED",
-          amount: 250.00,
-          statutory_citation: "FMC 46 CFR § 541 (Incentive Principle)"
+          id: "disc-c2-01",
+          title: "Fuel Surcharge (FSC) Index Inflation",
+          statutory_code: "Contract Rate Table Variance",
+          exposure_amount: "382.50"
         },
         {
-          code: "FSC_INDEX_INFLATED",
-          amount: 625.00,
-          statutory_citation: "DOE Weekly Gulf Coast Retail Diesel Index Contract Bound"
+          id: "disc-c2-02",
+          title: "Unauthorized Chassis Split Surcharge",
+          statutory_code: "FMC 46 CFR § 541",
+          exposure_amount: "285.00"
         },
         {
-          code: "PORT_DETENTION_INSIDE_FREE_TIME",
-          amount: 1700.00,
-          statutory_citation: "Ocean Shipping Reform Act of 2022 (OSRA 2022) / FMC Docket 21-08"
+          id: "disc-c2-03",
+          title: "Unwarranted Port Detention Inside Free Time",
+          statutory_code: "OSRA 2022 / FMC Docket 21-08",
+          exposure_amount: "880.00"
         }
-      ],
-      execution_metrics: {
-        latency_ms: 0.051,
-        intercept_status: "AP_WIRE_BLOCKED"
-      }
+      ]
     }
   },
   {
@@ -199,20 +265,22 @@ const PLAYGROUND_ENDPOINTS: EndpointDef[] = [
     statute: "19 U.S.C. § 1313 • 19 CFR § 190",
     description: "Reconciles CBP Form 7501 imports against paired export Bills of Lading within the 5-year statutory filing window, unlocking 99% duty refunds.",
     mockResponse: {
-      import_entry_number: "7501-92817491",
-      export_bol_number: "OOLU-91827401",
-      import_date: "2023-04-12",
-      export_date: "2024-02-18",
-      timely_filing_verified: true,
-      statutory_timeframe: "19 U.S.C. § 1313(r)(1) (Within 5-year limit)",
-      import_duty_paid: 27600.00,
-      eligible_drawback_percentage: 99.0,
-      statutory_cash_refund: 27324.00,
-      retained_cbp_revenue: 276.00,
-      execution_metrics: {
-        latency_ms: 0.044,
-        filing_status: "REFUND_READY"
-      }
+      concept_id: "concept_3_drawback",
+      title: "Duty Drawback Harvester",
+      document_filename: "nightmare_03_drawback_7501.pdf",
+      metrics: {
+        penalty_exposure_avoided: "0.00",
+        carrier_overbilling_caught: "0.00",
+        drawback_unclaimed_unlocked: "27324.00"
+      },
+      discrepancies: [
+        {
+          id: "disc-c3-01",
+          title: "Unclaimed 99% Unused Merchandise Duty Drawback",
+          statutory_code: "19 U.S.C. § 1313(j)(1) / 19 CFR § 190",
+          exposure_amount: "27324.00"
+        }
+      ]
     }
   }
 ];
@@ -235,7 +303,18 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [copiedCurl, setCopiedCurl] = useState<boolean>(false);
   const [copiedResponse, setCopiedResponse] = useState<boolean>(false);
-  const [simulatedLatency, setSimulatedLatency] = useState<number>(0.042);
+  const [executionModeLabel, setExecutionModeLabel] = useState<string>(
+    "Static Example Response (Run Local Backend to Execute Live)"
+  );
+  const [httpStatusLabel, setHttpStatusLabel] = useState<string>("200 OK");
+
+  const isBrowser = typeof window !== "undefined";
+  const isPublicHost =
+    isBrowser &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1";
+  const apiBase =
+    process.env.NEXT_PUBLIC_API_URL || (isPublicHost ? "" : "http://localhost:8000");
 
   const selectedEndpoint = PLAYGROUND_ENDPOINTS.find((e) => e.id === selectedEndpointId) || PLAYGROUND_ENDPOINTS[0];
   const currentPayload = customPayloads[selectedEndpoint.id] !== undefined
@@ -252,6 +331,8 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
     const ep = PLAYGROUND_ENDPOINTS.find((e) => e.id === id);
     if (ep) {
       setSimulatedResponse(JSON.stringify(ep.mockResponse, null, 2));
+      setExecutionModeLabel("Static Example Response (Run Local Backend to Execute Live)");
+      setHttpStatusLabel("200 OK");
     }
   };
 
@@ -272,15 +353,41 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
     }
   };
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     sound.playTick();
     setIsExecuting(true);
-    setTimeout(() => {
-      setIsExecuting(false);
-      setSimulatedLatency(0.042);
+    if (!apiBase) {
       setSimulatedResponse(JSON.stringify(selectedEndpoint.mockResponse, null, 2));
+      setExecutionModeLabel("Static Example Response (Run Local Backend to Execute Live)");
+      setHttpStatusLabel("200 OK");
+      setIsExecuting(false);
+      return;
+    }
+
+    const startTime = performance.now();
+    try {
+      const res = await fetch(`${apiBase}${selectedEndpoint.path}`, {
+        method: selectedEndpoint.method,
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: selectedEndpoint.method === "POST" ? currentPayload : undefined,
+      });
+      const elapsed = (performance.now() - startTime).toFixed(2);
+      setHttpStatusLabel(`${res.status} ${res.statusText || (res.ok ? "OK" : "ERR")}`);
+      const text = await res.text();
+      try {
+        setSimulatedResponse(JSON.stringify(JSON.parse(text), null, 2));
+      } catch {
+        setSimulatedResponse(text);
+      }
+      setExecutionModeLabel(`Live ASGI Response: ${elapsed} ms (${apiBase})`);
       sound.playSuccess();
-    }, 280);
+    } catch {
+      setSimulatedResponse(JSON.stringify(selectedEndpoint.mockResponse, null, 2));
+      setExecutionModeLabel("Static Example Response (Local Backend Offline)");
+      setHttpStatusLabel("200 OK");
+    } finally {
+      setIsExecuting(false);
+    }
   };
 
   const getCurlSnippet = () => {
@@ -535,9 +642,9 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                 </div>
 
                 <div className="p-3.5 rounded bg-[#0F172A] border border-[#1F2937]">
-                  <div className="text-emerald-400 font-bold uppercase text-[11px]">Sub-Millisecond Engine Latency</div>
+                  <div className="text-emerald-400 font-bold uppercase text-[11px]">Measured Two-Tier Engine Latency</div>
                   <div className="text-[#94A3B8] text-[11px] mt-1">
-                    Pre-Payment freight audit runs in <code className="text-ink-primary">0.08ms</code>. HTS GRI classification in <code className="text-ink-primary">5.60ms</code>. Assist valuation audit in <code className="text-ink-primary">4.67ms</code>.
+                    Tier 1 (2-page PDF + audit): <code className="text-ink-primary">58.8 ms p99</code>. Tier 2 (in-memory core): HTS GRI <code className="text-ink-primary">0.146 ms</code>, Sanctions <code className="text-ink-primary">0.115 ms</code>, Assist valuation <code className="text-ink-primary">0.200 ms</code> (max p99 <code className="text-ink-primary">0.303 ms</code>).
                   </div>
                 </div>
               </div>
@@ -612,7 +719,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     <tr>
                       <th className="py-2.5 px-3">Calculation Domain</th>
                       <th className="py-2.5 px-3 text-red-400">Standard Float / LLM Wrapper</th>
-                      <th className="py-2.5 px-3 text-emerald-400">Samuel's Deterministic Decimal</th>
+                      <th className="py-2.5 px-3 text-emerald-400">Samuel&apos;s Deterministic Decimal</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1F2937] text-[11px]">
@@ -746,7 +853,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     FastAPI 0.115+
                   </span>
                   <span className="px-2.5 py-1 text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-semibold">
-                    p99 &lt; 0.09 ms
+                    Tier 2 p99: 0.303 ms
                   </span>
                 </div>
               </div>
@@ -889,10 +996,10 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                     <div className="flex items-center gap-2">
                       <span className="text-slate-300 font-semibold">Response</span>
                       <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">
-                        200 OK
+                        {httpStatusLabel}
                       </span>
                       <span className="text-slate-400 text-[10px]">
-                        Benchmark Kernel Execution: 0.042 ms (Measured across 3,000 iterations in test suite)
+                        {executionModeLabel}
                       </span>
                     </div>
 

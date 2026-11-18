@@ -26,7 +26,14 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
     _dutiable_value = safe_decimal(data.get("dutiable_value"), "0.00")
     duties_paid = safe_decimal(data.get("duties_paid"), "0.00")
     drawback_pct = safe_decimal(data.get("drawback_percentage"), "0.99")  # 99%
-    is_timely = bool(data.get("is_timely_5yr_window", True))
+    
+    # Do not default timeliness to True if not provided (C2)
+    is_timely_raw = data.get("is_timely_5yr_window")
+    is_timely = bool(is_timely_raw) if is_timely_raw is not None else False
+
+    import_entry = str(data.get("import_entry") or "[UNSPECIFIED ENTRY]")
+    export_bl = str(data.get("export_bl") or "[UNSPECIFIED B/L]")
+    carrier = str(data.get("carrier") or "[CARRIER NOT PROVIDED]")
 
     if is_timely and duties_paid > Decimal("0.00"):
         unlocked_drawback = quantize_currency(duties_paid * drawback_pct)  # 99% statutory recovery
@@ -35,7 +42,7 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
                 id="disc-c3-01",
                 concept_id="concept_3_drawback",
                 title="Unclaimed 99% Statutory Duty Drawback Recovery",
-                description=f"Entry {data.get('import_entry', '441-9872134-2')} paid ${duties_paid:,.2f} in duties & Section 301 tariffs. Export B/L {data.get('export_bl', 'EXP-2024-88412')} confirms 100% export within the 5-year statutory window under 19 U.S.C. § 1313. Entitled to direct 99% cash refund from CBP: ${unlocked_drawback:,.2f} (prepared for filing by licensed customs broker or self-filing importer).",
+                description=f"Entry {import_entry} paid ${duties_paid:,.2f} in duties & Section 301 tariffs. Export B/L {export_bl} confirms 100% export within the 5-year statutory window under 19 U.S.C. § 1313. Entitled to direct 99% cash refund from CBP: ${unlocked_drawback:,.2f} (prepared for filing by licensed customs broker or self-filing importer).",
                 statutory_code="19 U.S.C. § 1313(j)(1)",
                 severity="opportunity",
                 exposure_amount=unlocked_drawback,
@@ -52,8 +59,8 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
                     confidence=0.99
                 ),
                 metadata={
-                    "import_entry": str(data.get("import_entry", "441-9872134-2")),
-                    "export_bl": str(data.get("export_bl", "EXP-2024-88412")),
+                    "import_entry": import_entry,
+                    "export_bl": export_bl,
                     "statutory_percent": f"{drawback_pct * 100:.1f}%",
                     "duties_paid": str(duties_paid),
                     "cash_recovery_ready": str(unlocked_drawback),
@@ -69,7 +76,7 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
                 id="disc-c3-02",
                 concept_id="concept_3_drawback",
                 title="Matched Export B/L Proof of Unused Re-Export",
-                description=f"Export Bill of Lading {data.get('export_bl', 'EXP-2024-88412')} verifies identical part numbers and full quantity shipped to export destination, satisfying CBP evidentiary burden of proof under 19 CFR Part 190 / 191.",
+                description=f"Export Bill of Lading {export_bl} verifies identical part numbers and full quantity shipped to export destination, satisfying CBP evidentiary burden of proof under 19 CFR Part 190 / 191.",
                 statutory_code="19 CFR Part 190 / 191",
                 severity="opportunity",
                 exposure_amount=Decimal("0.00"),
@@ -86,7 +93,7 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
                     confidence=0.95
                 ),
                 metadata={
-                    "carrier": str(data.get("carrier", "Hapag-Lloyd")),
+                    "carrier": carrier,
                     "destination": str(data.get("destination", "Hamburg, Germany")),
                     "quantity_match": "100%"
                 }
@@ -94,7 +101,7 @@ def audit_duty_drawback(data: Dict[str, Any]) -> Tuple[KillShotMetrics, List[Dis
         )
     else:
         unlocked_drawback = Decimal("0.00")
-        if not is_timely and duties_paid > Decimal("0.00"):
+        if is_timely_raw is False and duties_paid > Decimal("0.00"):
             discrepancies.append(
                 Discrepancy(
                     id="disc-c3-expired",

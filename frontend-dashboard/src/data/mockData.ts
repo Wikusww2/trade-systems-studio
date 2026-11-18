@@ -9,9 +9,9 @@ import {
 } from "@/lib/types";
 
 export const AGGREGATE_METRICS: KillShotMetrics = {
-  penalty_exposure_avoided: 125000.0,
-  carrier_overbilling_caught: 1547.5,
-  drawback_unclaimed_unlocked: 27324.0,
+  penalty_exposure_avoided: "125000.00",
+  carrier_overbilling_caught: "1547.50",
+  drawback_unclaimed_unlocked: "27324.00",
 };
 
 export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
@@ -22,9 +22,9 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     document_filename: "nightmare_01_customs_ci.pdf",
     document_url: "/nightmares/nightmare_01_customs_ci.pdf",
     metrics: {
-      penalty_exposure_avoided: 125000.0,
-      carrier_overbilling_caught: 0,
-      drawback_unclaimed_unlocked: 0,
+      penalty_exposure_avoided: "125000.00",
+      carrier_overbilling_caught: "0.00",
+      drawback_unclaimed_unlocked: "0.00",
     },
     discrepancies: [
       {
@@ -35,7 +35,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Transaction value declared CIF Los Angeles requires seller-provided marine insurance. Declaring CIF with $0.00 insurance distorts customs dutiable transaction value under 19 CFR § 152.103.",
         statutory_code: "19 CFR § 152.103",
         severity: "warning",
-        exposure_amount: 1200.0,
+        exposure_amount: "1200.00",
         confidence: 0.82, // < 0.85 triggers visual uncertainty dashed amber border
         bounding_box: {
           x: 58.0,
@@ -59,7 +59,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Line 001: 500 units @ $45.00 calculates to $22,500.00, but was invoiced as $25,500.00. Discrepancy of $3,000.00 misstates customs dutiable basis.",
         statutory_code: "19 CFR § 152.103(a)",
         severity: "critical",
-        exposure_amount: 3000.0,
+        exposure_amount: "3000.00",
         confidence: 0.99,
         bounding_box: {
           x: 58.0,
@@ -84,7 +84,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Merchandise declared under HTS 8471.30.0100 (Duty 0.0%) instead of lawful HTS 8542.31.0000 (Section 301 Duty 25.0%). Lawful duty underpaid: $31,250.00. Statutory penalty exposure under 19 U.S.C. § 1592 reaches up to $125,000.00 (Gross Negligence 4.0x).",
         statutory_code: "19 U.S.C. § 1592",
         severity: "critical",
-        exposure_amount: 125000.0,
+        exposure_amount: "125000.00",
         confidence: 0.96,
         bounding_box: {
           x: 58.0,
@@ -119,9 +119,9 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     document_filename: "nightmare_02_freight_audit.pdf",
     document_url: "/nightmares/nightmare_02_freight_audit.pdf",
     metrics: {
-      penalty_exposure_avoided: 0,
-      carrier_overbilling_caught: 1547.5,
-      drawback_unclaimed_unlocked: 0,
+      penalty_exposure_avoided: "0.00",
+      carrier_overbilling_caught: "1547.50",
+      drawback_unclaimed_unlocked: "0.00",
     },
     discrepancies: [
       {
@@ -132,7 +132,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Carrier billed FSC at 32.50% ($1,462.50) exceeding the authorized DOE/EIA West Coast weekly diesel index contract cap of 24.00% ($1,080.00). Overbill intercepted: $382.50.",
         statutory_code: "Contract Tariff Rule 22 / EIA Index",
         severity: "critical",
-        exposure_amount: 382.5,
+        exposure_amount: "382.50",
         confidence: 0.98,
         bounding_box: {
           x: 58.0,
@@ -156,7 +156,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Carrier assessed $285.00 for off-dock chassis repositioning without a signed Shipper Work Order or pre-dispatch agreement. Disallowed under Ocean Contract Terms Section 8.",
         statutory_code: "UCC § 2-207 / Tariff Sec. 8",
         severity: "warning",
-        exposure_amount: 285.0,
+        exposure_amount: "285.00",
         confidence: 0.94,
         bounding_box: {
           x: 58.0,
@@ -179,7 +179,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Carrier billed 4 days container detention ($880.00) on container MSKU-781290-3. Gate out occurred on Friday following Tuesday discharge (Day 4 of 4 allowed business days). Violates FMC OSRA 46 CFR § 545.5.",
         statutory_code: "FMC 46 CFR § 545.5 (OSRA)",
         severity: "critical",
-        exposure_amount: 880.0,
+        exposure_amount: "880.00",
         confidence: 0.97,
         bounding_box: {
           x: 58.0,
@@ -211,9 +211,9 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     document_filename: "nightmare_03_duty_drawback.pdf",
     document_url: "/nightmares/nightmare_03_duty_drawback.pdf",
     metrics: {
-      penalty_exposure_avoided: 0,
-      carrier_overbilling_caught: 0,
-      drawback_unclaimed_unlocked: 27324.0,
+      penalty_exposure_avoided: "0.00",
+      carrier_overbilling_caught: "0.00",
+      drawback_unclaimed_unlocked: "27324.00",
     },
     discrepancies: [
       {
@@ -224,7 +224,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Entry 441-9872134-2 paid $27,600.00 in duties & Section 301 tariffs on 2,000 Stepper Motors. Export B/L EXP-2024-88412 confirms 100% export to Germany within the 5-year statutory window. Entitled to direct 99% cash refund from CBP: $27,324.00.",
         statutory_code: "19 U.S.C. § 1313(j)(1)",
         severity: "opportunity",
-        exposure_amount: 27324.0,
+        exposure_amount: "27324.00",
         confidence: 0.99,
         bounding_box: {
           x: 58.0,
@@ -249,7 +249,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
           "Export Bill of Lading EXP-2024-88412 verifies identical part numbers (ST-8800-IND) and full quantity (2,000 units) shipped to Hamburg, Germany, satisfying CBP evidentiary burden of proof.",
         statutory_code: "19 CFR Part 190 / 191",
         severity: "opportunity",
-        exposure_amount: 0.0,
+        exposure_amount: "0.00",
         confidence: 0.95,
         bounding_box: {
           x: 58.0,
@@ -281,9 +281,9 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     document_filename: "clean_01_customs_fob.pdf",
     document_url: "/nightmares/clean_01_customs_fob.pdf",
     metrics: {
-      penalty_exposure_avoided: 0,
-      carrier_overbilling_caught: 0,
-      drawback_unclaimed_unlocked: 0,
+      penalty_exposure_avoided: "0.00",
+      carrier_overbilling_caught: "0.00",
+      drawback_unclaimed_unlocked: "0.00",
     },
     discrepancies: [],
     extracted_data: {
@@ -302,9 +302,9 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
     document_filename: "nightmare_04_ofac_registry.pdf",
     document_url: "/nightmares/nightmare_04_ofac_registry.pdf",
     metrics: {
-      penalty_exposure_avoided: 350000.0,
-      carrier_overbilling_caught: 0,
-      drawback_unclaimed_unlocked: 0,
+      penalty_exposure_avoided: "350000.00",
+      carrier_overbilling_caught: "0.00",
+      drawback_unclaimed_unlocked: "0.00",
     },
     discrepancies: [
       {
@@ -325,7 +325,7 @@ export const MOCK_AUDIT_DATA: Record<string, AuditResult> = {
         },
         statutory_code: "31 CFR § 501",
         statutory_defense: "OFAC 50 Percent Rule",
-        exposure_amount: 350000.0,
+        exposure_amount: "350000.00",
         metadata: {
           blocked_ownership_pct: "55.0%",
           blocking_entities: ["Victor Petrov (25%)", "Rosoboronexport JSC (30%)"],
@@ -874,16 +874,16 @@ export const MOCK_VALUATION_AUDIT: EntryValuationAudit = {
   lawful_duty_due: "25922.70",
   declared_duty_paid: "24300.00",
   duty_underpayment: "1622.70",
-  statutory_interest_19usc1505: "85.19",
+  statutory_interest_19usc1505: "87.21",
   negligence_penalty_exposure: "3245.40",
   gross_negligence_penalty_exposure: "6490.80",
-  prior_disclosure_tender_amount: "1707.89",
-  total_liability_avoided: "4782.91",
+  prior_disclosure_tender_amount: "1709.91",
+  total_liability_avoided: "4780.89",
   assists_audited: MOCK_ASSIST_ITEMS,
 };
 
 export const MOCK_PRIOR_DISCLOSURE: PriorDisclosurePackage = {
-  filing_reference_id: "PD-84920184-20261114",
+  filing_reference_id: "PD-84920184-20261118",
   port_of_entry: "Los Angeles / Long Beach (2704)",
   addressed_to: "Port Director & FP&F Officer, Port of Los Angeles / Long Beach (2704)",
   statutory_statutes_cited: [
@@ -896,15 +896,15 @@ export const MOCK_PRIOR_DISCLOSURE: PriorDisclosurePackage = {
   narrative_explanation: "Voluntary prior disclosure of omitted tooling and engineering assists on entry summary.",
   affected_entries: ["CBP-7501-84920184"],
   actual_duty_loss: "1622.70",
-  interest_tender_amount: "85.19",
-  total_tender_check: "1707.89",
-  letter_text: `*** DRAFT -- PREPARED FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***
+  interest_tender_amount: "87.21",
+  total_tender_check: "1709.91",
+  letter_text: `*** DRAFT -- GENERATED BY TradeTech Systems Studio Compliance Automation Engine FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***
 
 FORMAL PRIOR DISCLOSURE UNDER 19 CFR § 162.74
 AND 19 U.S.C. § 1592(c)(4)
 
-DATE: November 14, 2026
-REFERENCE: PD-84920184-20261114
+DATE: November 18, 2026
+REFERENCE: PD-84920184-20261118
 
 TO:
 Port Director, U.S. Customs and Border Protection
@@ -912,8 +912,8 @@ Fines, Penalties, and Forfeitures Officer
 Port of Los Angeles / Long Beach (2704)
 
 FROM:
-TradeTech Systems Studio / Automated Compliance Service
-Prepared on Behalf of Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
+Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
+[Subject to Review by Licensed Customs Broker or Legal Counsel]
 
 SUBJECT: Prior Disclosure of Inadvertent Valuation Understatement Pertaining to Assists
          Under 19 U.S.C. § 1401a and 19 CFR § 152.103 on Entry #CBP-7501-84920184
@@ -931,13 +931,13 @@ knowledge of, the formal commencement of an investigation by U.S. Customs and Bo
 - Applicable HTS General Duty Rate: 5.40%
 
 3. NARRATIVE EXPLANATION OF CIRCUMSTANCES
-During an internal compliance review conducted via TradeTech Systems Studio's Autonomous
-Valuation Ledger, the Importer identified that certain assists provided to the foreign manufacturer
+During an internal compliance review, the Importer identified that certain assists provided to the foreign manufacturer
 (specifically tools, dies, molds, and foreign engineering design qualifying under 19 U.S.C. § 1401a(h)(1)(A))
-were inadvertently omitted from the dutiable value declared upon entry.
+were omitted from the dutiable value declared upon entry.
+[IMPORTER / COUNSEL TO VERIFY CIRCUMSTANCES OF OMISSION].
 
 Furthermore, commercial invoice review indicates that CIF ocean freight of $24,500.00
-and marine insurance of $3,200.00 were improperly included in the entered
+and marine insurance of $3,200.00 were included in the entered
 value contrary to 19 CFR § 152.103.
 
 4. STATUTORY RECONCILIATION & MATHEMATICAL DETERMINATION (100% PYTHON DECIMAL)
@@ -950,18 +950,19 @@ value contrary to 19 CFR § 152.103.
 - Customs Duty Previously Tendered:         $24,300.00
 -------------------------------------------------------------------------
 - ACTUAL DUTY LOSS / UNDERPAYMENT:          $1,622.70
-- STATUTORY INTEREST DUE (19 U.S.C. § 1505): $85.19
+- STATUTORY INTEREST DUE (19 U.S.C. § 1505): $87.21
 =========================================================================
-- TOTAL TENDER CHECK ENCLOSED:              $1,707.89
+- TOTAL TENDER CHECK ENCLOSED (STATUTORY TENDER COMPUTED): $1,709.91
 
 5. PENALTY MITIGATION EFFECTUATION
-Under 19 U.S.C. § 1592(c)(4), upon tender of the actual duty loss plus statutory interest,
-all civil monetary penalties under 19 U.S.C. § 1592 (including gross negligence exposure of
-$6,490.80) are statutorily barred.
+Under 19 U.S.C. § 1592(c)(4) and 19 CFR § 162.74, upon tender of the actual duty loss
+plus statutory interest and satisfaction of all filing criteria, civil penalties under
+19 U.S.C. § 1592 are limited strictly to statutory interest, protecting
+$4,780.89 in gross negligence exposure.
 
 Respectfully submitted,
-TradeTech Systems Studio Compliance Automation Engine
-Prepared on Behalf of Importer of Record: Pacific Tech Imports LLC (EIN 94-8291048)
+Pacific Tech Imports LLC (EIN 94-8291048)
+[Signature by Authorized Officer of Importer of Record or Attorney-in-Fact]
 
 *** DRAFT -- PREPARED FOR REVIEW BY LICENSED CUSTOMS BROKER OR LEGAL COUNSEL ***`,
 };

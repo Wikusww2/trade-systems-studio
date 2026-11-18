@@ -34,7 +34,7 @@ repos:
 
       - id: backend-pytest
         name: Backend Deterministic Test Suite
-        entry: powershell -Command "cd backend-engine; ./.venv/Scripts/python -m pytest -q"
+        entry: python -m pytest backend-engine/tests -q
         language: system
         pass_filenames: false
         always_run: true

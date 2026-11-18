@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Deciders:** Samuel (Principal Architect), TradeTech Governance
 - **Date:** 2026-11-16
-- **Technical Invariant:** DualStackBoundary XPath filtering ahead of CargoWise eAdaptor, zero hard claim of legacy eAdaptor shutoff, ValuePackLeakage interception.
+- **Technical Invariant:** XSD-validated `CargoWiseExportService` (`UniversalInterchange v1.1`) ahead of CargoWise eAdaptor, zero hard claim of legacy eAdaptor shutoff, pre-ingest defect interception.
 
 ---
 
@@ -19,10 +19,10 @@ WiseTech offers an internal module called ComplianceWise. Competing directly ins
 ## Decision
 We position `trade-systems-studio` strictly as an **Upstream Pre-Ingest Firewall** (`PreIngestFirewall`):
 1. **Upstream Wedge:** The firewall operates as an external, deterministic pre-audit gatekeeper between the shipper/carrier ingress and CargoWise eAdaptor. It intercepts carrier accessorial overbilling (FMC Docket 21-08), assist omissions (19 CFR Section 152.103), and malformed payloads *before* eAdaptor ingestion.
-2. **DualStackBoundary:** The engine supports both legacy SOAP XML and modern eAdaptor Next (REST, OAuth 2.0, JWT) via strict XPath filtering:
+2. **XSD-Validated UniversalInterchange Export:** `CargoWiseExportService` constructs structured `UniversalInterchange v1.1` XML via `xml.etree.ElementTree`, validated against `app/schemas/cargowise_universal_v1_1.xsd`, with deterministic SHA-256 `CorrelationID` values and corridor-aware jurisdiction tagging (`19_USC_1592_PROTECTED` for US destinations, `EU_UCC_COMPLIANT` for EU destinations):
    `//UniversalShipment/Shipment/DataContext/DataTargetCollection/DataTarget/Type`
    We make zero claims regarding a hard legacy eAdaptor shutdown date, ensuring architectural longevity across legacy forwarder fleets and modern scale-ups.
-3. **Quarantine Ingress Mode:** When `PreIngestFirewall` catches a low-confidence element (`Conf(e) < 0.85`) or a statutory defect, it defaults to **Asynchronous Quarantine (`HTTP 202 QUARANTINED`)** with a unique `audit_run_id`, preventing upstream TMS connector retry storms while routing the transaction to the `OwnerRoutedQueue` and `ThreeWayResolutionBar`.
+3. **Quarantine Ingress Mode:** When `TradeDocumentExtractor` catches a low-confidence element (`Conf(e) < 0.85`) or a statutory defect, it emits `quarantine_status="QUARANTINED"` with a content-addressed `audit_run_id`, preventing unverified ingestion while routing the transaction to the operator triage queue and `ThreeWayResolutionBar`.
 4. **Clean Interchange Emission:** Only after automated validation or human-on-the-loop signoff does the firewall emit a validated `UniversalInterchange` XML/JSON envelope to eAdaptor.
 
 ## Consequences

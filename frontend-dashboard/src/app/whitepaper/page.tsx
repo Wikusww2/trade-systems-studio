@@ -140,7 +140,7 @@ export default function WhitepaperPage() {
         {/* Right Article Body */}
         <main id="main-content" className="lg:col-span-9 space-y-12">
           {/* Paper Title Block */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-[#0F172A] to-[#0B0F19] border border-[#1F2937] space-y-4">
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#0F172A] border border-[#1F2937] space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-1 text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded">
                 Systems Architecture Whitepaper (v2.0)
@@ -254,7 +254,7 @@ def quantize_currency(value: Decimal) -> Decimal:
               </div>
 
               <p>
-                Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), FMC Docket 21-08 freight audit checks (explicitly distinguishing <code className="text-cyan-300">0</code> free days from <code className="text-cyan-300">None</code>), and 99% Section 1313 Duty Drawback claims (with 5-year time-bar enforcement) are fuzz-tested with Hypothesis across {VERIFIED_PYTEST_COUNT} automated tests.
+                Merchandise Processing Fees (MPF capped between FY2027 statutory minimum $34.58 and maximum $670.86 per 91 FR 48398 / 19 CFR § 24.23, with FY2024 to FY2026 historical support), origin-aware Section 301 Chapter 99 tariffs, Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), FMC Docket 21-08 freight audit checks (explicitly distinguishing <code className="text-cyan-300">0</code> free days from <code className="text-cyan-300">None</code>), and 99% Section 1313 Duty Drawback claims (with 5-year time-bar enforcement) are fuzz-tested with Hypothesis across {VERIFIED_PYTEST_COUNT} automated tests.
               </p>
             </div>
           </section>
@@ -332,7 +332,7 @@ def quantize_currency(value: Decimal) -> Decimal:
               </div>
 
               <p>
-                Backed by a persistent 38-record FollowTheMoney v3 dataset (<code className="text-cyan-300">yente_ofac_ftm.jsonl</code>), the screener executes cycle-safe recursive ownership multiplication across multi-hop chains, fails closed (<code className="text-red-300">UNSCREENED / HOLD</code>) on unknown entities or upstream outages, and combines normalized RapidFuzz token-set and partial-ratio scoring to catch transliteration variants.
+                Backed by a persistent 37-record FollowTheMoney v3 dataset (<code className="text-cyan-300">yente_ofac_ftm.jsonl</code>), the screener executes cycle-safe OFAC FAQ 401 cascade ownership aggregation across multi-hop chains, fails closed (<code className="text-red-300">UNSCREENED_HOLD</code>) on unknown entities or upstream Yente outages, and combines normalized RapidFuzz token-sort, token-set, and partial-ratio scoring to catch transliteration variants.
               </p>
             </div>
           </section>
@@ -445,7 +445,7 @@ def quantize_currency(value: Decimal) -> Decimal:
               <span>Scope, Governance & Architectural Summary</span>
             </h2>
 
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-cobalt-950/40 to-slate-900 border border-cobalt-500/30 space-y-4">
+            <div className="p-6 rounded-2xl bg-[#0F172A] border border-cobalt-500/30 space-y-4">
               <p className="text-sm text-slate-300 leading-relaxed">
                 By grounding trade intelligence in <strong>end-to-end Python Decimal determinism</strong>, <strong>local PDF layout grounding</strong>, <strong>fail-closed classification and sanctions invariants</strong>, and <strong>transparent legal boundaries</strong>, TradeTech Systems Studio demonstrates production-disciplined systems engineering for global customs and freight compliance.
               </p>

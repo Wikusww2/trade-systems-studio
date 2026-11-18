@@ -2,6 +2,7 @@ import "./globals.css";
 import "../styles/typography.css";
 import React from "react";
 import { AmbientMotionBackground } from "@/components/AmbientMotionBackground";
+import { MotionProvider } from "@/components/MotionProvider";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -40,9 +41,11 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AmbientMotionBackground />
-        <div className="relative z-10">
-          {children}
-        </div>
+        <MotionProvider>
+          <div className="relative z-10">
+            {children}
+          </div>
+        </MotionProvider>
       </body>
     </html>
   );

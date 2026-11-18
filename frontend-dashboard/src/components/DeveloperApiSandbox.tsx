@@ -12,134 +12,220 @@ const isPublicHost =
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || (isPublicHost ? "" : "http://localhost:8000");
 
+type EndpointKey = "cargowise" | "hts_classify" | "hts_fail_closed" | "valuation";
+
 interface EndpointConfig {
+  label: string;
   path: string;
   method: "POST" | "GET";
+  benchmarkLabel: string;
   payload: Record<string, any>;
   offlinePreview: string;
 }
 
-const ENDPOINT_CONFIGS: Record<"cargowise" | "evaluate_gri" | "valuation", EndpointConfig> = {
+const ENDPOINT_CONFIGS: Record<EndpointKey, EndpointConfig> = {
   cargowise: {
+    label: "/export/cargowise-xml",
     path: "/api/v1/export/cargowise-xml",
     method: "POST",
+    benchmarkLabel: "Tier 2 p99: 0.303 ms",
     payload: {
       shipment_id: "S00001000",
       declaration_id: "B00001000",
+      port_origin_code: "CNSZX",
+      port_origin_name: "Shenzhen",
+      port_dest_code: "USLAX",
+      port_dest_name: "Los Angeles",
       incoterm: "CIF",
       invoice_amount: "148500.00",
       insurance_amount: "1450.00",
     },
     offlinePreview: `HTTP/1.1 200 OK
 Content-Type: application/xml
-X-Engine-Mode: Offline Sandbox Preview (Live ASGI backend not detected at localhost:8000)
+X-Engine-Mode: Static Example Response (Run Local Backend to Execute Live)
 X-Deterministic-Engine: python-decimal-std
 
 <UniversalInterchange xmlns="http://www.cargowise.com/Schemas/Universal/2011/11" version="1.1">
   <Header>
     <SenderID>TRADESYSTEMS_PREAUDIT</SenderID>
     <RecipientID>CW1_EADAPTOR_PRD</RecipientID>
+    <CorrelationID>CW-C9F321B08E14A702</CorrelationID>
   </Header>
   <Body>
-    <UniversalShipment>
-      <DataContext>
-        <DataTargetCollection>
-          <DataTarget><Type>ForwardingShipment</Type><Key>S00001000</Key></DataTarget>
-          <DataTarget><Type>CustomsDeclaration</Type><Key>B00001000</Key></DataTarget>
-        </DataTargetCollection>
-      </DataContext>
-      <CommercialInvoiceCollection>
-        <CommercialInvoice>
-          <InsuranceAmount Currency="USD">1450.00</InsuranceAmount>
-          <CommercialInvoiceLine>
-            <HarmonizedCode>8542.31</HarmonizedCode>
-            <CustomsValue Currency="USD">149950.00</CustomsValue>
-          </CommercialInvoiceLine>
-        </CommercialInvoice>
-      </CommercialInvoiceCollection>
+    <UniversalShipment xmlns="http://www.cargowise.com/Schemas/Universal/2011/11" version="1.1">
+      <Shipment>
+        <DataContext>
+          <DataTargetCollection>
+            <DataTarget><Type>ForwardingShipment</Type><Key>S00001000</Key></DataTarget>
+            <DataTarget><Type>CustomsDeclaration</Type><Key>B00001000</Key></DataTarget>
+          </DataTargetCollection>
+          <Company><Code>CPH</Code></Company>
+          <EnterpriseID>TRN</EnterpriseID>
+          <ServerID>A04</ServerID>
+        </DataContext>
+        <PortOfOrigin><Code>CNSZX</Code><Name>Shenzhen</Name></PortOfOrigin>
+        <PortOfDestination><Code>USLAX</Code><Name>Los Angeles</Name></PortOfDestination>
+        <CommercialInvoiceCollection>
+          <CommercialInvoice>
+            <InvoiceNumber>CI-2026-01</InvoiceNumber>
+            <Incoterm><Code>CIF</Code></Incoterm>
+            <InvoiceAmount Currency="USD">148500.00</InvoiceAmount>
+            <InsuranceAmount Currency="USD">1450.00</InsuranceAmount>
+          </CommercialInvoice>
+        </CommercialInvoiceCollection>
+      </Shipment>
     </UniversalShipment>
   </Body>
 </UniversalInterchange>`,
   },
-  evaluate_gri: {
+  hts_classify: {
+    label: "/hts/classify (Match)",
     path: "/api/v1/hts/classify",
     method: "POST",
+    benchmarkLabel: "HTS p99: 0.242 ms",
     payload: {
-      product_title: "Industrial Controller Assembly",
-      product_description: "Industrial Controller Assembly with Integrated Circuitry and power supply",
-      country_of_origin: "ZA",
-      entered_value: "148500.00",
+      product_title: "Industrial Brushless DC Drone Motor with Integrated ESC",
+      product_description: "480W brushless DC UAV propulsion motor with electronic speed controller",
+      country_of_origin: "TW",
+      entered_value: "45000.00",
       is_ocean_freight: true,
-      freight_and_insurance: "1450.00",
+      freight_and_insurance: "1500.00",
     },
     offlinePreview: `HTTP/1.1 200 OK
 Content-Type: application/json
-X-Engine-Mode: Offline Sandbox Preview (Live ASGI backend not detected at localhost:8000)
+X-Engine-Mode: Static Example Response (Run Local Backend to Execute Live)
 X-GRI-Rule: WCO GRI 3(b) Essential Character
 
 {
-  "item_id": "HTS-DEMO-001",
-  "product_title": "Industrial Controller Assembly",
-  "input_description": "Industrial Controller Assembly with Integrated Circuitry and power supply",
-  "country_of_origin": "ZA",
-  "classified_hts_code": "8542.31.0000",
-  "confidence": 0.985,
+  "item_id": "hts-drone_motor",
+  "product_title": "Industrial Brushless DC Drone Motor with Integrated ESC",
+  "country_of_origin": "TW",
+  "classified_hts_code": "8501.31.8000",
+  "confidence": 0.94,
   "requires_human_review": false,
   "landed_cost": {
-    "entered_value": "148500.00",
-    "calculated_duty": "0.00",
-    "merchandise_processing_fee": "514.40",
-    "harbor_maintenance_fee": "185.63",
-    "total_landed_cost": "149200.03"
+    "entered_value": "45000.00",
+    "duty_rate_ad_valorem": "0.024",
+    "customs_duty": "1080.00",
+    "section_301_rate": "0.00",
+    "section_301_duty": "0.00",
+    "mpf_rate": "0.003464",
+    "mpf_min_cap": "34.58",
+    "mpf_max_cap": "670.86",
+    "mpf_fee": "155.88",
+    "hmf_rate": "0.00125",
+    "hmf_fee": "56.25",
+    "freight_and_insurance": "1500.00",
+    "total_customs_cost": "1292.13",
+    "total_landed_cost": "47792.13",
+    "fiscal_year": "FY2027"
+  }
+}`,
+  },
+  hts_fail_closed: {
+    label: "/hts/classify (Fail-Closed)",
+    path: "/api/v1/hts/classify",
+    method: "POST",
+    benchmarkLabel: "HTS p99: 0.242 ms",
+    payload: {
+      product_title: "Cotton T-Shirt",
+      product_description: "100% ring-spun cotton crewneck tee",
+      country_of_origin: "VN",
+      entered_value: "12000.00",
+      is_ocean_freight: true,
+      freight_and_insurance: "500.00",
+    },
+    offlinePreview: `HTTP/1.1 200 OK
+Content-Type: application/json
+X-Engine-Mode: Static Example Response (Run Local Backend to Execute Live)
+X-Fail-Closed-Gate: Conf(e) < 0.85 -> Broker Escalation
+
+{
+  "item_id": "hts-unclassified",
+  "product_title": "Cotton T-Shirt",
+  "country_of_origin": "VN",
+  "classified_hts_code": "REQUIRES_BROKER_REVIEW",
+  "confidence": 0.0,
+  "requires_human_review": true,
+  "gri_path": [],
+  "chapter_notes_cited": [
+    "Unclassified merchandise: product description does not match pre-computed GRI patterns.",
+    "Mandatory review by licensed customs broker required under 19 CFR Part 111 before CBP entry filing."
+  ],
+  "landed_cost": {
+    "entered_value": "12000.00",
+    "duty_rate_ad_valorem": "0.00",
+    "customs_duty": "0.00",
+    "mpf_fee": "41.57",
+    "hmf_fee": "15.00",
+    "total_customs_cost": "56.57",
+    "total_landed_cost": "12556.57",
+    "fiscal_year": "FY2027"
   }
 }`,
   },
   valuation: {
+    label: "/valuation/audit-entry",
     path: "/api/v1/valuation/audit-entry",
     method: "POST",
+    benchmarkLabel: "Valuation p99: 0.303 ms",
     payload: {
-      entry_number: "859-2026-0012",
-      importer_of_record: "Apex Global Logistics LLC",
-      declared_transaction_value: "148500.00",
+      entry_number: "CBP-7501-84920184",
+      importer_of_record: "Pacific Tech Imports LLC",
+      declared_transaction_value: "450000.00",
       duty_rate_ad_valorem: "0.054",
-      current_entry_units: 5000,
+      current_entry_units: 15000,
       invoice_incoterm: "CIF Los Angeles",
-      international_freight_in_invoice: "12000.00",
-      marine_insurance_in_invoice: "1450.00",
-      months_elapsed: 6,
+      international_freight_in_invoice: "24500.00",
+      marine_insurance_in_invoice: "3200.00",
+      months_elapsed: 9,
     },
     offlinePreview: `HTTP/1.1 200 OK
 Content-Type: application/json
-X-Engine-Mode: Offline Sandbox Preview (Live ASGI backend not detected at localhost:8000)
+X-Engine-Mode: Static Example Response (Run Local Backend to Execute Live)
 X-Valuation-Rule: 19 U.S.C. § 1401a / 19 CFR § 152.103
 
 {
-  "entry_number": "859-2026-0012",
-  "importer_of_record": "Apex Global Logistics LLC",
-  "declared_transaction_value": "148500.00",
-  "statutory_base_value": "135050.00",
-  "statutory_adjustments": {
-    "international_freight_deduction": "-12000.00",
-    "marine_insurance_deduction": "-1450.00"
-  },
-  "compliance_status": "RECONCILED_TRANSACTION_VALUE"
+  "entry_number": "CBP-7501-84920184",
+  "importer_of_record": "Pacific Tech Imports LLC",
+  "declared_transaction_value": "450000.00",
+  "duty_rate_ad_valorem": "0.054",
+  "improper_cif_overvaluation": "27700.00",
+  "assists_omitted_cost": "57750.00",
+  "adjusted_lawful_dutiable_value": "480050.00",
+  "lawful_duty_due": "25922.70",
+  "declared_duty_paid": "24300.00",
+  "duty_underpayment": "1622.70",
+  "statutory_interest_19usc1505": "87.21",
+  "negligence_penalty_exposure": "3245.40",
+  "gross_negligence_penalty_exposure": "6490.80",
+  "prior_disclosure_tender_amount": "1709.91",
+  "total_liability_avoided": "4780.89"
 }`,
   },
 };
 
 export const DeveloperApiSandbox: React.FC = () => {
   const [copied, setCopied] = useState(false);
-  const [activeEndpoint, setActiveEndpoint] = useState<"cargowise" | "evaluate_gri" | "valuation">("cargowise");
+  const [activeEndpoint, setActiveEndpoint] = useState<EndpointKey>("cargowise");
   const [isRunning, setIsRunning] = useState(false);
   const [responseOutput, setResponseOutput] = useState<string | null>(null);
-  const [latencyText, setLatencyText] = useState<string>("Benchmark: 0.042 ms");
+  const [isLiveResponse, setIsLiveResponse] = useState(false);
+  const [latencyText, setLatencyText] = useState<string>(ENDPOINT_CONFIGS.cargowise.benchmarkLabel);
 
-  const baseUrl = API_BASE || "http://localhost:8000";
+  const displayBaseUrl = API_BASE || "http://localhost:8000";
   const currentConfig = ENDPOINT_CONFIGS[activeEndpoint];
 
-  const curlSnippet = `curl -X POST "${baseUrl}${currentConfig.path}" \\
+  const curlSnippet = `curl -X ${currentConfig.method} "${displayBaseUrl}${currentConfig.path}" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(currentConfig.payload, null, 2)}'`;
+
+  const handleSelectEndpoint = (key: EndpointKey) => {
+    setActiveEndpoint(key);
+    setResponseOutput(null);
+    setIsLiveResponse(false);
+    setLatencyText(ENDPOINT_CONFIGS[key].benchmarkLabel);
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(curlSnippet);
@@ -149,26 +235,36 @@ export const DeveloperApiSandbox: React.FC = () => {
 
   const handleRun = async () => {
     setIsRunning(true);
+    if (!API_BASE) {
+      // Static public host: never trigger blocked loopback fetch to localhost:8000
+      setIsLiveResponse(false);
+      setLatencyText(`Static Preview (${currentConfig.benchmarkLabel})`);
+      setResponseOutput(currentConfig.offlinePreview);
+      setIsRunning(false);
+      return;
+    }
+
     const startTime = performance.now();
     try {
-      const res = await fetch(`${baseUrl}${currentConfig.path}`, {
+      const res = await fetch(`${API_BASE}${currentConfig.path}`, {
         method: currentConfig.method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(currentConfig.payload),
       });
       const elapsed = (performance.now() - startTime).toFixed(2);
-      setLatencyText(`Live: ${elapsed} ms`);
+      setLatencyText(`Live ASGI: ${elapsed} ms`);
+      setIsLiveResponse(true);
 
       if (res.ok) {
         const text = await res.text();
         try {
           const json = JSON.parse(text);
           setResponseOutput(
-            `HTTP/1.1 200 OK\nContent-Type: application/json\nX-Latency-Ms: ${elapsed}ms\nX-Engine-State: Live ASGI Engine (${baseUrl})\n\n${JSON.stringify(json, null, 2)}`
+            `HTTP/1.1 200 OK\nContent-Type: application/json\nX-Latency-Ms: ${elapsed}ms\nX-Engine-State: Live ASGI Engine (${API_BASE})\n\n${JSON.stringify(json, null, 2)}`
           );
         } catch {
           setResponseOutput(
-            `HTTP/1.1 200 OK\nContent-Type: application/xml\nX-Latency-Ms: ${elapsed}ms\nX-Engine-State: Live ASGI Engine (${baseUrl})\n\n${text}`
+            `HTTP/1.1 200 OK\nContent-Type: application/xml\nX-Latency-Ms: ${elapsed}ms\nX-Engine-State: Live ASGI Engine (${API_BASE})\n\n${text}`
           );
         }
       } else {
@@ -176,8 +272,8 @@ export const DeveloperApiSandbox: React.FC = () => {
         setResponseOutput(`HTTP/1.1 ${res.status} ${res.statusText}\nX-Latency-Ms: ${elapsed}ms\n\n${errText}`);
       }
     } catch {
-      // Backend not running on localhost:8000
-      setLatencyText("Benchmark: 0.042 ms");
+      setIsLiveResponse(false);
+      setLatencyText(`Static Preview (${currentConfig.benchmarkLabel})`);
       setResponseOutput(currentConfig.offlinePreview);
     } finally {
       setIsRunning(false);
@@ -187,41 +283,28 @@ export const DeveloperApiSandbox: React.FC = () => {
   return (
     <div className="w-full bg-[#0F172A] border border-[#1F2937] rounded-xl overflow-hidden p-4 font-mono text-xs shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Terminal className="w-4 h-4 text-emerald-400" />
-          <span className="font-bold text-slate-200">Developer API & curl Playground</span>
+          <span className="font-bold text-slate-200">Developer API &amp; curl Playground</span>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
             <Zap className="w-3 h-3" />
             <span>{latencyText}</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex bg-[#1E293B] rounded-lg p-0.5 border border-[#334155]/60">
-            <button
-              onClick={() => { setActiveEndpoint("cargowise"); setResponseOutput(null); }}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "cargowise" ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              /export/cargowise-xml
-            </button>
-            <button
-              onClick={() => { setActiveEndpoint("evaluate_gri"); setResponseOutput(null); }}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "evaluate_gri" ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              /hts/classify
-            </button>
-            <button
-              onClick={() => { setActiveEndpoint("valuation"); setResponseOutput(null); }}
-              className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
-                activeEndpoint === "valuation" ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              /valuation/audit-entry
-            </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex bg-[#1E293B] rounded-lg p-0.5 border border-[#334155]/60 flex-wrap">
+            {(Object.keys(ENDPOINT_CONFIGS) as EndpointKey[]).map((key) => (
+              <button
+                key={key}
+                onClick={() => handleSelectEndpoint(key)}
+                className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors ${
+                  activeEndpoint === key ? "bg-blue-600 text-canvas-stone" : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {ENDPOINT_CONFIGS[key].label}
+              </button>
+            ))}
           </div>
 
           <button
@@ -254,7 +337,7 @@ export const DeveloperApiSandbox: React.FC = () => {
           ) : (
             <>
               <Play className="w-3.5 h-3.5" />
-              <span>Execute Test Request</span>
+              <span>{API_BASE ? "Execute Live Request" : "Preview Static Example Response"}</span>
             </>
           )}
         </button>
@@ -268,9 +351,11 @@ export const DeveloperApiSandbox: React.FC = () => {
         >
           <div className="flex items-center justify-between pb-1.5 text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
             <span>Terminal Response Payload</span>
-            <span className="text-emerald-400">Deterministic Engine Verified</span>
+            <span className={isLiveResponse ? "text-emerald-400" : "text-amber-300"}>
+              {isLiveResponse ? "Live ASGI Verified" : "Static Example Response (Run Local Backend to Execute Live)"}
+            </span>
           </div>
-          <pre className="p-3 bg-[#0B0F19] rounded-lg border border-emerald-950 text-emerald-300/90 overflow-x-auto text-[10px] leading-relaxed max-h-48">
+          <pre className="p-3 bg-[#0B0F19] rounded-lg border border-emerald-950 text-emerald-300/90 overflow-x-auto text-[10px] leading-relaxed max-h-60">
             <code>{responseOutput}</code>
           </pre>
         </motion.div>

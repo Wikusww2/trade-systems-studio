@@ -1,7 +1,9 @@
 name: Deploy Next.js Demo to GitHub Pages
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Enterprise CI Pipeline & Test Verification"]
+    types: [completed]
     branches: ["main"]
   workflow_dispatch:
 
@@ -16,6 +18,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -39,6 +42,10 @@ jobs:
         working-directory: frontend-dashboard
         env:
           NEXT_PUBLIC_BASE_PATH: /trade-systems-studio
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_LEAD_ENDPOINT: ${{ vars.NEXT_PUBLIC_LEAD_ENDPOINT }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Ensure .nojekyll exists

@@ -219,6 +219,8 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
               sound.playTick();
               setPiiRedacted((r) => !r);
             }}
+            aria-label={piiRedacted ? "Disable PII Redaction Mask" : "Redact Shipper and Consignee PII on Document"}
+            aria-pressed={piiRedacted}
             title={piiRedacted ? "Disable PII Redaction Mask" : "Redact Shipper & Consignee PII on Document"}
             className={`flex items-center gap-1 px-2 py-1 rounded-sm font-mono text-[10px] uppercase font-bold transition-all border shadow-xs ${
               piiRedacted
@@ -232,6 +234,7 @@ export const PdfOverlayCanvas: React.FC<PdfOverlayCanvasProps> = ({
 
           <button
             onClick={triggerManualScan}
+            aria-label="Trigger Scanner Beam"
             title="Trigger Cybernetic Scanner Beam"
             className="flex items-center gap-1 px-2 py-1 bg-cobalt-50 dark:bg-cobalt-950/80 hover:bg-cobalt-100 dark:hover:bg-cobalt-900/60 text-cobalt-700 dark:text-cobalt-300 border border-cobalt-300 dark:border-cobalt-800 rounded-sm font-mono text-[10px] uppercase font-bold transition-all shadow-xs"
           >

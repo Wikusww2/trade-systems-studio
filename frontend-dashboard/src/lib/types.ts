@@ -14,7 +14,7 @@ export interface Discrepancy {
   description: string;
   statutory_code: string;
   severity: "critical" | "warning" | "info" | "opportunity";
-  exposure_amount: number;
+  exposure_amount: string | number;
   confidence: number;
   bounding_box: BoundingBox;
   executive_summary?: string;
@@ -24,15 +24,15 @@ export interface Discrepancy {
 }
 
 export interface KillShotMetrics {
-  penalty_exposure_avoided: number;
-  carrier_overbilling_caught: number;
-  drawback_unclaimed_unlocked: number;
+  penalty_exposure_avoided: string | number;
+  carrier_overbilling_caught: string | number;
+  drawback_unclaimed_unlocked: string | number;
 }
 
 export interface EngagementPolicy {
   policy_id: string;
-  auto_hold_threshold_usd: number;
-  commercial_freight_tolerance_usd: number;
+  auto_hold_threshold_usd: string | number;
+  commercial_freight_tolerance_usd: string | number;
   statutory_floor_enforced: boolean;
   fmc_free_time_days: number;
   assist_amortization_method: string;
@@ -72,6 +72,7 @@ export interface LeadCapturePayload {
   phone?: string;
   monthly_import_volume?: string;
   source?: string;
+  privacy_consent: boolean;
 }
 
 export interface TelemetryPayload {
@@ -140,6 +141,9 @@ export interface LandedCostBreakdown {
   entered_value: string | number;
   duty_rate_ad_valorem: string | number;
   customs_duty: string | number;
+  section_301_rate?: string | number;
+  section_301_duty?: string | number;
+  section_301_subheading?: string;
   mpf_rate: string | number;
   mpf_min_cap: string | number;
   mpf_max_cap: string | number;
@@ -149,6 +153,7 @@ export interface LandedCostBreakdown {
   freight_and_insurance: string | number;
   total_customs_cost: string | number;
   total_landed_cost: string | number;
+  fiscal_year?: string;
 }
 
 export interface HTSClassificationResult {

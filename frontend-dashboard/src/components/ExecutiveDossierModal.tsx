@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { X, Printer, ShieldCheck } from "lucide-react";
 import { AuditResult } from "@/lib/types";
 import { sound } from "@/lib/audio";
+import { formatUsd, sumMoneyStrings } from "@/lib/money";
 
 interface ExecutiveDossierModalProps {
   isOpen: boolean;
@@ -130,9 +131,11 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
             <strong>{auditData.document_filename}</strong> using localized coordinate tokenization and Python Decimal precision arithmetic. The system identified{" "}
             <strong>{auditData.discrepancies.length} material compliance defects</strong> representing a statutory financial exposure of{" "}
             <span className="font-bold text-red-600">
-              ${auditData.discrepancies
-                .reduce((acc, d) => acc + d.exposure_amount, 0)
-                .toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              {formatUsd(
+                sumMoneyStrings(
+                  ...auditData.discrepancies.map((d) => d.exposure_amount)
+                )
+              )}
             </span>.
           </p>
         </div>
@@ -162,7 +165,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
                     <div className="text-[10px] text-slate-600 mt-0.5">{disc.description}</div>
                   </td>
                   <td className="p-2 font-mono font-bold text-red-600 border-r border-slate-300 text-right">
-                    ${disc.exposure_amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    {formatUsd(disc.exposure_amount)}
                   </td>
                   <td className="p-2 font-mono text-slate-600">
                     {(disc.confidence * 100).toFixed(0)}% (pypdf/docling)
@@ -177,7 +180,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
         <div className="p-4 bg-slate-50 border border-slate-300 rounded-xs mb-6">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono mb-1.5 flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-cobalt-600" />
-            <span>3. Samuel's Mandatory Remediation Protocol</span>
+            <span>3. Samuel&apos;s Mandatory Remediation Protocol</span>
           </h4>
           <ol className="list-decimal list-inside text-xs text-slate-700 space-y-1 leading-relaxed">
             <li>
@@ -187,7 +190,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
               <strong>Prior Disclosure Safe Harbor:</strong> Execute voluntary prior disclosure under 19 CFR § 162.74 to cap statutory exposure under 19 U.S.C. § 1592 to lawful interest only.
             </li>
             <li>
-              <strong>Automated Gateway Deployment:</strong> Install Samuel's deterministic pre-payment audit engine to inspect all inbound 7501 summaries and carrier EDI 210 invoices.
+              <strong>Automated Gateway Deployment:</strong> Install Samuel&apos;s deterministic pre-payment audit engine to inspect all inbound 7501 summaries and carrier EDI 210 invoices.
             </li>
           </ol>
         </div>

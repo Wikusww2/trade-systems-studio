@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { AuditResult, Discrepancy } from "@/lib/types";
+import { formatUsd, toDecimalString } from "@/lib/money";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -17,12 +18,6 @@ import {
 } from "lucide-react";
 
 const CONFIDENCE_GATE = 0.85;
-const USD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 export interface ProvenanceEvent {
   id: string;
@@ -133,9 +128,9 @@ export function getProvenanceTrace(discrepancy: Discrepancy): {
       `Spatial Ingest: Docling AST located target field on page ${bbox.page_number} [x:${bbox.x}, y:${bbox.y}]`,
       `Statutory Rule: ${code} citation applied against transactional evidence`,
       `Deterministic Computation: Audited statutory variance evaluated in Python Decimal`,
-      `Exposure Determination: Lawful restitution capped at ${USD.format(discrepancy.exposure_amount)}`,
+      `Exposure Determination: Lawful restitution capped at ${formatUsd(discrepancy.exposure_amount)}`,
     ],
-    formula: `Decimal("${discrepancy.exposure_amount.toFixed(2)}") (Statutory Restitution Baseline)`,
+    formula: `Decimal("${toDecimalString(discrepancy.exposure_amount)}") (Statutory Restitution Baseline)`,
   };
 }
 
@@ -192,8 +187,8 @@ export const ProvenanceMetadataBar: React.FC<{ audit: AuditResult | null }> = ({
         </span>
 
         <span className="flex items-center gap-1.5">
-          <span className="text-ink-muted uppercase">Kernel Latency:</span>
-          <span className="text-ink-emerald font-medium tabular-nums">&lt; 0.09 ms</span>
+          <span className="text-ink-muted uppercase">Core Compute:</span>
+          <span className="text-ink-emerald font-medium tabular-nums">0.303 ms p99</span>
         </span>
 
         <span className="flex items-center gap-1.5">
@@ -250,7 +245,7 @@ export const DecisionProvenanceCard: React.FC<{ discrepancy: Discrepancy }> = ({
       <div className="grid grid-cols-[74px_1fr] gap-2">
         <span className="text-ink-muted uppercase tracking-wider">Exposure</span>
         <span className="type-mono-data text-ink-crimson font-medium tabular-nums">
-          {USD.format(discrepancy.exposure_amount)}
+          {formatUsd(discrepancy.exposure_amount)}
         </span>
       </div>
 

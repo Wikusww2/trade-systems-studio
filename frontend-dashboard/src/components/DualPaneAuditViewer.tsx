@@ -2,64 +2,50 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { AuditResult, KillShotMetrics } from "@/lib/types";
-import { fetchAudit, fetchAggregateMetrics } from "@/lib/api";
+import { fetchAudit, fetchAggregateMetrics, uploadAndAuditDocument } from "@/lib/api";
 import dynamic from "next/dynamic";
-import { DiscrepancyCard } from "./DiscrepancyCard";
 import { LeadCaptureModal } from "./LeadCaptureModal";
-import { BilledVsLawfulDiff } from "./BilledVsLawfulDiff";
 import { PenaltyExposureLadder } from "./PenaltyExposureLadder";
 import { ExecutiveDossierModal } from "./ExecutiveDossierModal";
 import { FilmTheaterModal } from "./FilmTheaterModal";
-import { RollingNumber } from "./RollingNumber";
 import { SanctionsGraphViewer } from "./SanctionsGraphViewer";
 import { HtsClassifierViewer } from "./HtsClassifierViewer";
 import { CustomsValuationViewer } from "./CustomsValuationViewer";
 import { SystemArchitectureModal } from "./SystemArchitectureModal";
 import { ExecutiveTourOverlay } from "./ExecutiveTourOverlay";
-import { CargoWiseXmlViewer } from "./CargoWiseXmlViewer";
-import { DeveloperApiSandbox } from "./DeveloperApiSandbox";
 import { ScenarioSelectorBar, CORRIDOR_SCENARIOS, Scenario } from "./ScenarioSelectorBar";
 import { InlineArchitectureFlow } from "./InlineArchitectureFlow";
 import { ArchitectThesis } from "./ArchitectThesis";
-import { IcpPersonaSwitcher, IcpPersona } from "./IcpPersonaSwitcher";
-import { ProvenanceCockpit, ProvenanceMetadataBar } from "./ProvenanceCockpit";
+import { IcpPersona } from "./IcpPersonaSwitcher";
+import { ProvenanceMetadataBar } from "./ProvenanceCockpit";
 import { MobileBottomNavPill } from "./MobileBottomNavPill";
+import { WorkbenchHeader } from "./WorkbenchHeader";
+import { SystemsHeroSection } from "./SystemsHeroSection";
+import { KillShotMetricsBar } from "./KillShotMetricsBar";
+import { AuditTerminalBay } from "./AuditTerminalBay";
+import { WorkbenchFooter } from "./WorkbenchFooter";
+import { WorkspaceTabBar } from "./WorkspaceTabBar";
 import { sound } from "@/lib/audio";
 import { recordTelemetry } from "@/lib/supabase";
 import { resolveAssetPath } from "@/lib/assets";
-import { auditUploadedPdf } from "@/lib/clientAuditor";
 import { INITIAL_CUSTOMS_NIGHTMARE_FIXTURE } from "@/data/mockData";
-import { VERIFIED_PYTEST_COUNT } from "@/lib/metrics";
 import { ParadigmSwitcher, ParadigmId } from "./ParadigmSwitcher";
 import { Var2TriageQueue } from "./variations/Var2TriageQueue";
-import { ThreeWayResolutionBar } from "./ThreeWayResolutionBar";
 import { FirewallProvider, usePreIngestFirewall, playPseudoHaptic } from "@/lib/firewall-core";
 import {
   Scale,
   DollarSign,
   FileCheck2,
-  Cpu,
   Shield,
-  ArrowRight,
-  ExternalLink,
-  ChevronRight,
-  CheckCircle2,
-  Lock,
-  Menu,
-  X,
   FileText,
   Network,
   Upload,
   Binary,
   Landmark,
-  Code2,
-  Terminal,
-  Zap,
   Columns2,
   Maximize2,
   LayoutList,
   Download,
-  AlertTriangle,
 } from "lucide-react";
 
 const PdfOverlayCanvas = dynamic(
@@ -160,7 +146,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
     sound.playLock();
     setIsLoading(true);
     try {
-      const result = await auditUploadedPdf(file);
+      const result = await uploadAndAuditDocument(file);
       setAuditData(result);
       setActiveConceptId("client_upload_audit");
       setActiveDiscrepancyId(result.discrepancies[0]?.id || null);
@@ -380,110 +366,20 @@ const DualPaneAuditViewerInner: React.FC = () => {
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-transparent text-ink-primary flex flex-col font-sans transition-colors duration-200 relative selection:bg-cobalt-600 selection:text-canvas-stone">
       {/* 1. STICKY MINIMALIST DEVELOPER HEADER (56px) */}
-      <header className="sticky top-0 z-40 bg-terminal-slate/90 backdrop-blur-md border-b border-terminal-subtle px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 w-full max-w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
-          {/* Identity & Practice */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cobalt-600 text-canvas-stone flex items-center justify-center font-mono font-semibold text-xs shadow-md shadow-blue-500/20 shrink-0">
-              S
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="font-mono text-xs font-semibold tracking-wider text-ink-primary uppercase truncate">
-                  SAMUEL
-                </span>
-                <span className="type-caption-mono text-ink-muted hidden sm:inline">·</span>
-                <span className="type-caption-mono text-ink-cobalt uppercase font-medium truncate hidden sm:inline">
-                  TRADE SYSTEMS STUDIO
-                </span>
-              </div>
-              <div className="hidden lg:flex items-center gap-1.5 mt-0.5">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="type-caption-mono text-ink-emerald">
-                  Available for Principal Systems & Forward-Deployed AI
-                </span>
-              </div>
-            </div>
-          </div>
+      <WorkbenchHeader
+        activeParadigm={activeParadigm}
+        onParadigmChange={handleParadigmChange}
+        isMobileNavOpen={isMobileNavOpen}
+        setIsMobileNavOpen={setIsMobileNavOpen}
+        onOpenArchitecture={() => {
+          sound.playTick();
+          setArchitectureModalTab("architecture");
+          setIsArchitectureModalOpen(true);
+        }}
+        onOpenReview={openReview}
+      />
 
-          {/* 2-Way Paradigm Switcher (⌘1-⌘2) */}
-          <div className="hidden sm:flex items-center">
-            <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} />
-          </div>
-
-          {/* Right Action Group */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            <button
-              onClick={() => {
-                sound.playTick();
-                setArchitectureModalTab("architecture");
-                setIsArchitectureModalOpen(true);
-              }}
-              className="px-2.5 sm:px-3 py-1.5 border border-slate-700/80 hover:border-slate-500 bg-terminal-elevated/40 hover:bg-terminal-elevated text-ink-secondary hover:text-ink-primary type-mono-data rounded-md transition-colors flex items-center gap-1.5"
-              title="Open Architecture & Executive Dossier"
-            >
-              <Terminal className="w-3.5 h-3.5 text-ink-cobalt" />
-              <span className="hidden md:inline">Architecture & Dossier</span>
-            </button>
-
-            <button
-              onClick={openReview}
-              className="px-2.5 sm:px-3.5 py-1.5 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-mono font-semibold text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-colors rounded-md shadow-sm"
-            >
-              <span className="hidden sm:inline">Schedule Architecture Review</span>
-              <span className="sm:hidden">Review</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-              aria-label="Toggle navigation"
-              className="sm:hidden p-1.5 text-ink-secondary border border-slate-700 rounded-md shrink-0"
-            >
-              {isMobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Dropdown */}
-        {isMobileNavOpen && (
-          <div className="sm:hidden pt-3 pb-2 mt-2 border-t border-terminal-subtle space-y-2 type-mono-data">
-            <div className="pb-2 flex justify-center">
-              <ParadigmSwitcher activeParadigm={activeParadigm} onChange={handleParadigmChange} showLabel={false} />
-            </div>
-            <a
-              href="#workbench"
-              onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-ink-secondary hover:bg-slate-800 rounded-md"
-            >
-              #workbench
-            </a>
-            <a
-              href="#architecture"
-              onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-ink-secondary hover:bg-slate-800 rounded-md"
-            >
-              #architecture
-            </a>
-            <a
-              href="#architect-thesis"
-              onClick={() => setIsMobileNavOpen(false)}
-              className="block px-2 py-1.5 text-ink-secondary hover:bg-slate-800 rounded-md"
-            >
-              #architect-thesis
-            </a>
-            <button
-              onClick={openReview}
-              className="w-full mt-2 py-2 px-3 bg-cobalt-600 text-canvas-stone font-semibold text-xs uppercase tracking-wider rounded-md text-center"
-            >
-              Schedule Architecture Review
-            </button>
-          </div>
-        )}
-      </header>
-
-      <main>
+      <main id="main-content">
         {/* Mobile Paradigm Switcher Bar (only when menu is closed) */}
         {!isMobileNavOpen && (
           <div className="sm:hidden px-3 py-2 bg-canvas-dark border-b border-terminal-subtle flex items-center justify-center">
@@ -496,101 +392,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
         ) : (
           <>
       {/* 2. ACT 1: ABOVE-THE-FOLD SYSTEMS HERO */}
-      <section className="border-b border-terminal-subtle bg-terminal-slate/40 py-8 lg:py-12 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl">
-            {/* Verification + Executive Lens */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
-              <div className="flex flex-wrap items-center gap-2 type-mono-data">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-cobalt-950/80 border border-cobalt-800 text-cobalt-300 rounded-md font-medium">
-                  <Zap className="w-3.5 h-3.5 text-ink-cobalt" />
-                  <span>Deterministic Pre-Ingest Firewall</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-terminal-elevated border border-terminal-subtle text-ink-secondary rounded-md">
-                  <Cpu className="w-3.5 h-3.5 text-ink-emerald" />
-                  <span>CargoWise UniversalShipment XML &amp; ACE Ready</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-terminal-elevated border border-terminal-subtle text-ink-secondary rounded-md tabular-nums">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-ink-emerald" />
-                  <span>{`${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Automated Tests Passing`}</span>
-                </span>
-              </div>
-
-              <IcpPersonaSwitcher persona={persona} onChange={setPersona} />
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-ink-primary tracking-[-0.025em] leading-[1.15] text-balance mb-4">
-              Deterministic Pre-Ingest Verification for{" "}
-              <span className="text-ink-cobalt">CargoWise &amp; ACE</span>
-            </h1>
-
-            <p className="type-body-default sm:text-base text-ink-secondary leading-relaxed mb-6 font-normal">
-              Intercepting <span className="statutory-cite">19 U.S.C. § 1592</span> customs penalties, carrier accessorial overbilling, and GRI misclassifications before UniversalShipment XML enters your TMS. Built with sub-50ms execution, zero floating-point drift, and 100% Python Decimal precision.
-            </p>
-
-            {/* Executive Lens Takeaway */}
-            <div className="mb-6 pl-3 border-l-2 border-cobalt-600">
-              <div className="type-caption-mono uppercase text-ink-cobalt font-medium mb-1">
-                {persona === "cfo"
-                  ? "CFO / EBITDA lens"
-                  : persona === "counsel"
-                  ? "General Counsel lens"
-                  : "CTO / Platform lens"}
-              </div>
-              <p className="type-body-default text-ink-secondary max-w-2xl">
-                {persona === "cfo"
-                  ? "Cash leaks at the carrier invoice and the duty payment. Both are intercepted here before the wire releases: 5% to 15% of freight spend is recoverable billing error, not cost of doing business."
-                  : persona === "counsel"
-                  ? "Every finding cites its statute and carries a contestable provenance record. 19 U.S.C. § 1592 negligence exposure runs 0.25x to 4.0x lawful duty loss (quantified from the entry, not estimated)."
-                  : `No external API in the critical path. Deterministic fallback keeps the engine live offline, ${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} pytest tests verify the kernel, and Python Decimal eliminates floating-point drift in every statutory figure.`}
-              </p>
-            </div>
-
-            {/* Systems Metrics Strip: documented benchmarks only */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-terminal-subtle">
-              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
-                <div className="type-caption-mono uppercase text-ink-muted">
-                  Core Throughput
-                </div>
-                <div className="text-base sm:text-lg font-mono font-semibold text-ink-cobalt tabular-nums">
-                  6,496 /sec
-                </div>
-                <div className="type-caption-mono text-ink-muted">Statutory core evals</div>
-              </div>
-
-              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
-                <div className="type-caption-mono uppercase text-ink-muted">
-                  p99 Latency
-                </div>
-                <div className="text-base sm:text-lg font-mono font-semibold text-ink-cobalt tabular-nums">
-                  &lt; 0.31 ms
-                </div>
-                <div className="type-caption-mono text-ink-muted">Core (&lt;60ms 2p PDF)</div>
-              </div>
-
-              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
-                <div className="type-caption-mono uppercase text-ink-muted">
-                  Arithmetic Standard
-                </div>
-                <div className="text-base sm:text-lg font-mono font-semibold text-ink-emerald tabular-nums">
-                  100% Decimal
-                </div>
-                <div className="type-caption-mono text-ink-muted">Zero LLM Calculations</div>
-              </div>
-
-              <div className="p-3 bg-terminal-slate border border-terminal-subtle rounded-lg">
-                <div className="type-caption-mono uppercase text-ink-muted">
-                  Carrier Leakage Intercept
-                </div>
-                <div className="text-base sm:text-lg font-mono font-semibold text-ink-crimson tabular-nums">
-                  5% to 15%
-                </div>
-                <div className="type-caption-mono text-ink-muted">Pre-Payment Guard</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <SystemsHeroSection persona={persona} onChangePersona={setPersona} />
 
       {/* 3. DUAL-PANE AUDIT WORKBENCH (ACT 1 CONTINUED) */}
       <section id="workbench" className="max-w-7xl w-full max-w-full overflow-hidden mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -603,124 +405,21 @@ const DualPaneAuditViewerInner: React.FC = () => {
         />
 
         {/* Workspace Tab Bar: the six engineering surfaces + Desktop Layout Mode */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4 pb-2 border-b border-[#1F2937] font-mono text-xs">
-          <div className="flex items-center gap-2 overflow-x-auto max-w-full">
-            <span className="text-[10px] text-slate-400 uppercase font-bold shrink-0">
-              Workspace:
-            </span>
-            {ALL_PILLARS.map((pillar) => {
-              const isActive = activeConceptId === pillar.id;
-              return (
-                <button
-                  key={pillar.id}
-                  onClick={() => switchConcept(pillar.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border whitespace-nowrap transition-colors ${
-                    isActive
-                      ? "bg-terminal-elevated border-cobalt-500 text-ink-primary shadow-sm ring-1 ring-cobalt-500/50"
-                      : "bg-terminal-slate border-terminal-subtle text-ink-muted hover:text-ink-primary"
-                  }`}
-                >
-                  {pillar.icon}
-                  <span>{pillar.shortTag}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Export Board & Counsel Audit Packet + Desktop 3-Way Layout Mode Switcher */}
-          <div className="hidden lg:flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => exportAuditPacket()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-mono text-xs font-semibold uppercase tracking-wider transition-colors shadow-xs"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Export Board & Counsel Audit Packet</span>
-            </button>
-            <div className="flex items-center gap-1 p-0.5 bg-terminal-slate border border-terminal-subtle rounded-lg shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                sound.playTick();
-                setDesktopViewMode("split");
-              }}
-              title="Split View (60/40)"
-              className={`flex items-center gap-1 px-2.5 py-1 rounded type-caption-mono transition-colors ${
-                desktopViewMode === "split"
-                  ? "bg-cobalt-600 text-canvas-stone font-medium shadow-xs"
-                  : "text-ink-muted hover:text-ink-primary"
-              }`}
-            >
-              <Columns2 className="w-3 h-3" />
-              <span>Split View</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                sound.playTick();
-                setDesktopViewMode("doc_focus");
-              }}
-              title="Focus on Document"
-              className={`flex items-center gap-1 px-2.5 py-1 rounded type-caption-mono transition-colors ${
-                desktopViewMode === "doc_focus"
-                  ? "bg-cobalt-600 text-canvas-stone font-medium shadow-xs"
-                  : "text-ink-muted hover:text-ink-primary"
-              }`}
-            >
-              <FileText className="w-3 h-3" />
-              <span>Document Only</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                sound.playTick();
-                setDesktopViewMode("report_focus");
-              }}
-              title="Focus on Forensic Report"
-              className={`flex items-center gap-1 px-2.5 py-1 rounded type-caption-mono transition-colors ${
-                desktopViewMode === "report_focus"
-                  ? "bg-cobalt-600 text-canvas-stone font-medium shadow-xs"
-                  : "text-ink-muted hover:text-ink-primary"
-              }`}
-            >
-              <LayoutList className="w-3 h-3" />
-              <span>Report Only</span>
-            </button>
-          </div>
-        </div>
-      </div>
+        <WorkspaceTabBar
+          pillars={ALL_PILLARS}
+          activeConceptId={activeConceptId}
+          onSelectConcept={switchConcept}
+          onExportAuditPacket={() => exportAuditPacket()}
+          desktopViewMode={desktopViewMode}
+          setDesktopViewMode={setDesktopViewMode}
+        />
 
         {/* Dynamic Kill Shot Metrics Flash Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 font-mono">
-          <div className="bg-terminal-slate border border-terminal-subtle px-4 py-3 rounded-lg">
-            <div className="type-caption-mono uppercase text-ink-muted">
-              19 U.S.C. § 1592 Exposure Avoided
-            </div>
-            <div className="type-display-md sm:type-display-lg font-mono text-ink-crimson tabular-nums mt-0.5">
-              <RollingNumber value={displayedExposureAvoided} />
-            </div>
-            <div className="type-caption-mono text-ink-muted mt-0.5">Statutory safe-harbor mitigation</div>
-          </div>
-
-          <div className="bg-terminal-slate border border-terminal-subtle px-4 py-3 rounded-lg">
-            <div className="type-caption-mono uppercase text-ink-muted">
-              Pre-Payment Freight Overbilling Intercepted
-            </div>
-            <div className="type-display-md sm:type-display-lg font-mono text-ink-crimson tabular-nums mt-0.5">
-              <RollingNumber value={displayedCarrierOverbilling} />
-            </div>
-            <div className="type-caption-mono text-ink-muted mt-0.5">Withheld prior to cash disbursement</div>
-          </div>
-
-          <div className="bg-terminal-slate border border-terminal-subtle px-4 py-3 rounded-lg">
-            <div className="type-caption-mono uppercase text-ink-muted">
-              99% Duty Drawback Cash Unlocked
-            </div>
-            <div className="type-display-md sm:type-display-lg font-mono text-ink-emerald tabular-nums mt-0.5">
-              <RollingNumber value={displayedDrawback} />
-            </div>
-            <div className="type-caption-mono text-ink-muted mt-0.5">19 U.S.C. § 1313 direct cash refund</div>
-          </div>
-        </div>
+        <KillShotMetricsBar
+          exposureAvoided={displayedExposureAvoided}
+          carrierOverbilling={displayedCarrierOverbilling}
+          drawbackUnlocked={displayedDrawback}
+        />
 
         {/* Hidden Client PDF Input */}
         <input
@@ -776,194 +475,19 @@ const DualPaneAuditViewerInner: React.FC = () => {
             </div>
 
             {/* RIGHT PANE: Interactive Terminal Bay with 3 Sub-Tabs */}
-            <div
-              className={`h-full flex-col bg-[#0F172A] overflow-hidden transition-all duration-200 ${
-                mobileTab === "findings" ? "flex w-full" : "hidden lg:flex"
-              } ${
-                desktopViewMode === "report_focus"
-                  ? "lg:w-full lg:flex"
-                  : desktopViewMode === "doc_focus"
-                  ? "lg:hidden"
-                  : "lg:w-2/5"
-              }`}
-            >
-              {/* Terminal Bay Header & Tabs */}
-              <div className="px-4 py-3 bg-[#0B0F19] border-b border-[#1F2937] flex items-center justify-between shrink-0 font-mono text-xs">
-                <div className="inline-flex p-0.5 bg-[#0F172A] border border-[#1F2937] rounded-lg">
-                  <button
-                    onClick={() => {
-                      sound.playTick();
-                      setRightTerminalTab("discrepancies");
-                    }}
-                    className={`px-2.5 py-1 rounded-md type-caption-mono font-medium transition-colors ${
-                      rightTerminalTab === "discrepancies"
-                        ? "bg-cobalt-600 text-canvas-stone shadow-xs"
-                        : "text-ink-muted hover:text-ink-primary"
-                    }`}
-                  >
-                    Findings ({auditData?.discrepancies.length || 0})
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sound.playLock();
-                      setRightTerminalTab("cargowise");
-                    }}
-                    className={`px-2.5 py-1 rounded-md type-caption-mono font-medium transition-colors flex items-center gap-1 ${
-                      rightTerminalTab === "cargowise"
-                        ? "bg-cobalt-600 text-canvas-stone shadow-xs"
-                        : "text-ink-muted hover:text-ink-primary"
-                    }`}
-                  >
-                    <Code2 className="w-3 h-3" />
-                    <span>CargoWise XML</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sound.playLock();
-                      setRightTerminalTab("developer_api");
-                    }}
-                    className={`px-2.5 py-1 rounded-md type-caption-mono font-medium transition-colors flex items-center gap-1 ${
-                      rightTerminalTab === "developer_api"
-                        ? "bg-cobalt-600 text-canvas-stone shadow-xs"
-                        : "text-ink-muted hover:text-ink-primary"
-                    }`}
-                  >
-                    <Terminal className="w-3 h-3" />
-                    <span>API Sandbox</span>
-                  </button>
-                </div>
-
-                {/* PDF Link */}
-                {(() => {
-                  const safePdfPath = auditData?.document_url || (auditData?.document_filename ? `/nightmares/${auditData.document_filename}` : "/nightmares/nightmare_01_customs_ci.pdf");
-                  return (
-                    <a
-                      href={resolveAssetPath(safePdfPath)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs font-mono text-slate-400 hover:text-blue-400 flex items-center gap-1 border border-[#1F2937] px-2 py-1 rounded-md transition-colors"
-                    >
-                      <span>PDF</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  );
-                })()}
-              </div>
-
-              {/* Sub-Tab 1: Discrepancies Redline */}
-              {rightTerminalTab === "discrepancies" && (
-                <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
-                  {/* Honest Disclaimer Banner for Uploaded Heuristic Scans */}
-                  {activeConceptId === "client_upload_audit" && (
-                    <div className="p-3 bg-amber-950/40 border border-amber-600/70 rounded-lg text-amber-200 text-xs font-mono flex items-start gap-2.5 shadow-sm">
-                      <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <div className="space-y-1">
-                        <div className="font-bold text-amber-300 uppercase tracking-wide text-[11px]">
-                          Demonstration Heuristic Inspection
-                        </div>
-                        <div className="text-[11px] leading-relaxed text-amber-200/90">
-                          Demonstration heuristic pattern matcher running in browser. Does not certify compliance or replace licensed customs broker review.
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <ProvenanceCockpit discrepancy={activeDiscrepancy} />
-
-                  <BilledVsLawfulDiff conceptId={activeConceptId} />
-
-                  {activeConceptId === "concept_clean_fob" ? (
-                    <div className="p-4 bg-emerald-950/20 border border-emerald-800/60 rounded-lg font-mono space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-md bg-emerald-950 border border-emerald-600 text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                            <span>Clean Commercial Baseline</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-900/60 border border-emerald-700 text-emerald-300 rounded-sm">
-                              BASELINE VERIFIED
-                            </span>
-                          </div>
-                          <div className="text-[11px] text-slate-400 mt-0.5">
-                            Standard FOB commercial invoice with verified non-dutiable terms and zero flagged defects.
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-3 bg-[#0B0F19] border border-emerald-900/40 rounded-md space-y-2 text-xs">
-                        <div className="flex items-center justify-between text-slate-300 pb-1.5 border-b border-[#1F2937]">
-                          <span className="text-slate-400">19 U.S.C. § 1592 Penalty Exposure:</span>
-                          <span className="font-bold text-emerald-400">$0.00 (Zero Duty Loss)</span>
-                        </div>
-                        <div className="flex items-center justify-between text-slate-300 pb-1.5 border-b border-[#1F2937]">
-                          <span className="text-slate-400">Incoterms 2020 Allocation:</span>
-                          <span className="font-bold text-emerald-400">FOB Yantian (Non-Dutiable)</span>
-                        </div>
-                        <div className="flex items-center justify-between text-slate-300 pb-1.5 border-b border-[#1F2937]">
-                          <span className="text-slate-400">Line Extension Math (500 × $45):</span>
-                          <span className="font-bold text-emerald-400">$22,500.00 (Verified)</span>
-                        </div>
-                        <div className="flex items-center justify-between text-slate-300">
-                          <span className="text-slate-400">HTS Classification Match:</span>
-                          <span className="font-bold text-emerald-400">8542.31.0001 (Microcontrollers)</span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : activeConceptId === "client_upload_audit" && auditData?.discrepancies.length === 0 ? (
-                    <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-lg font-mono text-center space-y-2">
-                      <div className="text-xs font-bold text-slate-300">
-                        Zero Keyword Anomalies Detected by Browser Scanner
-                      </div>
-                      <div className="text-[11px] text-slate-400 max-w-sm mx-auto">
-                        No common pattern triggers (such as CIF without marine insurance or detention surcharges) were flagged in this file. This heuristic check does not constitute a formal statutory audit.
-                      </div>
-                    </div>
-                  ) : (
-                    auditData?.discrepancies.map((disc) => (
-                      <div key={disc.id} className="space-y-2">
-                        <DiscrepancyCard
-                          key={disc.id}
-                          discrepancy={disc}
-                          isActive={activeDiscrepancyId === disc.id}
-                          onHover={setActiveDiscrepancyId}
-                          onClick={handleCardClick}
-                          onFocusMobileDoc={() => {
-                            setActiveDiscrepancyId(disc.id);
-                            setMobileTab("doc");
-                          }}
-                        />
-                        {(disc.confidence < 0.85 || disc.severity === "critical") && (
-                          <div className="pl-2 border-l-2 border-amber-500/60">
-                            <ThreeWayResolutionBar
-                              discrepancyId={disc.id}
-                              confidence={disc.confidence}
-                              statutoryCode={disc.statutory_code}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-
-              {/* Sub-Tab 2: CargoWise eAdaptor XML Viewer */}
-              {rightTerminalTab === "cargowise" && (
-                <div className="flex-1 overflow-y-auto p-4">
-                  <CargoWiseXmlViewer />
-                </div>
-              )}
-
-              {/* Sub-Tab 3: Developer API Sandbox */}
-              {rightTerminalTab === "developer_api" && (
-                <div className="flex-1 overflow-y-auto p-4">
-                  <DeveloperApiSandbox />
-                </div>
-              )}
-            </div>
+            <AuditTerminalBay
+              activeConceptId={activeConceptId}
+              auditData={auditData}
+              activeDiscrepancy={activeDiscrepancy}
+              activeDiscrepancyId={activeDiscrepancyId}
+              setActiveDiscrepancyId={setActiveDiscrepancyId}
+              handleCardClick={handleCardClick}
+              rightTerminalTab={rightTerminalTab}
+              setRightTerminalTab={setRightTerminalTab}
+              mobileTab={mobileTab}
+              setMobileTab={setMobileTab}
+              desktopViewMode={desktopViewMode}
+            />
           </div>
         )}
       </section>
@@ -1001,42 +525,7 @@ const DualPaneAuditViewerInner: React.FC = () => {
       </main>
 
       {/* 9. ENTERPRISE FOOTER */}
-      <footer className="border-t border-terminal-subtle bg-terminal-slate py-10 mt-12 type-mono-data text-ink-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="max-w-xl text-center md:text-left">
-            <h3 className="type-heading-sm text-ink-primary mb-1">
-              Trade Systems Studio: Deterministic Trade Compliance Engineering
-            </h3>
-            <p className="type-body-dense text-ink-muted">
-              Built and maintained by Samuel Rencken. Every statutory figure computed in Python Decimal, every finding traceable to its source clause.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={openReview}
-              className="px-5 py-2.5 bg-cobalt-600 hover:bg-cobalt-500 text-canvas-stone font-semibold font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors rounded-md"
-            >
-              <span>Schedule Architecture Review</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-[#1F2937] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            © {new Date().getFullYear()} Samuel Rencken · Trade Systems Studio. All rights reserved.
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1">
-              <Lock className="w-3 h-3 text-slate-400" />
-              <span>Attorney-Client & NDA Protected</span>
-            </span>
-            <span>·</span>
-            <span>Zero Data Retention</span>
-          </div>
-        </div>
-      </footer>
+      <WorkbenchFooter onOpenReview={openReview} />
 
       {/* MODALS */}
       <LeadCaptureModal

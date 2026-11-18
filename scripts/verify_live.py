@@ -1,5 +1,5 @@
-import urllib.request
 import sys
+import urllib.request
 
 url = "https://sssammyboyyy.github.io/trade-systems-studio/"
 req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})

@@ -1,5 +1,6 @@
 import asyncio
 import sys
+
 from playwright.async_api import async_playwright
 
 BASE_URL = "https://sssammyboyyy.github.io/trade-systems-studio/"

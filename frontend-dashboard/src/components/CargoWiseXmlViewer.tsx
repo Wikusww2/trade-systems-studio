@@ -23,7 +23,7 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
   <Header>
     <SenderID>TRADESYSTEMS_PREAUDIT</SenderID>
     <RecipientID>CW1_EADAPTOR_PRD</RecipientID>
-    <CorrelationID>9b5c9c8e-8a5b-40ed-91a5-4a4fe9060dbd</CorrelationID>
+    <CorrelationID>CW-C9F321B08E14A702</CorrelationID>
   </Header>
   <Body>
     <UniversalShipment xmlns="http://www.cargowise.com/Schemas/Universal/2011/11" version="1.1">
@@ -34,12 +34,14 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
             <DataTarget><Type>CustomsDeclaration</Type><Key>B00001000</Key></DataTarget>
           </DataTargetCollection>
         </DataContext>
+        <PortOfOrigin><Code>ZADUR</Code><Name>Durban</Name></PortOfOrigin>
+        <PortOfDestination><Code>NLRTM</Code><Name>Rotterdam</Name></PortOfDestination>
         <CommercialInvoiceCollection>
           <CommercialInvoice>
             <InvoiceNumber>CI-2026-01</InvoiceNumber>
             <Incoterm><Code>CIF</Code></Incoterm>
             <InvoiceAmount Currency="USD">148500.00</InvoiceAmount>
-            <!-- DEFECT: Missing CIF Marine Insurance apportionment -->
+            <!-- DEFECT: Missing CIF Marine Insurance apportionment under EU UCC -->
             <InsuranceAmount Currency="USD">0.00</InsuranceAmount>
             <CommercialInvoiceLineCollection>
               <CommercialInvoiceLine>
@@ -58,6 +60,11 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
             <DataType>String</DataType>
             <Value>UNVERIFIED_RAW_INGEST</Value>
           </CustomizedField>
+          <CustomizedField>
+            <Key>PenaltyExposureMitigated</Key>
+            <DataType>String</DataType>
+            <Value>UNAUDITED_DEFECT_EXPOSURE</Value>
+          </CustomizedField>
         </CustomizedFieldCollection>
       </Shipment>
     </UniversalShipment>
@@ -69,7 +76,7 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
   <Header>
     <SenderID>TRADESYSTEMS_PREAUDIT</SenderID>
     <RecipientID>CW1_EADAPTOR_PRD</RecipientID>
-    <CorrelationID>9b5c9c8e-8a5b-40ed-91a5-4a4fe9060dbd</CorrelationID>
+    <CorrelationID>CW-C9F321B08E14A702</CorrelationID>
   </Header>
   <Body>
     <UniversalShipment xmlns="http://www.cargowise.com/Schemas/Universal/2011/11" version="1.1">
@@ -90,7 +97,7 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
             <InvoiceNumber>CI-2026-01</InvoiceNumber>
             <Incoterm><Code>CIF</Code></Incoterm>
             <InvoiceAmount Currency="USD">148500.00</InvoiceAmount>
-            <!-- RECONCILED: Recomputed & added missing CIF Marine Insurance under 19 CFR § 152.103 -->
+            <!-- RECONCILED: Itemized CIF Marine Insurance under EU Union Customs Code (Reg. (EU) 952/2013, Art. 71) -->
             <InsuranceAmount Currency="USD">1450.00</InsuranceAmount>
             <CommercialInvoiceLineCollection>
               <CommercialInvoiceLine>
@@ -112,7 +119,7 @@ export const CargoWiseXmlViewer: React.FC<CargoWiseXmlViewerProps> = ({
           <CustomizedField>
             <Key>PenaltyExposureMitigated</Key>
             <DataType>String</DataType>
-            <Value>19_USC_1592_PROTECTED</Value>
+            <Value>EU_UCC_COMPLIANT</Value>
           </CustomizedField>
         </CustomizedFieldCollection>
       </Shipment>

@@ -7,26 +7,36 @@ strict Python Decimal fee aggregation.
 
 import os
 import re
-from decimal import ROUND_HALF_UP, Decimal
-from typing import Dict
+from decimal import Decimal
+from typing import Dict, Optional
 
+from app.core.statutory_rates import (
+    DEFAULT_MPF_FISCAL_YEAR,
+    HMF_AD_VALOREM_RATE,
+    MPF_AD_VALOREM_RATE,
+    MPF_CAPS_BY_FY,
+    calculate_hmf,
+    calculate_mpf,
+    get_mpf_caps,
+    get_section_301_rate,
+)
 from app.models.hts_models import (
     ClassificationRequest,
     GRIDecisionNode,
     HTSClassificationResult,
     LandedCostBreakdown,
 )
+from app.services.utils import quantize_currency
 
 # Statutory Constants
-MPF_RATE = Decimal("0.003464")
+MPF_RATE = MPF_AD_VALOREM_RATE
+HMF_RATE = HMF_AD_VALOREM_RATE
 MPF_CAPS = {
-    "FY2024": {"min": Decimal("31.67"), "max": Decimal("614.35")},
-    "FY2025": {"min": Decimal("32.71"), "max": Decimal("634.62")},
+    fy: {"min": caps[0], "max": caps[1]}
+    for fy, caps in MPF_CAPS_BY_FY.items()
 }
-# Default to FY2025 caps (89 FR 60685) while supporting FY2024
-MPF_MIN = MPF_CAPS["FY2025"]["min"]
-MPF_MAX = MPF_CAPS["FY2025"]["max"]
-HMF_RATE = Decimal("0.00125")
+# Active default FY2027 caps (91 FR 48398) while supporting FY2024-FY2026
+MPF_MIN, MPF_MAX = get_mpf_caps(DEFAULT_MPF_FISCAL_YEAR)
 CONFIDENCE_THRESHOLD = 0.85
 
 # Non-apparatus exclusions under WCO GRI 1 to prevent polysemous keyword collisions (C3)
@@ -46,52 +56,60 @@ def calculate_landed_cost(
     duty_rate_ad_valorem: Decimal,
     is_ocean_freight: bool = True,
     freight_and_insurance: Decimal = Decimal("0.00"),
-    fiscal_year: str = "FY2025",
+    fiscal_year: str = DEFAULT_MPF_FISCAL_YEAR,
+    country_of_origin: Optional[str] = None,
+    hts_code: Optional[str] = None,
+    section_301_rate: Optional[Decimal] = None,
 ) -> LandedCostBreakdown:
     """Calculate US Customs Landed Cost using statutory formulas and Python Decimal."""
     # Ensure standard 2-decimal quantization for currency values
-    entered_val_quantized = entered_value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-    freight_quantized = freight_and_insurance.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    entered_val_quantized = quantize_currency(entered_value)
+    freight_quantized = quantize_currency(freight_and_insurance)
 
-    # Customs Duty: Value * Rate
-    customs_duty = (entered_val_quantized * duty_rate_ad_valorem).quantize(
-        Decimal("0.01"), rounding=ROUND_HALF_UP
-    )
+    # General Customs Duty: Value * Rate
+    customs_duty = quantize_currency(entered_val_quantized * duty_rate_ad_valorem)
 
-    # Merchandise Processing Fee (19 CFR § 24.23): 0.3464%
-    caps = MPF_CAPS.get(fiscal_year.upper(), MPF_CAPS["FY2025"])
-    mpf_min_cap = caps["min"]
-    mpf_max_cap = caps["max"]
+    # USTR Section 301 Chapter 99 Country-of-Origin Surcharge (19 U.S.C. § 2411)
+    sec_subheading: Optional[str] = None
+    if section_301_rate is not None:
+        sec_rate = section_301_rate
+        if sec_rate > Decimal("0.00"):
+            sec_subheading = "9903.88.01"
+    elif hts_code and country_of_origin:
+        sec_rate, sec_subheading = get_section_301_rate(hts_code, country_of_origin)
+    else:
+        sec_rate = Decimal("0.00")
 
-    raw_mpf = (entered_val_quantized * MPF_RATE).quantize(
-        Decimal("0.01"), rounding=ROUND_HALF_UP
-    )
-    mpf_fee = min(max(raw_mpf, mpf_min_cap), mpf_max_cap)
+    section_301_duty = quantize_currency(entered_val_quantized * sec_rate)
+
+    # Merchandise Processing Fee (19 CFR § 24.23): 0.3464% clamped between caps
+    min_cap, max_cap = get_mpf_caps(fiscal_year)
+    mpf_fee = calculate_mpf(entered_val_quantized, fiscal_year)
 
     # Harbor Maintenance Fee (19 CFR § 24.24): 0.125% for ocean freight, $0 for air/truck
-    if is_ocean_freight:
-        hmf_fee = (entered_val_quantized * HMF_RATE).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-    else:
-        hmf_fee = Decimal("0.00")
+    transport_mode = "ocean" if is_ocean_freight else "air"
+    hmf_fee = calculate_hmf(entered_val_quantized, transport_mode)
 
-    total_customs_cost = customs_duty + mpf_fee + hmf_fee
+    total_customs_cost = customs_duty + section_301_duty + mpf_fee + hmf_fee
     total_landed_cost = entered_val_quantized + total_customs_cost + freight_quantized
 
     return LandedCostBreakdown(
         entered_value=entered_val_quantized,
         duty_rate_ad_valorem=duty_rate_ad_valorem,
         customs_duty=customs_duty,
+        section_301_rate=sec_rate,
+        section_301_duty=section_301_duty,
+        section_301_subheading=sec_subheading,
         mpf_rate=MPF_RATE,
-        mpf_min_cap=mpf_min_cap,
-        mpf_max_cap=mpf_max_cap,
+        mpf_min_cap=min_cap,
+        mpf_max_cap=max_cap,
         mpf_fee=mpf_fee,
         hmf_rate=HMF_RATE if is_ocean_freight else Decimal("0.00"),
         hmf_fee=hmf_fee,
         freight_and_insurance=freight_quantized,
         total_customs_cost=total_customs_cost,
         total_landed_cost=total_landed_cost,
+        fiscal_year=fiscal_year.upper(),
     )
 
 
@@ -359,6 +377,8 @@ class HTSClassifierEngine:
             duty_rate_ad_valorem=preset["duty_rate"],
             is_ocean_freight=request.is_ocean_freight,
             freight_and_insurance=request.freight_and_insurance,
+            country_of_origin=request.country_of_origin,
+            hts_code=preset["hts_code"],
         )
 
         overall_conf = preset["confidence"]

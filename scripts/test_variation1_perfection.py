@@ -1,8 +1,9 @@
 import asyncio
 import os
 import sys
-from http.server import HTTPServer, SimpleHTTPRequestHandler
 import threading
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+
 from playwright.async_api import async_playwright
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

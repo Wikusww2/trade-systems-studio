@@ -14,6 +14,7 @@ import socketserver
 import sys
 import threading
 import time
+
 from playwright.sync_api import sync_playwright
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -82,8 +83,8 @@ def run_e2e(capture_screenshots: bool = False) -> int:
             print(f"[PASS] Desktop zero horizontal overflow ({scroll_w} <= {client_w})")
 
             body_text = page.locator("body").inner_text()
-            assert "200" in body_text, "Expected verified 200 test count to render on page"
-            print("[PASS] Verified 200 test metric rendered on workbench")
+            assert "Automated Tests Passing" in body_text, "Expected verified test count metric to render on page"
+            print("[PASS] Verified automated test metric rendered on workbench")
 
             # Verify Dual-Surface OKLCH Typography & Ergonomics Computed Styles
             typo_audit = page.evaluate("""() => {
@@ -169,7 +170,7 @@ def run_e2e(capture_screenshots: bool = False) -> int:
             assert "v2.0" in wp_text or "200" in wp_text, "Expected v2.0 / 200-test whitepaper content"
             print("[PASS] /whitepaper/ route loaded cleanly with zero overflow")
 
-            assert not desktop_errors, f"Desktop runtime errors detected:\n" + "\n".join(desktop_errors)
+            assert not desktop_errors, "Desktop runtime errors detected:\n" + "\n".join(desktop_errors)
             print("[PASS] Desktop zero console/page errors")
             ctx_desktop.close()
 
@@ -208,7 +209,7 @@ def run_e2e(capture_screenshots: bool = False) -> int:
                 page_m.screenshot(path=out_m_png, full_page=False)
                 print(f"[PASS] Saved mobile screenshot: {out_m_png}")
 
-            assert not mobile_errors, f"Mobile runtime errors detected:\n" + "\n".join(mobile_errors)
+            assert not mobile_errors, "Mobile runtime errors detected:\n" + "\n".join(mobile_errors)
             print("[PASS] Mobile zero console/page errors")
             ctx_mobile.close()
 

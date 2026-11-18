@@ -207,16 +207,25 @@ class TestTier1FeatureCoverage:
         assert res.classified_hts_code != "8501.31.8000", "Substring 'esc' in 'description' incorrectly triggered drone motor"
 
     def test_f3_05_landed_cost_statutory_mpf_fy2025_statutory_caps(self):
-        """F3.5: Landed cost calculator must use updated FY2025 MPF caps ($32.71 min, $634.62 max) (M3)."""
-        # Low value test: $1,000 * 0.003464 = $3.46, below floor -> clamped to min cap
+        """F3.5: Landed cost calculator must use active FY2027 MPF caps ($34.58 min, $670.86 max) with FY2025 support (M3)."""
+        # Active FY2027 default
         landed_low = calculate_landed_cost(
             entered_value=Decimal("1000.00"),
             duty_rate_ad_valorem=Decimal("0.00"),
             is_ocean_freight=False,
         )
-        assert landed_low.mpf_min_cap == Decimal("32.71"), f"Stale MPF minimum cap: expected $32.71, got {landed_low.mpf_min_cap}"
-        assert landed_low.mpf_max_cap == Decimal("634.62"), f"Stale MPF maximum cap: expected $634.62, got {landed_low.mpf_max_cap}"
-        assert landed_low.mpf_fee == Decimal("32.71"), f"MPF fee below minimum cap: got {landed_low.mpf_fee}"
+        assert landed_low.mpf_min_cap == Decimal("34.58"), f"Stale MPF minimum cap: expected $34.58, got {landed_low.mpf_min_cap}"
+        assert landed_low.mpf_max_cap == Decimal("670.86"), f"Stale MPF maximum cap: expected $670.86, got {landed_low.mpf_max_cap}"
+        assert landed_low.mpf_fee == Decimal("34.58"), f"MPF fee below minimum cap: got {landed_low.mpf_fee}"
+
+        # FY2025 compatibility
+        landed_fy25 = calculate_landed_cost(
+            entered_value=Decimal("1000.00"),
+            duty_rate_ad_valorem=Decimal("0.00"),
+            is_ocean_freight=False,
+            fiscal_year="FY2025",
+        )
+        assert landed_fy25.mpf_fee == Decimal("32.71")
 
         # High value test: $1,000,000 * 0.003464 = $3,464.00, above ceiling -> clamped to max cap
         landed_high = calculate_landed_cost(
@@ -224,7 +233,7 @@ class TestTier1FeatureCoverage:
             duty_rate_ad_valorem=Decimal("0.00"),
             is_ocean_freight=False,
         )
-        assert landed_high.mpf_fee == Decimal("634.62"), f"MPF fee above maximum cap: got {landed_high.mpf_fee}"
+        assert landed_high.mpf_fee == Decimal("670.86"), f"MPF fee above maximum cap: got {landed_high.mpf_fee}"
 
     def test_f3_06_adversarial_non_motor_goods_require_broker_review(self):
         """F3.6: Verify unrelated goods with isolated keywords do not classify as drone motors (C3 Challenger Fix)."""
@@ -942,16 +951,16 @@ class TestTier2BoundaryAndCornerCases:
         assert eval_res.blocking_entities[0]["ownership_pct"] == 49.99
 
     def test_t2_13_boundary_statutory_mpf_minimum_floor(self):
-        """T2.13: Entered value yielding raw MPF < $32.71 is clamped to the statutory floor."""
+        """T2.13: Entered value yielding raw MPF < $34.58 is clamped to the statutory floor."""
         landed = calculate_landed_cost(entered_value=Decimal("500.00"), duty_rate_ad_valorem=Decimal("0.00"))
         # 500 * 0.003464 = 1.73 -> Clamped to min cap
-        assert landed.mpf_fee == Decimal("32.71")
+        assert landed.mpf_fee == Decimal("34.58")
 
     def test_t2_14_boundary_statutory_mpf_maximum_ceiling(self):
-        """T2.14: Entered value yielding raw MPF > $634.62 is clamped to the statutory ceiling."""
+        """T2.14: Entered value yielding raw MPF > $670.86 is clamped to the statutory ceiling."""
         landed = calculate_landed_cost(entered_value=Decimal("500000.00"), duty_rate_ad_valorem=Decimal("0.00"))
         # 500,000 * 0.003464 = 1,732.00 -> Clamped to max cap
-        assert landed.mpf_fee == Decimal("634.62")
+        assert landed.mpf_fee == Decimal("670.86")
 
     def test_t2_15_boundary_statutory_mpf_exact_cutoff(self):
         """T2.15: Entered value where raw MPF falls between minimum and maximum caps calculates un-clamped."""

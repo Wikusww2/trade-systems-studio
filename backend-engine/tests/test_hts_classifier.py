@@ -34,15 +34,24 @@ def test_landed_cost_mathematical_precision():
 
 
 def test_mpf_statutory_minimum_cap():
-    """Verify MPF is floored at statutory minimum ($32.71 for FY2025, $31.67 for FY2024)."""
-    # FY2025 default
-    breakdown_fy25 = calculate_landed_cost(
+    """Verify MPF is floored at statutory minimum ($34.58 for FY2027 active default, $32.71 for FY2025, $31.67 for FY2024)."""
+    # FY2027 active default (91 FR 48398)
+    breakdown_fy27 = calculate_landed_cost(
         entered_value=Decimal("1000.00"),
         duty_rate_ad_valorem=Decimal("0.05"),
         is_ocean_freight=False,
     )
+    assert breakdown_fy27.mpf_fee == Decimal("34.58")
+    assert breakdown_fy27.hmf_fee == Decimal("0.00")  # Air freight has no HMF
+
+    # FY2025 backward compatibility
+    breakdown_fy25 = calculate_landed_cost(
+        entered_value=Decimal("1000.00"),
+        duty_rate_ad_valorem=Decimal("0.05"),
+        is_ocean_freight=False,
+        fiscal_year="FY2025",
+    )
     assert breakdown_fy25.mpf_fee == Decimal("32.71")
-    assert breakdown_fy25.hmf_fee == Decimal("0.00")  # Air freight has no HMF
 
     # FY2024 backward compatibility
     breakdown_fy24 = calculate_landed_cost(
@@ -55,12 +64,21 @@ def test_mpf_statutory_minimum_cap():
 
 
 def test_mpf_statutory_maximum_cap():
-    """Verify MPF is capped at statutory maximum ($634.62 for FY2025, $614.35 for FY2024)."""
-    # FY2025 default
+    """Verify MPF is capped at statutory maximum ($670.86 for FY2027 active default, $634.62 for FY2025, $614.35 for FY2024)."""
+    # FY2027 active default
+    breakdown_fy27 = calculate_landed_cost(
+        entered_value=Decimal("500000.00"),
+        duty_rate_ad_valorem=Decimal("0.05"),
+        is_ocean_freight=True,
+    )
+    assert breakdown_fy27.mpf_fee == Decimal("670.86")
+
+    # FY2025 backward compatibility
     breakdown_fy25 = calculate_landed_cost(
         entered_value=Decimal("500000.00"),
         duty_rate_ad_valorem=Decimal("0.05"),
         is_ocean_freight=True,
+        fiscal_year="FY2025",
     )
     assert breakdown_fy25.mpf_fee == Decimal("634.62")
 
@@ -72,6 +90,33 @@ def test_mpf_statutory_maximum_cap():
         fiscal_year="FY2024",
     )
     assert breakdown_fy24.mpf_fee == Decimal("614.35")
+
+
+def test_section_301_origin_aware_tariff_calculation():
+    """Verify Section 301 +25.0% surcharge applies strictly to CN origin for covered HTS lines."""
+    # Origin CN: Triggers 25% Section 301
+    breakdown_cn = calculate_landed_cost(
+        entered_value=Decimal("100000.00"),
+        duty_rate_ad_valorem=Decimal("0.024"),
+        hts_code="8501.31.8000",
+        country_of_origin="CN",
+    )
+    assert breakdown_cn.customs_duty == Decimal("2400.00")
+    assert breakdown_cn.section_301_rate == Decimal("0.250")
+    assert breakdown_cn.section_301_duty == Decimal("25000.00")
+    assert breakdown_cn.section_301_subheading == "9903.88.01"
+
+    # Origin TW: Free of Section 301
+    breakdown_tw = calculate_landed_cost(
+        entered_value=Decimal("100000.00"),
+        duty_rate_ad_valorem=Decimal("0.024"),
+        hts_code="8501.31.8000",
+        country_of_origin="TW",
+    )
+    assert breakdown_tw.customs_duty == Decimal("2400.00")
+    assert breakdown_tw.section_301_rate == Decimal("0.00")
+    assert breakdown_tw.section_301_duty == Decimal("0.00")
+    assert breakdown_tw.section_301_subheading is None
 
 
 def test_wco_gri_drone_motor_classification():

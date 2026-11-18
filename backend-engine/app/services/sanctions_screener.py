@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import re
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import httpx
 import rapidfuzz.fuzz
@@ -59,6 +59,8 @@ class ScreeningReport(BaseModel):
     has_violations: bool = False
     highest_risk_score: float = 0.0
     engine_used: str = "rapidfuzz_embedded"
+    provider_error: bool = False
+    compliance_status: str = "CLEARED"
 
 # Embedded high-risk sanctions / denied-party dataset (OpenSanctions yente format)
 EMBEDDED_SANCTIONS_DATASET: List[Dict[str, Any]] = [
@@ -362,158 +364,107 @@ class SanctionsScreener:
         return entities
 
     def _load_networks(self) -> Dict[str, Dict[str, Any]]:
-        networks: Dict[str, Dict[str, Any]] = dict(CORPORATE_OWNERSHIP_NETWORKS)
-        # Augment with additional scenario networks
-        networks["baltic-semiconductor-485"] = {
-            "target": {
-                "id": "baltic-semiconductor-485",
-                "label": "Baltic Semiconductor Fabrications OU",
-                "country": "EE",
-                "is_blocked": False,
-                "risk_level": "CLEAN_COMMERCIAL",
-                "programs": [],
-                "sanction_authority": None,
-                "notes": "Near-threshold 48.5% unblocked target under the OFAC 50% Rule."
-            },
-            "nodes": [
-                {
-                    "id": "baltic-semiconductor-485",
-                    "label": "Baltic Semiconductor Fabrications OU",
-                    "country": "EE",
-                    "is_blocked": False,
-                    "risk_level": "CLEAN_COMMERCIAL",
-                    "programs": [],
-                    "sanction_authority": None
-                },
-                {
-                    "id": "node-ivan-volkov",
-                    "label": "Ivan Volkov (SDN)",
-                    "country": "RU",
-                    "is_blocked": True,
-                    "risk_level": "SDN_BLOCKED",
-                    "programs": ["OFAC SDN (E.O. 14024)"],
-                    "sanction_authority": "OFAC"
-                },
-                {
-                    "id": "node-tallinn-venture",
-                    "label": "Tallinn Venture Capital OU",
-                    "country": "EE",
-                    "is_blocked": False,
-                    "risk_level": "CLEAN_COMMERCIAL",
-                    "programs": [],
-                    "sanction_authority": None
-                }
-            ],
-            "edges": [
-                {
-                    "source_id": "node-ivan-volkov",
-                    "target_id": "baltic-semiconductor-485",
-                    "ownership_pct": 48.5,
-                    "relationship_type": "BENEFICIAL_OWNER"
-                },
-                {
-                    "source_id": "node-tallinn-venture",
-                    "target_id": "baltic-semiconductor-485",
-                    "ownership_pct": 51.5,
-                    "relationship_type": "COMMERCIAL_SHAREHOLDER"
-                }
-            ]
-        }
-        networks["arctic-minerals-sub"] = {
-            "target": {
-                "id": "arctic-minerals-sub",
-                "label": "Arctic Minerals Processing AS",
-                "country": "NO",
-                "is_blocked": False,
-                "risk_level": "HIGH_RISK_INDIRECT",
-                "programs": [],
-                "sanction_authority": "OFAC",
-                "notes": "Indirectly controlled by blocked oligarch Victor Petrov via Nordic Titan (60% * 90% = 54%)."
-            },
-            "nodes": [
-                {
-                    "id": "arctic-minerals-sub",
-                    "label": "Arctic Minerals Processing AS",
-                    "country": "NO",
-                    "is_blocked": False,
-                    "risk_level": "HIGH_RISK_INDIRECT",
-                    "programs": []
-                },
-                {
-                    "id": "nordic-titan-holdings",
-                    "label": "Nordic Titan Holdings AS",
-                    "country": "NO",
-                    "is_blocked": True,
-                    "risk_level": "SDN_BLOCKED",
-                    "programs": ["OFAC 50% Rule Tier-1"]
-                },
-                {
-                    "id": "node-petrov",
-                    "label": "Victor Petrov (SDN Oligarch)",
-                    "country": "RU",
-                    "is_blocked": True,
-                    "risk_level": "SDN_BLOCKED",
-                    "programs": ["OFAC SDN (E.O. 14024)"]
-                }
-            ],
-            "edges": [
-                {
-                    "source_id": "nordic-titan-holdings",
-                    "target_id": "arctic-minerals-sub",
-                    "ownership_pct": 90.0,
-                    "relationship_type": "PARENT_HOLDING"
-                },
-                {
-                    "source_id": "node-petrov",
-                    "target_id": "nordic-titan-holdings",
-                    "ownership_pct": 60.0,
-                    "relationship_type": "CONTROLLING_INTEREST"
-                }
-            ]
-        }
-        networks["cyprus-holding-alpha"] = {
-            "target": {
-                "id": "cyprus-holding-alpha",
-                "label": "Alpha Maritime Holdings Ltd",
-                "country": "CY",
-                "is_blocked": False,
-                "risk_level": "HIGH_RISK_SHELL",
-                "programs": []
-            },
-            "nodes": [
-                {
-                    "id": "cyprus-holding-alpha",
-                    "label": "Alpha Maritime Holdings Ltd",
-                    "country": "CY",
-                    "is_blocked": False,
-                    "risk_level": "HIGH_RISK_SHELL",
-                    "programs": []
-                },
-                {
-                    "id": "cyprus-holding-beta",
-                    "label": "Beta Marine Investments Ltd",
-                    "country": "CY",
-                    "is_blocked": False,
-                    "risk_level": "HIGH_RISK_SHELL",
-                    "programs": []
-                }
-            ],
-            "edges": [
-                {
-                    "source_id": "cyprus-holding-beta",
-                    "target_id": "cyprus-holding-alpha",
-                    "ownership_pct": 100.0,
-                    "relationship_type": "CROSS_HOLDING"
-                },
-                {
-                    "source_id": "cyprus-holding-alpha",
-                    "target_id": "cyprus-holding-beta",
-                    "ownership_pct": 100.0,
-                    "relationship_type": "CROSS_HOLDING"
-                }
-            ]
-        }
-        return networks
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        jsonl_path = os.path.join(current_dir, "../data/yente_ofac_ftm.jsonl")
+
+        entities_map: Dict[str, Dict[str, Any]] = {}
+        edges_list: List[Dict[str, Any]] = []
+        ofac_sanctions: Set[str] = set()
+        bis_sanctions: Set[str] = set()
+
+        if os.path.exists(jsonl_path):
+            try:
+                with open(jsonl_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        rec = json.loads(line)
+                        schema = rec.get("schema")
+                        props = rec.get("properties", {})
+                        rid = rec.get("id")
+                        if schema in ("Company", "Person", "LegalEntity", "Vessel", "Organization"):
+                            entities_map[rid] = {
+                                "id": rid,
+                                "label": (props.get("name") or [""])[0],
+                                "country": (props.get("country") or [""])[0],
+                                "programs": props.get("program", []),
+                                "schema": schema,
+                                "is_blocked": False,
+                                "risk_level": "CLEAN_COMMERCIAL",
+                                "sanction_authority": None,
+                                "notes": (props.get("description") or [None])[0]
+                            }
+                        elif schema == "Sanction":
+                            ent = (props.get("entity") or [""])[0]
+                            auth = (props.get("authority") or [""])[0]
+                            if "OFAC" in auth or any("OFAC" in p for p in props.get("program", [])):
+                                ofac_sanctions.add(ent)
+                            else:
+                                bis_sanctions.add(ent)
+                        elif schema == "Ownership":
+                            owner = (props.get("owner") or [""])[0]
+                            asset = (props.get("asset") or [""])[0]
+                            pct = float((props.get("percentage") or ["0"])[0])
+                            role = (props.get("role") or ["OWNER"])[0]
+                            edges_list.append({
+                                "source_id": owner,
+                                "target_id": asset,
+                                "ownership_pct": pct,
+                                "relationship_type": role
+                            })
+
+                for sid, node in entities_map.items():
+                    is_ofac = sid in ofac_sanctions or any("OFAC" in p or "SDN" in p for p in node.get("programs", []))
+                    is_bis = sid in bis_sanctions or any("BIS" in p or "EAR" in p for p in node.get("programs", []))
+                    if is_ofac:
+                        node["is_blocked"] = True
+                        node["risk_level"] = "SDN_BLOCKED"
+                        node["sanction_authority"] = "OFAC"
+                    elif is_bis:
+                        node["is_blocked"] = False
+                        node["risk_level"] = "SDN_BLOCKED"
+                        node["sanction_authority"] = "BIS"
+
+                networks: Dict[str, Dict[str, Any]] = {}
+                for target_id in entities_map:
+                    visited: Set[str] = set()
+                    queue = [target_id]
+                    net_edges: List[Dict[str, Any]] = []
+                    seen_edges: Set[Tuple[str, str]] = set()
+                    while queue:
+                        curr = queue.pop(0)
+                        if curr in visited:
+                            continue
+                        visited.add(curr)
+                        for e in edges_list:
+                            edge_key = (e["source_id"], e["target_id"])
+                            if e["target_id"] == curr:
+                                if edge_key not in seen_edges:
+                                    seen_edges.add(edge_key)
+                                    net_edges.append(e)
+                                if e["source_id"] not in visited:
+                                    queue.append(e["source_id"])
+                            elif curr == target_id and e["source_id"] == curr:
+                                if edge_key not in seen_edges:
+                                    seen_edges.add(edge_key)
+                                    net_edges.append(e)
+                                if e["target_id"] not in visited:
+                                    queue.append(e["target_id"])
+
+                    if net_edges:
+                        net_nodes = [entities_map[nid] for nid in visited if nid in entities_map]
+                        networks[target_id] = {
+                            "target": entities_map[target_id],
+                            "nodes": net_nodes,
+                            "edges": net_edges
+                        }
+                if networks:
+                    return networks
+            except Exception as e:
+                logger.warning("Failed to load dynamic networks from yente_ofac_ftm.jsonl: %s", e)
+
+        return dict(CORPORATE_OWNERSHIP_NETWORKS)
 
     def calculate_effective_blocked_ownership(
         self,
@@ -573,18 +524,28 @@ class SanctionsScreener:
     def match_entity(self, query_name: Optional[str], threshold: float = 85.0) -> EntityMatch:
         """
         Fuzzy matches entity query name against canonical names and aliases using rapidfuzz.
-        Uses normalized token matching to handle punctuation and casing variations strictly.
+        Combines token_sort_ratio, token_set_ratio, suffix normalization, and space-collapsed matching.
         """
         if not query_name or not query_name.strip():
             return EntityMatch(query_name="", matched=False)
 
         clean_query = query_name.strip()
 
-        def _normalize_tokens(text: str) -> str:
-            cleaned = re.sub(r"[,\.\(\)\-\–\/\"']", " ", text.lower())
-            return " ".join(cleaned.split())
+        def _clean_for_matching(text: str) -> str:
+            # Common abbreviations
+            s = re.sub(r"\bRep\.?\b", "Republic", text, flags=re.I)
+            # Strip corporate and transport legal suffixes for normalized matching
+            s = re.sub(
+                r"\b(joint stock company|jsc|ltd|limited|inc|incorporated|corp|corporation|co|llc|as|ou|gmbh|lines|line)\b",
+                "",
+                s,
+                flags=re.I,
+            )
+            s = re.sub(r"[,\.\(\)\-\–\/\"']", " ", s)
+            return " ".join(s.lower().split())
 
-        norm_query = _normalize_tokens(clean_query)
+        norm_query = _clean_for_matching(clean_query)
+        norm_query_nospace = norm_query.replace(" ", "")
         best_match: Optional[SanctionsEntity] = None
         best_score: float = 0.0
         best_candidate: Optional[str] = None
@@ -592,15 +553,29 @@ class SanctionsScreener:
         for entity in self.entities:
             candidates = [entity.name] + entity.aliases
             for cand in candidates:
-                raw_score = float(rapidfuzz.fuzz.token_sort_ratio(clean_query, cand))
-                norm_score = float(rapidfuzz.fuzz.token_sort_ratio(norm_query, _normalize_tokens(cand)))
-                score = max(raw_score, norm_score)
+                norm_cand = _clean_for_matching(cand)
+                norm_cand_nospace = norm_cand.replace(" ", "")
+
+                raw_sort = float(rapidfuzz.fuzz.token_sort_ratio(clean_query, cand))
+                norm_sort = float(rapidfuzz.fuzz.token_sort_ratio(norm_query, norm_cand))
+                nospace_ratio = float(rapidfuzz.fuzz.ratio(norm_query_nospace, norm_cand_nospace))
+
+                score = max(raw_sort, norm_sort, nospace_ratio)
+
                 if score > best_score:
                     best_score = score
                     best_match = entity
                     best_candidate = cand
 
+        is_sanction_match = False
         if best_match and best_score >= threshold:
+            has_programs = len(best_match.programs) > 0
+            has_sanction_topic = any(
+                "sanction" in t or "export" in t or "military" in t for t in best_match.topics
+            )
+            is_sanction_match = has_programs or has_sanction_topic
+
+        if best_match and is_sanction_match:
             return EntityMatch(
                 query_name=clean_query,
                 matched=True,
@@ -628,7 +603,7 @@ class SanctionsScreener:
     ) -> Optional[EntityMatch]:
         """
         Queries live yente instance (/match endpoint) if YENTE_API_URL is configured.
-        Falls back gracefully if unreachable with structured logging (M12).
+        Raises exception on failure so caller can fail closed (C5).
         """
         if not self.yente_url or not query_name.strip():
             return None
@@ -668,8 +643,12 @@ class SanctionsScreener:
                                 topics=top.get("topics", []),
                                 screening_engine="yente_api"
                             )
+                else:
+                    logger.warning("Yente API returned non-200 status %s", res.status_code)
+                    raise httpx.HTTPStatusError(f"Status {res.status_code}", request=res.request, response=res)
         except Exception as e:
-            logger.warning("Yente API screening call failed, falling back to embedded screener: %s", e)
+            logger.warning("Yente API screening call failed: %s", e)
+            raise e
 
         return None
 
@@ -710,12 +689,36 @@ class SanctionsScreener:
     ) -> ScreeningReport:
         """
         Asynchronously screens trade parties, delegating CPU fuzzy matching to worker thread
-        and checking live yente API if configured.
+        and checking live yente API if configured. Fails closed on Yente API outages (C5).
         """
         if self.yente_url:
-            shipper_res = await self.screen_via_yente_api(shipper, threshold) if shipper else None
-            buyer_res = await self.screen_via_yente_api(buyer, threshold) if buyer else None
-            consignee_res = await self.screen_via_yente_api(consignee, threshold) if consignee else None
+            provider_failed = False
+            shipper_res = None
+            buyer_res = None
+            consignee_res = None
+            try:
+                if shipper:
+                    shipper_res = await self.screen_via_yente_api(shipper, threshold)
+                if buyer:
+                    buyer_res = await self.screen_via_yente_api(buyer, threshold)
+                if consignee:
+                    consignee_res = await self.screen_via_yente_api(consignee, threshold)
+            except Exception as e:
+                logger.error("Yente API provider error during screening: %s", e)
+                provider_failed = True
+
+            if provider_failed:
+                return ScreeningReport(
+                    shipper=None,
+                    buyer=None,
+                    consignee=None,
+                    total_matches=0,
+                    has_violations=True,
+                    highest_risk_score=100.0,
+                    engine_used="yente_unavailable_hold",
+                    provider_error=True,
+                    compliance_status="UNSCREENED_HOLD",
+                )
 
             # If yente succeeded for matched items, use them; otherwise fill with embedded
             if shipper and not shipper_res:
@@ -733,7 +736,9 @@ class SanctionsScreener:
                 total_matches=len(matches),
                 has_violations=len(matches) > 0,
                 highest_risk_score=max([m.match_score for m in matches], default=0.0),
-                engine_used="yente_hybrid"
+                engine_used="yente_hybrid",
+                provider_error=False,
+                compliance_status="VIOLATION_BLOCKED" if len(matches) > 0 else "CLEARED"
             )
 
         # Non-blocking CPU execution via asyncio.to_thread

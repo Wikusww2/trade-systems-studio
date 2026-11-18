@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Console-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/)
 [![Whitepaper](https://img.shields.io/badge/Whitepaper-Interactive%20Edition-8b5cf6?style=for-the-badge&logo=googledocs&logoColor=white)](https://sssammyboyyy.github.io/trade-systems-studio/whitepaper/)
 [![CI](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/sssammyboyyy/trade-systems-studio/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Pytest-200%2F200%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
+[![Tests](https://img.shields.io/badge/Pytest-230%2F230%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](#-automated-verification)
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.5.29-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
@@ -80,7 +80,7 @@ TradeTech Systems Studio acts as an **Upstream Pre-Ingest and Financial Exceptio
 ### 5. Autonomous Landed Cost & HTS Classification Copilot
 - **Statutory Authority:** WCO General Rules of Interpretation (GRI 1 to 6) & 19 CFR § 24.23/24.
 - **The Threat:** Single-turn LLM prompts guess 10-digit HTS codes in one shot, bypassing Chapter/Section Notes and generating indefensible entries that fail CBP regulatory audits.
-- **The Defense:** Word-boundary hierarchical classification engine evaluating candidate headings and Section notes with element-wise confidence gating. Unmatched goods or low confidence (`confidence < 0.85`) fail closed to `unclassified / requires_human_review=True` for licensed customs broker adjudication. Aggregates duty, MPF ($31.67 to $614.35 statutory caps), and HMF (0.125%) via Python `Decimal`.
+- **The Defense:** Word-boundary hierarchical classification engine evaluating candidate headings and Section notes with element-wise confidence gating. Unmatched goods or low confidence (`confidence < 0.85`) fail closed to `REQUIRES_BROKER_REVIEW / requires_human_review=True` for licensed customs broker adjudication. Aggregates duty, origin-aware Section 301 tariffs, MPF (FY2027 statutory caps $34.58 to $670.86 per 91 FR 48398, with FY2024 to FY2026 historical support), and HMF (0.125%) via Python `Decimal`.
 
 ### 6. CBP Assist & Valuation Register (19 CFR § 152.103)
 - **Statutory Authority:** 19 U.S.C. § 1401a, 19 CFR § 152.103, and 19 CFR § 162.74 (Prior Disclosure).

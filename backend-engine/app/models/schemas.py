@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_serializer, field_validator, model_validator
 
@@ -14,8 +14,8 @@ class BoundingBox(BaseModel):
     page_number: 1-indexed document page
     confidence: element-wise extraction confidence [0.0, 1.0]
     """
-    x: float = Field(..., ge=0.0, le=1000.0, description="Normalized X coordinate [0, 1000)")
-    y: float = Field(..., ge=0.0, le=1000.0, description="Normalized Y coordinate [0, 1000)")
+    x: float = Field(..., ge=0.0, lt=1000.0, description="Normalized X coordinate [0, 1000)")
+    y: float = Field(..., ge=0.0, lt=1000.0, description="Normalized Y coordinate [0, 1000)")
     width: float = Field(..., ge=0.0, le=1000.0, description="Normalized width [0, 1000)")
     height: float = Field(..., ge=0.0, le=1000.0, description="Normalized height [0, 1000)")
     page_number: int = Field(default=1, ge=1, description="1-based page number")
@@ -120,6 +120,7 @@ class LeadCaptureRequest(BaseModel):
     phone: Optional[str] = Field(default=None, max_length=30, description="Contact phone number")
     monthly_import_volume: Optional[str] = Field(default=None, max_length=50, description="Estimated monthly container or entry volume")
     source: str = Field(default="conversion_modal", min_length=1, max_length=50, description="Lead acquisition source")
+    privacy_consent: Literal[True] = Field(..., description="Explicit user privacy consent (must be true)")
 
 class TelemetryEvent(BaseModel):
     """

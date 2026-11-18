@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Discrepancy } from "@/lib/types";
 import { sound } from "@/lib/audio";
+import { formatUsd, gtZero } from "@/lib/money";
 import { TabularAmount } from "./TabularAmount";
 import {
   AlertOctagon,
@@ -88,9 +89,11 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
         id={`card-${discrepancy.id}`}
         role="button"
         tabIndex={0}
-        aria-selected={isActive}
+        aria-pressed={isActive}
         aria-label={`Discrepancy: ${discrepancy.title}, exposure: ${
-          discrepancy.exposure_amount > 0 ? `$${discrepancy.exposure_amount}` : "Valuation defect"
+          gtZero(discrepancy.exposure_amount)
+            ? formatUsd(discrepancy.exposure_amount)
+            : "Valuation defect"
         }`}
         onKeyDown={(e) => {
           if (e.target !== e.currentTarget) return;
@@ -102,7 +105,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
         onMouseEnter={() => onHover(discrepancy.id)}
         onMouseLeave={() => onHover(null)}
         onClick={() => onClick(discrepancy.id)}
-        className={`relative p-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.985] cursor-pointer border rounded-lg overflow-hidden ${
+        className={`relative p-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.985] cursor-pointer border rounded-lg overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
           isActive
             ? "bg-[#1E293B] border-blue-500 ring-1 ring-blue-500 shadow-xl shadow-blue-500/10"
             : isUncertain
@@ -160,7 +163,7 @@ export const DiscrepancyCard: React.FC<DiscrepancyCardProps> = ({
               : "Statutory Financial Exposure"}
           </span>
           <span className={`type-mono-data text-sm font-medium ${style.accent}`}>
-            {discrepancy.exposure_amount > 0 ? (
+            {gtZero(discrepancy.exposure_amount) ? (
               <TabularAmount value={discrepancy.exposure_amount} />
             ) : (
               "Valuation Defect"

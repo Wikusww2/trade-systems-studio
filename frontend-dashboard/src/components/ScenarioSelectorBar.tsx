@@ -21,8 +21,8 @@ export const CORRIDOR_SCENARIOS: Scenario[] = [
     name: "Port of Durban to Rotterdam Electronics",
     route: "ZADUR -> NLRTM",
     concept_id: "concept_1_customs",
-    risk_type: "CIF Marine Insurance Omission & GRI 3(b) Reclassification",
-    statutory_code: "19 U.S.C. § 1592 & 19 CFR § 152.103",
+    risk_type: "EU UCC Incoterms Dutiable Valuation & GRI 3(b) Classification",
+    statutory_code: "EU Union Customs Code (Reg. (EU) 952/2013, Art. 71)",
     default_exposure: "$36,000",
     severity: "critical"
   },
@@ -32,7 +32,7 @@ export const CORRIDOR_SCENARIOS: Scenario[] = [
     route: "CNSZX -> USLAX",
     concept_id: "concept_2_freight",
     risk_type: "Section 301 Secondary Tariff & Chassis Split Surcharge",
-    statutory_code: "19 U.S.C. § 1592 & FMC Docket 21-08",
+    statutory_code: "19 U.S.C. § 1592 & FMC 46 U.S.C. § 41104",
     default_exposure: "$48,200",
     severity: "critical"
   },

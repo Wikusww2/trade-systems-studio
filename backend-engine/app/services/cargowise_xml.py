@@ -6,6 +6,8 @@ from xml.dom import minidom
 
 from pydantic import BaseModel
 
+from app.core.config import settings
+
 
 class CargoWiseShipmentData(BaseModel):
     shipment_id: str = "S00001000"
@@ -41,7 +43,10 @@ class CargoWiseExportService:
         insurance_amount: Decimal = Decimal("1450.00"),
         line_items: Optional[List[Dict[str, Any]]] = None,
         audit_status: str = "CLEARED_WITH_RECONCILIATION",
-        penalty_status: str = "19_USC_1592_PROTECTED"
+        penalty_status: str = "19_USC_1592_PROTECTED",
+        company_code: Optional[str] = None,
+        enterprise_id: Optional[str] = None,
+        server_id: Optional[str] = None,
     ) -> str:
         if line_items is None:
             line_items = [
@@ -99,10 +104,14 @@ class CargoWiseExportService:
         ET.SubElement(target_cus, "Type").text = "CustomsDeclaration"
         ET.SubElement(target_cus, "Key").text = declaration_id
 
+        effective_company = company_code or getattr(settings, "CARGOWISE_COMPANY_CODE", "CPH")
+        effective_enterprise = enterprise_id or getattr(settings, "CARGOWISE_ENTERPRISE_ID", "TRN")
+        effective_server = server_id or getattr(settings, "CARGOWISE_SERVER_ID", "A04")
+
         company = ET.SubElement(data_context, "Company")
-        ET.SubElement(company, "Code").text = "CPH"
-        ET.SubElement(data_context, "EnterpriseID").text = "TRN"
-        ET.SubElement(data_context, "ServerID").text = "A04"
+        ET.SubElement(company, "Code").text = effective_company
+        ET.SubElement(data_context, "EnterpriseID").text = effective_enterprise
+        ET.SubElement(data_context, "ServerID").text = effective_server
 
         # Ports
         port_origin = ET.SubElement(shipment, "PortOfOrigin")
@@ -161,13 +170,107 @@ class CargoWiseExportService:
         """
         Returns a side-by-side XML diff payload: Raw Unaudited vs. Reconciled Lawful XML.
         Constructs both XML documents structurally via ElementTree rather than string replaces (M4).
+        Reflects concept-specific characteristics (clean FOB vs customs defects vs freight vs drawback).
         """
+        clean_cid = str(concept_id).lower().strip()
+        if "clean" in clean_cid or "fob" in clean_cid:
+            # Baseline Clean FOB: zero defects, raw and reconciled match identically
+            line_items = [
+                {
+                    "line_number": 1,
+                    "description": "Industrial Brushless DC Motors 480W",
+                    "hts_code": "8501.31",
+                    "value": Decimal("48000.00"),
+                }
+            ]
+            clean_xml = self.generate_universal_interchange_xml(
+                shipment_id="S-CLEAN-FOB-01",
+                declaration_id="B-CLEAN-FOB-01",
+                port_origin_code="CNSZX",
+                port_origin_name="Shenzhen",
+                port_dest_code="USLAX",
+                port_dest_name="Los Angeles",
+                invoice_number="INV-CLEAN-01",
+                incoterm="FOB",
+                invoice_amount=Decimal("48000.00"),
+                insurance_amount=Decimal("0.00"),
+                line_items=line_items,
+                audit_status="CLEARED_NO_EXCEPTIONS",
+                penalty_status="19_USC_1592_COMPLIANT",
+            )
+            return {
+                "concept_id": concept_id,
+                "status": "READY_FOR_INGESTION",
+                "schema_version": "1.1",
+                "reconciled_lawful_xml": clean_xml,
+                "raw_unaudited_xml": clean_xml,
+                "diff_summary": [],
+            }
+
+        if "freight" in clean_cid:
+            reconciled_items = [
+                {
+                    "line_number": 1,
+                    "description": "Ocean Containerized Freight Surcharge Audit",
+                    "hts_code": "9901.00",
+                    "value": Decimal("4500.00"),
+                }
+            ]
+            raw_xml = self.generate_universal_interchange_xml(
+                shipment_id="S-FREIGHT-OVERBILL",
+                declaration_id="B-FREIGHT-OVERBILL",
+                port_origin_code="CNSZX",
+                port_origin_name="Shenzhen",
+                port_dest_code="USLAX",
+                port_dest_name="Los Angeles",
+                invoice_number="FRT-2026-NIGHTMARE",
+                incoterm="FOB",
+                invoice_amount=Decimal("6047.50"),
+                insurance_amount=Decimal("0.00"),
+                line_items=reconciled_items,
+                audit_status="UNVERIFIED_RAW_INGEST",
+                penalty_status="CARRIER_OVERBILLING_DETECTED",
+            )
+            reconciled_xml = self.generate_universal_interchange_xml(
+                shipment_id="S-FREIGHT-OVERBILL",
+                declaration_id="B-FREIGHT-OVERBILL",
+                port_origin_code="CNSZX",
+                port_origin_name="Shenzhen",
+                port_dest_code="USLAX",
+                port_dest_name="Los Angeles",
+                invoice_number="FRT-2026-NIGHTMARE",
+                incoterm="FOB",
+                invoice_amount=Decimal("4500.00"),
+                insurance_amount=Decimal("0.00"),
+                line_items=reconciled_items,
+                audit_status="CLEARED_WITH_RECONCILIATION",
+                penalty_status="OVERBILLING_INTERCEPTED",
+            )
+            return {
+                "concept_id": concept_id,
+                "status": "READY_FOR_INGESTION",
+                "schema_version": "1.1",
+                "reconciled_lawful_xml": reconciled_xml,
+                "raw_unaudited_xml": raw_xml,
+                "diff_summary": [
+                    {
+                        "node": "InvoiceAmount",
+                        "raw": "6047.50",
+                        "reconciled": "4500.00",
+                        "statute": "FMC 46 U.S.C. § 41104",
+                        "status": "OVERBILLING_DISALLOWED",
+                    }
+                ],
+            }
+
+        # Default / Concept 1 Customs:
+        # Raw invoice misclassified at 8471.30, Reconciled at 8542.31
         reconciled_items = [
             {
                 "line_number": 1,
                 "description": "Industrial Controller Assembly with Integrated Circuitry",
                 "hts_code": "8542.31",
-                "value": Decimal("148500.00")
+                "value": Decimal("148500.00"),
             }
         ]
         reconciled_xml = self.generate_universal_interchange_xml(
@@ -180,7 +283,7 @@ class CargoWiseExportService:
             insurance_amount=Decimal("1450.00"),
             line_items=reconciled_items,
             audit_status="CLEARED_WITH_RECONCILIATION",
-            penalty_status="19_USC_1592_PROTECTED"
+            penalty_status="19_USC_1592_PROTECTED",
         )
 
         raw_items = [
@@ -188,7 +291,7 @@ class CargoWiseExportService:
                 "line_number": 1,
                 "description": "Industrial Controller Assembly with Integrated Circuitry",
                 "hts_code": "8471.30",
-                "value": Decimal("148500.00")
+                "value": Decimal("148500.00"),
             }
         ]
         raw_xml = self.generate_universal_interchange_xml(
@@ -201,7 +304,7 @@ class CargoWiseExportService:
             insurance_amount=Decimal("0.00"),
             line_items=raw_items,
             audit_status="UNVERIFIED_RAW_INGEST",
-            penalty_status="UNAUDITED_DEFECT_EXPOSURE"
+            penalty_status="UNAUDITED_DEFECT_EXPOSURE",
         )
 
         return {
@@ -216,16 +319,16 @@ class CargoWiseExportService:
                     "raw": "0.00",
                     "reconciled": "1450.00",
                     "statute": "19 CFR § 152.103",
-                    "status": "CORRECTED"
+                    "status": "CORRECTED",
                 },
                 {
                     "node": "HarmonizedCode",
                     "raw": "8471.30",
                     "reconciled": "8542.31",
                     "statute": "WCO GRI 3(b)",
-                    "status": "RECLASSIFIED"
-                }
-            ]
+                    "status": "RECLASSIFIED",
+                },
+            ],
         }
 
 cargowise_exporter = CargoWiseExportService()

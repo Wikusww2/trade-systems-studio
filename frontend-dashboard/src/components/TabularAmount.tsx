@@ -1,20 +1,26 @@
 "use client";
 
 import React from "react";
+import { parseCents } from "@/lib/money";
 
 interface TabularAmountProps {
-  value: number;
+  value: string | number | bigint;
   currency?: string;
   showPlusSign?: boolean;
   decimals?: number;
   className?: string;
 }
 
+const ZERO = BigInt(0);
+const TEN = BigInt(10);
+const HUNDRED = BigInt(100);
+
 /**
  * Renders monetary figures on a rigid 3-column tabular grid:
  * [sign (1ch)] [currency symbol (1ch)] [tabular digits]
  * Prevents currency symbols ($, EUR, GBP) and +/- indicators from
  * displacing decimal points vertically across dense audit rows.
+ * Implemented with BigInt scaled cents for zero float drift.
  */
 export const TabularAmount: React.FC<TabularAmountProps> = ({
   value,
@@ -23,12 +29,16 @@ export const TabularAmount: React.FC<TabularAmountProps> = ({
   decimals = 2,
   className = "",
 }) => {
-  const isNegative = value < 0;
-  const sign = isNegative ? "-" : showPlusSign && value > 0 ? "+" : "";
-  const formatted = Math.abs(value).toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  const cents = parseCents(value);
+  const isNegative = cents < ZERO;
+  const absCents = isNegative ? -cents : cents;
+  const sign = isNegative ? "-" : showPlusSign && cents > ZERO ? "+" : "";
+
+  const whole = absCents / HUNDRED;
+  const frac = absCents % HUNDRED;
+  const wholeFormatted = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const fracFormatted = frac < TEN ? `0${frac}` : `${frac}`;
+  const formatted = decimals === 0 ? wholeFormatted : `${wholeFormatted}.${fracFormatted}`;
 
   return (
     <span className={`tabular-currency ${className}`.trim()}>

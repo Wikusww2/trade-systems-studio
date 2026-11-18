@@ -56,6 +56,17 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (!showDisclosureModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowDisclosureModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showDisclosureModal]);
+
   const handleOpenDisclosure = () => {
     soundEngine.click();
     setShowDisclosureModal(true);
@@ -77,40 +88,54 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
     const tenderFormatted = Number(audit?.prior_disclosure_tender_amount || 0).toLocaleString("en-US", {
       minimumFractionDigits: 2,
     });
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>19 CFR § 162.74 Formal Prior Disclosure - ${priorDisclosure?.filing_reference_id || "FILING"}</title>
-          <style>
-            body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; padding: 48px; color: #111; max-width: 800px; margin: 0 auto; }
-            .header { text-align: center; font-weight: bold; margin-bottom: 24px; border-bottom: 2px solid #0F172A; padding-bottom: 12px; }
-            .badge { font-size: 13pt; letter-spacing: 1px; }
-            .sub { font-size: 9pt; font-weight: normal; margin-top: 4px; }
-            .meta { font-family: monospace; font-size: 9pt; margin-bottom: 20px; color: #333; }
-            pre { font-family: 'Times New Roman', Times, serif; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.5; margin: 0; }
-            .signature { margin-top: 40px; border-top: 1px solid #666; padding-top: 12px; font-size: 10pt; }
-            @media print { body { padding: 20px; } }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="badge">PRELIMINARY COMPLIANCE DRAFT -- FOR BROKER / COUNSEL REVIEW</div>
-            <div class="sub">UNITED STATES CUSTOMS AND BORDER PROTECTION • FORMAL PRIOR DISCLOSURE</div>
-          </div>
-          <div class="meta">FILING REF: ${priorDisclosure?.filing_reference_id} | PORT: ${priorDisclosure?.port_of_entry}</div>
-          <pre>${priorDisclosure?.letter_text}</pre>
-          <div class="signature">
-            <strong>Importer of Record / Broker Authorization</strong><br/>
-            Certified Statutory Tender Enclosed: \$${tenderFormatted} (19 U.S.C. § 1505 Lawful Duty Loss + Statutory Interest)
-          </div>
-          <script>
-            window.onload = function() { window.print(); }
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+    const printDoc = printWindow.document;
+    printDoc.open();
+    printDoc.write(`<!DOCTYPE html>
+<html>
+  <head>
+    <title>19 CFR § 162.74 Formal Prior Disclosure</title>
+    <style>
+      body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; padding: 48px; color: #111; max-width: 800px; margin: 0 auto; }
+      .header { text-align: center; font-weight: bold; margin-bottom: 24px; border-bottom: 2px solid #0F172A; padding-bottom: 12px; }
+      .badge { font-size: 13pt; letter-spacing: 1px; }
+      .sub { font-size: 9pt; font-weight: normal; margin-top: 4px; }
+      .meta { font-family: monospace; font-size: 9pt; margin-bottom: 20px; color: #333; }
+      pre { font-family: 'Times New Roman', Times, serif; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+      .signature { margin-top: 40px; border-top: 1px solid #666; padding-top: 12px; font-size: 10pt; }
+      @media print { body { padding: 20px; } }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="badge">PRELIMINARY COMPLIANCE DRAFT -- FOR BROKER / COUNSEL REVIEW</div>
+      <div class="sub">UNITED STATES CUSTOMS AND BORDER PROTECTION • FORMAL PRIOR DISCLOSURE</div>
+    </div>
+    <div id="meta-block" class="meta"></div>
+    <pre id="letter-body"></pre>
+    <div class="signature">
+      <strong>Importer of Record / Authorized Agent Authorization</strong><br/>
+      <span id="tender-statutory-line"></span>
+    </div>
+  </body>
+</html>`);
+    printDoc.close();
+
+    const metaEl = printDoc.getElementById("meta-block");
+    if (metaEl) {
+      metaEl.textContent = `FILING REF: ${priorDisclosure?.filing_reference_id || "FILING"} | PORT: ${priorDisclosure?.port_of_entry || "PORT"}`;
+    }
+    const bodyEl = printDoc.getElementById("letter-body");
+    if (bodyEl) {
+      bodyEl.textContent = priorDisclosure?.letter_text || "";
+    }
+    const tenderEl = printDoc.getElementById("tender-statutory-line");
+    if (tenderEl) {
+      tenderEl.textContent = `Prior Disclosure Statutory Tender Computed: $${tenderFormatted} (19 U.S.C. § 1505 Lawful Duty Loss + Statutory Interest)`;
+    }
+
+    printWindow.onload = () => {
+      printWindow.print();
+    };
   };
 
   return (
@@ -396,7 +421,12 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
       {/* Prior Disclosure Modal */}
       <AnimatePresence>
         {showDisclosureModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas-dark/80 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="prior-disclosure-modal-title"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas-dark/80 backdrop-blur-sm"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -405,7 +435,7 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
             >
               <div className="p-5 border-b border-[#1F2937] flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-ink-primary flex items-center gap-2">
+                  <h3 id="prior-disclosure-modal-title" className="text-base font-bold text-ink-primary flex items-center gap-2">
                     <span>📜</span>
                     <span>19 CFR § 162.74 Formal Prior Disclosure Filing</span>
                   </h3>
@@ -415,7 +445,8 @@ export const CustomsValuationViewer: React.FC<CustomsValuationViewerProps> = ({
                 </div>
                 <button
                   onClick={() => setShowDisclosureModal(false)}
-                  className="text-slate-400 hover:text-ink-primary text-lg p-1"
+                  aria-label="Close Prior Disclosure dialog"
+                  className="text-slate-400 hover:text-ink-primary text-lg p-1 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 >
                   ✕
                 </button>

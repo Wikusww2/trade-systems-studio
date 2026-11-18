@@ -119,6 +119,8 @@ def test_empty_dict_input_returns_zero_discrepancies():
 
 def test_duty_drawback_untimely_5yr_window():
     expired_drawback = {
+        "import_entry": "441-9872134-2",
+        "export_bl": "EXP-2024-88412",
         "dutiable_value": "200000.00",
         "duties_paid": "20000.00",
         "drawback_percentage": "0.99",
@@ -129,3 +131,52 @@ def test_duty_drawback_untimely_5yr_window():
     assert len(discrepancies) == 1
     assert "5-Year Statutory Limit Exceeded" in discrepancies[0].title
     assert discrepancies[0].statutory_code == "19 U.S.C. § 1313(r)"
+
+
+def test_freight_missing_free_days_no_fabrication():
+    """C2: Missing port free days or actual days held must not fabricate a violation."""
+    partial_freight = {
+        "invoice_number": "FB-TEST-001",
+        "detention_billed": "100.00"
+    }
+    metrics, discrepancies = audit_freight_bill(partial_freight)
+    assert metrics.carrier_overbilling_caught == Decimal("0.00")
+    detention_discs = [d for d in discrepancies if "Detention" in d.title]
+    assert len(detention_discs) == 0
+
+
+def test_drawback_missing_entry_no_fabrication():
+    """C2: Duties paid without paired import entry must return 0 unlocked drawback."""
+    partial_drawback = {"duties_paid": "1000.00"}
+    metrics, discrepancies = audit_duty_drawback(partial_drawback)
+    assert metrics.drawback_unclaimed_unlocked == Decimal("0.00")
+    assert len(discrepancies) == 0
+
+
+def test_drawback_missing_export_bl_no_fabrication():
+    """C2: Import entry without export B/L must return 0 unlocked drawback."""
+    partial_drawback = {
+        "duties_paid": "1000.00",
+        "import_entry": "441-1234567-8"
+    }
+    metrics, discrepancies = audit_duty_drawback(partial_drawback)
+    assert metrics.drawback_unclaimed_unlocked == Decimal("0.00")
+    assert len(discrepancies) == 0
+
+
+def test_freight_explicit_values_still_work():
+    """Verify that complete freight bills still catch all overbillings accurately."""
+    full_freight = {
+        "invoice_number": "FB-2024-FULL",
+        "base_freight": "4500.00",
+        "billed_fsc_rate": "0.325",
+        "authorized_fsc_rate": "0.240",
+        "chassis_split_fee": "285.00",
+        "has_chassis_work_order": False,
+        "port_free_days_allowed": 4,
+        "actual_days_held": 4,
+        "detention_billed": "880.00"
+    }
+    metrics, discrepancies = audit_freight_bill(full_freight)
+    assert metrics.carrier_overbilling_caught == Decimal("1547.50")
+    assert len(discrepancies) == 3

@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from app.core.config import settings
 from app.services.layout_extractor import DocumentLayoutExtractor
 from app.services.sanctions_screener import (
@@ -116,3 +118,20 @@ def test_real_document_statutory_text_presence():
     nightmare_boxes = extractor.extract_bounding_boxes(nightmare_pdf_path)
     nightmare_text = " ".join(b.get("text", "") for b in nightmare_boxes).upper()
     assert len(nightmare_text) > 20
+
+
+@pytest.mark.anyio
+async def test_yente_outage_fails_closed():
+    """
+    C5 Requirement: When Yente API is configured and unreachable, the engine must
+    fail closed to UNSCREENED_HOLD with provider_error=True, never silent clear.
+    """
+    # Point to an unreachable port to simulate connection refusal / outage
+    screener = SanctionsScreener(yente_url="http://127.0.0.1:59999")
+    report = await screener.screen_parties_async(shipper="Unknown Foreign Shipper Ltd")
+
+    assert report.provider_error is True
+    assert report.compliance_status == "UNSCREENED_HOLD"
+    assert report.engine_used == "yente_unavailable_hold"
+    assert report.has_violations is True
+

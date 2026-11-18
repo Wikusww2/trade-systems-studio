@@ -1,8 +1,9 @@
 import asyncio
 import http.server
+import os
 import socketserver
 import threading
-import os
+
 from playwright.async_api import async_playwright
 
 PORT = 3456

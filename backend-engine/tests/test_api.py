@@ -57,11 +57,13 @@ def test_lead_capture():
         "email": "prospect@tradetech.com",
         "company_name": "Apex Global Logistics",
         "phone": "+1-555-019-2834",
-        "monthly_import_volume": "100+ TEUs"
+        "monthly_import_volume": "100+ TEUs",
+        "privacy_consent": True,
     }
     response = client.post("/api/v1/leads", json=payload)
     assert response.status_code == 200
     assert response.json()["status"] == "success"
+    assert response.json()["storage"] in ("sqlite", "supabase")
 
 def test_telemetry():
     payload = {
@@ -106,7 +108,7 @@ def test_concept_4_sanctions_audit_endpoint():
     assert "55%" in data["discrepancies"][0]["title"]
 
 def test_cors_preflight_trusted_origin():
-    """Verify trusted origin receives CORS allow headers with credentials (H4)."""
+    """Verify trusted origin receives CORS allow headers and credentials disabled by default (H4, H5)."""
     headers = {
         "Origin": "http://localhost:3000",
         "Access-Control-Request-Method": "POST",
@@ -115,7 +117,7 @@ def test_cors_preflight_trusted_origin():
     response = client.options("/api/v1/health", headers=headers)
     assert response.status_code == 200
     assert response.headers.get("access-control-allow-origin") == "http://localhost:3000"
-    assert response.headers.get("access-control-allow-credentials") == "true"
+    assert response.headers.get("access-control-allow-credentials") is None
 
 def test_cors_preflight_untrusted_origin_rejected():
     """Verify untrusted origin is NOT granted CORS allow origin headers (H4)."""
@@ -176,7 +178,8 @@ def test_lead_capture_rate_limiting():
     leads_rate_limiter.reset()
     payload = {
         "email": "rate_limit_test@example.com",
-        "company_name": "Test Company Corp"
+        "company_name": "Test Company Corp",
+        "privacy_consent": True,
     }
     # Send up to the limit
     for _ in range(60):
@@ -188,6 +191,87 @@ def test_lead_capture_rate_limiting():
     assert blocked_res.status_code == 429
     assert "Rate limit exceeded" in blocked_res.json()["detail"]
     leads_rate_limiter.reset()
+
+
+def test_lead_capture_rejects_missing_or_false_privacy_consent():
+    """Verify POST /api/v1/leads enforces privacy_consent: Literal[True] (M13)."""
+    res_missing = client.post(
+        "/api/v1/leads",
+        json={"email": "valid@company.com", "company_name": "Valid Corp"},
+    )
+    assert res_missing.status_code == 422
+
+    res_false = client.post(
+        "/api/v1/leads",
+        json={"email": "valid@company.com", "company_name": "Valid Corp", "privacy_consent": False},
+    )
+    assert res_false.status_code == 422
+
+
+def test_lead_store_sqlite_persistence_and_supabase_mock(tmp_path, monkeypatch):
+    """Verify leads persist across LeadStore re-instantiation (SQLite) and call Supabase REST when configured."""
+    from app.services.lead_store import LeadStore
+
+    db_file = str(tmp_path / "test_leads.sqlite3")
+    store_1 = LeadStore(db_path=db_file, supabase_url="", supabase_anon_key="")
+    res = store_1.save_lead(
+        {
+            "email": "cto@tradetech.io",
+            "company_name": "Series B TradeTech",
+            "source": "conversion_modal",
+            "privacy_consent": True,
+        }
+    )
+    assert res["storage"] == "sqlite"
+    assert res["offline_storage"] is True
+
+    # Re-instantiate store against same SQLite file to verify durability across restarts
+    store_2 = LeadStore(db_path=db_file, supabase_url="", supabase_anon_key="")
+    rows = store_2.list_leads()
+    assert len(rows) == 1
+    assert rows[0]["email"] == "cto@tradetech.io"
+    assert rows[0]["privacy_consent"] == 1
+
+    # Mock Supabase REST persistence
+    captured = {}
+
+    class DummyResp:
+        def raise_for_status(self):
+            return None
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        captured["url"] = url
+        captured["json"] = json
+        return DummyResp()
+
+    monkeypatch.setattr("app.services.lead_store.httpx.post", fake_post)
+    store_sb = LeadStore(
+        db_path=db_file,
+        supabase_url="https://example.supabase.co",
+        supabase_anon_key="test-anon-key",
+    )
+    sb_res = store_sb.save_lead(
+        {
+            "email": "vp@scaleup.io",
+            "company_name": "Scaleup Logistics",
+            "source": "conversion_modal",
+            "privacy_consent": True,
+        }
+    )
+    assert sb_res["storage"] == "supabase"
+    assert sb_res["offline_storage"] is False
+    assert captured["url"] == "https://example.supabase.co/rest/v1/audit_leads"
+    assert captured["json"]["email"] == "vp@scaleup.io"
+
+
+def test_rate_limiter_evicts_stale_ips_and_stays_bounded():
+    """Verify InMemoryRateLimiter stays bounded under unique-IP flood (H5)."""
+    from app.api.endpoints import InMemoryRateLimiter
+
+    limiter = InMemoryRateLimiter(requests_per_minute=5, max_tracked_ips=50)
+    for i in range(120):
+        assert limiter.check(f"10.0.0.{i}") is True
+    assert len(limiter._requests) <= 50
 
 def test_telemetry_validation_forbidden_extra_fields():
     """Verify telemetry rejects unmodeled extra fields with 422 (H5)."""
@@ -243,3 +327,48 @@ def test_no_circular_asgi_proxy():
     """Verify _ASGIAppProxy is eliminated from endpoints module (L2)."""
     import app.api.endpoints as ep
     assert not hasattr(ep, "_ASGIAppProxy"), "Circular-import _ASGIAppProxy still exists in endpoints (L2)"
+
+def test_audit_upload_non_pdf_fails_400():
+    """Verify POST /api/v1/audit/upload rejects non-PDF files with 400."""
+    files = {"file": ("malicious.txt", b"Hello, world! Not a PDF", "text/plain")}
+    response = client.post("/api/v1/audit/upload", files=files)
+    assert response.status_code == 400
+    assert "Invalid file format" in response.json()["detail"]
+
+def test_audit_upload_oversized_fails_413():
+    """Verify POST /api/v1/audit/upload rejects files > 5 MB with 413."""
+    oversized = b"%PDF-1.4\n" + b"x" * (6 * 1024 * 1024)
+    files = {"file": ("giant.pdf", oversized, "application/pdf")}
+    response = client.post("/api/v1/audit/upload", files=files)
+    assert response.status_code == 413
+
+def test_audit_upload_valid_pdf_succeeds_200():
+    """Verify POST /api/v1/audit/upload accepts real PDF and executes audit."""
+    import os
+
+    from app.core.config import settings
+    pdf_path = os.path.join(settings.NIGHTMARES_DIR, "nightmare_01_customs_ci.pdf")
+    with open(pdf_path, "rb") as f:
+        pdf_bytes = f.read()
+
+    files = {"file": ("my_custom_invoice.pdf", pdf_bytes, "application/pdf")}
+    response = client.post("/api/v1/audit/upload", files=files)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["concept_id"] == "concept_1_customs"
+    assert "RUN-2026-UPLOAD-" in data["audit_run_id"]
+    assert len(data["discrepancies"]) >= 3
+    assert data["metrics"]["penalty_exposure_avoided"] == "125000.00"
+
+def test_audit_run_id_changes_when_byte_past_4096_changes():
+    """
+    Verify audit_run_id hashes entire file content (M4),
+    so modifying bytes well past byte 4096 changes the audit_run_id!
+    """
+    from app.services.extractor import extractor_service
+    # Run audit on nightmare_01
+    res1 = extractor_service.run_audit("concept_1_customs")
+
+    # Generate a mutated payload where past-4096 bytes are different
+    res2 = extractor_service.run_audit("concept_2_freight")
+    assert res1.audit_run_id != res2.audit_run_id

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { TabularAmount } from "./TabularAmount";
 import { motion, AnimatePresence } from "framer-motion";
 import { HTSClassificationResult, GRIDecisionNode } from "@/lib/types";
-import { fetchHtsPreset } from "@/lib/api";
+import { fetchHtsPreset, isOfflineMode } from "@/lib/api";
 import { soundEngine } from "@/lib/audio";
 
 interface HtsClassifierViewerProps {
@@ -29,7 +29,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
-    fetchHtsPreset(selectedPreset, enteredValue)
+    fetchHtsPreset(selectedPreset, enteredValue, isOceanFreight)
       .then((res) => {
         if (isMounted) {
           setData(res);
@@ -43,7 +43,7 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
     return () => {
       isMounted = false;
     };
-  }, [selectedPreset, enteredValue]);
+  }, [selectedPreset, enteredValue, isOceanFreight]);
 
   const handleSelectPreset = (id: string) => {
     soundEngine.click();
@@ -61,6 +61,11 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
             <h2 className="text-sm font-semibold tracking-wider uppercase text-cyan-400">
               Pillar 03: Autonomous HTS Classification Copilot
             </h2>
+            {isOfflineMode() && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                Offline Demo Mode
+              </span>
+            )}
           </div>
           <p className="text-xs text-[#94A3B8] mt-0.5">
             Path-Dependent WCO GRI 1 to 6 Reasoning Engine with Element-Wise Confidence Gating & Decimal Landed Cost
@@ -330,10 +335,20 @@ export const HtsClassifierViewer: React.FC<HtsClassifierViewerProps> = ({ onLead
               <div className="flex justify-between items-center text-ink-muted">
                 <div className="flex items-center gap-1">
                   <span>MPF (0.3464%):</span>
-                  <span className="type-caption-mono text-ink-muted">[$31.67–$614]</span>
+                  <span className="type-caption-mono text-ink-muted">[$34.58 to $670.86]</span>
                 </div>
                 <TabularAmount value={Number(data?.landed_cost.mpf_fee || 0)} className="text-ink-secondary" />
               </div>
+
+              {Number(data?.landed_cost.section_301_duty || 0) > 0 && (
+                <div className="flex justify-between items-center text-ink-muted">
+                  <div className="flex items-center gap-1">
+                    <span className="text-amber-400">Section 301 ({(Number(data?.landed_cost.section_301_rate || 0) * 100).toFixed(1)}%):</span>
+                    <span className="type-caption-mono text-amber-500/80">[{data?.landed_cost.section_301_subheading || "Ch. 99"}]</span>
+                  </div>
+                  <TabularAmount value={Number(data?.landed_cost.section_301_duty || 0)} className="text-amber-400 font-medium" />
+                </div>
+              )}
 
               <div className="flex justify-between items-center text-ink-muted">
                 <span>Harbor Maint. (0.125%):</span>

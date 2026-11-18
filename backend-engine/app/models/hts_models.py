@@ -26,15 +26,19 @@ class LandedCostBreakdown(BaseModel):
     entered_value: Decimal = Field(..., description="FOB / Dutiable value of merchandise")
     duty_rate_ad_valorem: Decimal = Field(..., description="General duty rate percentage (e.g. 0.025 for 2.5%)")
     customs_duty: Decimal = Field(..., description="Calculated ad valorem customs duty")
+    section_301_rate: Decimal = Field(Decimal("0.00"), description="Section 301 Chapter 99 ad valorem tariff rate")
+    section_301_duty: Decimal = Field(Decimal("0.00"), description="Section 301 Chapter 99 duty amount")
+    section_301_subheading: Optional[str] = Field(None, description="Chapter 99 tariff subheading")
     mpf_rate: Decimal = Field(Decimal("0.003464"), description="Merchandise Processing Fee statutory rate (0.3464%)")
-    mpf_min_cap: Decimal = Field(Decimal("31.67"), description="Statutory MPF minimum fee cap")
-    mpf_max_cap: Decimal = Field(Decimal("614.35"), description="Statutory MPF maximum fee cap")
+    mpf_min_cap: Decimal = Field(Decimal("34.58"), description="Statutory MPF minimum fee cap (FY2027 standard)")
+    mpf_max_cap: Decimal = Field(Decimal("670.86"), description="Statutory MPF maximum fee cap (FY2027 standard)")
     mpf_fee: Decimal = Field(..., description="Merchandise Processing Fee after statutory capping")
     hmf_rate: Decimal = Field(Decimal("0.00125"), description="Harbor Maintenance Fee rate (0.125%) for ocean freight")
     hmf_fee: Decimal = Field(..., description="Harbor Maintenance Fee amount")
     freight_and_insurance: Decimal = Field(Decimal("0.00"), description="International logistics overhead")
-    total_customs_cost: Decimal = Field(..., description="Sum of Duty + MPF + HMF")
+    total_customs_cost: Decimal = Field(..., description="Sum of Duty + Section 301 + MPF + HMF")
     total_landed_cost: Decimal = Field(..., description="Sum of Entered Value + Customs Costs + Logistics")
+    fiscal_year: str = Field("FY2027", description="CBP Fiscal year used for MPF fee caps")
 
 
 class HTSClassificationResult(BaseModel):
@@ -62,3 +66,4 @@ class ClassificationRequest(BaseModel):
     is_ocean_freight: bool = True
     freight_and_insurance: Decimal = Field(Decimal("1200.00"), description="Freight and marine insurance")
     declared_hts_code: Optional[str] = None
+    fiscal_year: str = Field(default="FY2027", description="CBP Fiscal year: FY2024, FY2025, FY2026, or FY2027")

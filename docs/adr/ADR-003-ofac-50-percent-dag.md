@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Deciders:** Samuel (Principal Architect), TradeTech Governance
 - **Date:** 2026-11-16
-- **Technical Invariant:** 0.019 ms recursive DAG traversal, OFAC 50% Rule multi-tier resolution, RapidFuzz C++ token matching, zero cloud API fees.
+- **Technical Invariant:** Sub-millisecond recursive DAG traversal (0.115 ms mean / 0.175 ms p99), OFAC FAQ 401 50% Rule cascade resolution over `yente_ofac_ftm.jsonl` (37 FollowTheMoney records), RapidFuzz C++ multi-scorer matching, zero cloud API fees.
 
 ---
 
@@ -19,6 +19,6 @@ We implement a zero-budget, high-performance local corporate entity resolution a
 3. **Statutory Quarantine:** Any transaction involving an OFAC 50% match is immediately placed in quarantine. In accordance with ADR-001, no tenant policy tolerance can override or waive a positive sanctions match.
 
 ## Consequences
-- **Positive:** Sub-millisecond (0.019 ms) corporate graph traversal, zero external API costs, offline evaluation capability using synthetic `NightmareFixture` payloads, and mathematical certainty in multi-tier ownership aggregation.
+- **Positive:** Sub-millisecond (0.115 ms mean / 0.175 ms p99) corporate graph traversal, zero external API costs, offline evaluation capability over the embedded 37-record FollowTheMoney dataset (`yente_ofac_ftm.jsonl`), fail-closed `UNSCREENED_HOLD` on Yente API outages, and exact OFAC FAQ 401 multi-tier cascade aggregation.
 - **Negative:** Corporate registry datasets must be periodically refreshed via automated pipeline feeds.
 - **Verification:** Enforced via `tests/test_sanctions.py` and `tests/test_sanctions_graph.py`.

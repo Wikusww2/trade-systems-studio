@@ -7,12 +7,13 @@ Executes:
 4. Viewport testing at 1440x900 (Desktop) and 390x844 (Mobile).
 """
 
-import os
-import sys
-import time
-import socketserver
 import http.server
+import os
+import socketserver
+import sys
 import threading
+import time
+
 from playwright.sync_api import sync_playwright
 
 PORT = 8991
@@ -59,8 +60,6 @@ def run_gates():
 
     base_url = f"http://127.0.0.1:{PORT}"
     print(f"Connecting Playwright Chromium to {base_url}...")
-
-    results = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)

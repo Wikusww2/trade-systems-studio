@@ -48,6 +48,64 @@ const PRESET_ENTITIES = [
   },
 ];
 
+const CANDIDATE_ENTITIES = [
+  {
+    id: "bis-el-cn-0941",
+    names: [
+      "Global Micro Electronics Ltd",
+      "Global Micro Electronics",
+      "Shenzhen Advanced Electronic Technologies",
+      "Victor Petrov",
+      "Rosoboronexport JSC",
+    ],
+  },
+  {
+    id: "ofac-sdn-ir-0382",
+    names: [
+      "Apex Ocean Logistics Inc",
+      "Apex Ocean Logistics",
+      "Islamic Republic of Iran Shipping Lines",
+      "IRISL",
+      "Panama Maritime Holding Trust",
+    ],
+  },
+  {
+    id: "pacific-apex-01",
+    names: [
+      "Pacific Apex Computing Limited",
+      "Pacific Apex",
+      "Pacific Apex HK",
+      "Pacific Apex Computing",
+    ],
+  },
+];
+
+function scoreEntityMatch(query: string, candidateNames: string[]): number {
+  const qClean = query.toLowerCase().trim().replace(/[^a-z0-9\s]/g, "");
+  const qTokens = qClean.split(/\s+/).filter((t) => t.length > 1);
+  if (qTokens.length === 0) return 0;
+
+  let maxScore = 0;
+  for (const name of candidateNames) {
+    const nClean = name.toLowerCase().trim().replace(/[^a-z0-9\s]/g, "");
+    if (qClean === nClean) return 100;
+    if (nClean.includes(qClean) || qClean.includes(nClean)) {
+      const ratio = (Math.min(qClean.length, nClean.length) / Math.max(qClean.length, nClean.length)) * 100;
+      maxScore = Math.max(maxScore, Math.round(ratio));
+    }
+    const nTokens = nClean.split(/\s+/).filter((t) => t.length > 1);
+    let matched = 0;
+    for (const qt of qTokens) {
+      if (nTokens.some((nt) => nt === qt || nt.startsWith(qt) || qt.startsWith(nt))) {
+        matched++;
+      }
+    }
+    const tokenScore = (matched / Math.max(qTokens.length, nTokens.length)) * 100;
+    maxScore = Math.max(maxScore, Math.round(tokenScore));
+  }
+  return maxScore;
+}
+
 export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
   onOpenLeadModal,
 }) => {
@@ -56,26 +114,30 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchScore, setSearchScore] = useState<number | null>(null);
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
     fetchSanctionsGraph(selectedEntityId).then((data) => {
       if (isMounted) {
         setGraphData(data);
-        if (data.evaluation.is_blocked_by_50_percent_rule) {
-          sound.playAlert();
-        } else {
-          sound.playLock();
+        if (hasInteracted) {
+          if (data.evaluation.is_blocked_by_50_percent_rule) {
+            sound.playAlert();
+          } else {
+            sound.playLock();
+          }
         }
       }
     });
     return () => {
       isMounted = false;
     };
-  }, [selectedEntityId]);
+  }, [selectedEntityId, hasInteracted]);
 
-  // Live fuzzy string calculation for prospect interactive queries
+  // Live honest token matching calculation for prospect interactive queries
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHasInteracted(true);
     const query = e.target.value;
     setSearchQuery(query);
     if (!query.trim()) {
@@ -83,22 +145,24 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
       return;
     }
 
-    const clean = query.toLowerCase();
-    if (clean.includes("global") || clean.includes("micro") || clean.includes("ic")) {
-      setSelectedEntityId("bis-el-cn-0941");
-      setSearchScore(94.2);
-    } else if (clean.includes("apex") || clean.includes("ocean") || clean.includes("irisl")) {
-      setSelectedEntityId("ofac-sdn-ir-0382");
-      setSearchScore(91.8);
-    } else if (clean.includes("pacific") || clean.includes("computing")) {
-      setSelectedEntityId("pacific-apex-01");
-      setSearchScore(96.5);
-    } else {
-      setSearchScore(64.0);
+    let bestId = selectedEntityId;
+    let highestScore = 0;
+    for (const cand of CANDIDATE_ENTITIES) {
+      const s = scoreEntityMatch(query, cand.names);
+      if (s > highestScore) {
+        highestScore = s;
+        bestId = cand.id;
+      }
+    }
+
+    setSearchScore(highestScore);
+    if (highestScore >= 50 && bestId !== selectedEntityId) {
+      setSelectedEntityId(bestId);
     }
   };
 
   const handleSelectPreset = (id: string) => {
+    setHasInteracted(true);
     sound.click();
     setSelectedEntityId(id);
     setSearchQuery("");
@@ -299,16 +363,27 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
               return (
                 <g
                   key={node.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${node.label} (${node.country}) - ${isBlocked ? "Blocked entity" : "Owner entity"}`}
                   transform={`translate(${x}, ${y})`}
-                  className="cursor-pointer transition-transform"
+                  className="cursor-pointer transition-transform focus:outline-none"
                   onMouseEnter={() => {
                     sound.playTick();
                     setHoveredNode(node);
                   }}
                   onMouseLeave={() => setHoveredNode(null)}
+                  onFocus={() => setHoveredNode(node)}
                   onClick={() => {
                     sound.playLock();
                     setHoveredNode(node);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      sound.playLock();
+                      setHoveredNode(node);
+                    }
                   }}
                 >
                   <circle
@@ -353,11 +428,21 @@ export const SanctionsGraphViewer: React.FC<SanctionsGraphViewerProps> = ({
 
             {/* Central Target Company Node */}
             <g
+              role="button"
+              tabIndex={0}
+              aria-label={`Target entity ${targetNode.label}: ${evaluation.is_blocked_by_50_percent_rule ? "Blocked under OFAC 50 percent rule" : "Clear"}`}
               transform={`translate(${targetX}, ${targetY})`}
-              className="cursor-pointer"
+              className="cursor-pointer focus:outline-none"
               onMouseEnter={() => setHoveredNode(targetNode)}
               onMouseLeave={() => setHoveredNode(null)}
+              onFocus={() => setHoveredNode(targetNode)}
               onClick={() => setHoveredNode(targetNode)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setHoveredNode(targetNode);
+                }
+              }}
             >
               {/* Pulsating Halo if Blocked */}
               {evaluation.is_blocked_by_50_percent_rule && (

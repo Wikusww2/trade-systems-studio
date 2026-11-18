@@ -22,6 +22,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
   const [phone, setPhone] = useState("");
   const [volume, setVolume] = useState("500-2500 documents/mo");
   const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -77,7 +78,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
     recordTelemetry({
       event_type: "lead_submitted",
       concept_id: activeConceptId,
-      metadata: { name, company: companyName, volume },
+      metadata: { volume_tier: volume },
     });
 
     const payload = {
@@ -86,6 +87,7 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
       phone,
       monthly_import_volume: `${volume}${name ? ` [${name}]` : ""}`.slice(0, 50),
       source: "technical_architecture_review_modal",
+      privacy_consent: privacyConsent,
     };
 
     // Try backend API endpoint first
@@ -249,8 +251,8 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                 </select>
               </div>
 
-              {/* Privacy Policy Consent Checkbox (Finding M13) */}
-              <div className="pt-1">
+              {/* Privacy Policy Consent Checkbox & Inline Notice Drawer (Finding M13) */}
+              <div className="pt-1 space-y-2">
                 <label className="flex items-start gap-2 cursor-pointer text-xs font-mono text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
@@ -260,21 +262,48 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                     className="mt-0.5 rounded border-slate-300 dark:border-slate-700 text-cobalt-600 focus:ring-cobalt-500"
                   />
                   <span>
-                    I agree to the privacy terms for technical review contact. See our{" "}
+                    I agree to the privacy terms for technical review contact. Read our{" "}
                     <button
                       type="button"
-                      onClick={() =>
-                        alert(
-                          "Privacy Terms: Information submitted is used solely for scheduling technical architecture review sessions. Zero marketing spam, zero third-party sharing, and zero data resale."
-                        )
-                      }
+                      aria-expanded={showPrivacyNotice}
+                      aria-controls="inline-privacy-notice-drawer"
+                      onClick={() => setShowPrivacyNotice((prev) => !prev)}
                       className="text-cobalt-600 dark:text-cobalt-400 underline hover:text-cobalt-500 font-semibold"
                     >
-                      privacy terms
+                      privacy and data retention notice
                     </button>
                     .
                   </span>
                 </label>
+
+                {showPrivacyNotice && (
+                  <div
+                    id="inline-privacy-notice-drawer"
+                    role="region"
+                    aria-label="Privacy and Data Retention Notice"
+                    className="p-3 bg-slate-50 dark:bg-[#0B0F19] border border-slate-200 dark:border-[#1F2937] rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 space-y-1.5 leading-relaxed"
+                  >
+                    <p>
+                      <strong className="text-slate-900 dark:text-slate-100">Data Controller:</strong> Samuel, Principal Architect, TradeTech Systems Studio.
+                    </p>
+                    <p>
+                      <strong className="text-slate-900 dark:text-slate-100">Purpose:</strong> Used exclusively to schedule and follow up on your requested technical architecture review. Zero marketing resale, zero third-party brokerage, and zero unconsented telemetry.
+                    </p>
+                    <p>
+                      <strong className="text-slate-900 dark:text-slate-100">Retention Period:</strong> Deleted automatically within 90 days after inquiry closure unless an active NDA engagement is initiated.
+                    </p>
+                    <p>
+                      <strong className="text-slate-900 dark:text-slate-100">Opt-Out &amp; Erasure:</strong> Email{" "}
+                      <a
+                        href="mailto:samuel-tradetech@outlook.com?subject=Data%20Deletion%20Request"
+                        className="text-cobalt-600 dark:text-cobalt-400 underline"
+                      >
+                        samuel-tradetech@outlook.com
+                      </a>{" "}
+                      at any time for immediate removal.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="pt-2">

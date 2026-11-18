@@ -126,7 +126,7 @@ export const PenaltyExposureLadder: React.FC<PenaltyExposureLadderProps> = ({
       <div className="p-2.5 bg-canvas-dark/80 border border-slate-800/80 rounded-xs">
         <div className="type-caption-mono uppercase font-medium text-ink-cobalt mb-1 flex items-center gap-1.5">
           <ShieldAlert className="w-3.5 h-3.5 text-ink-cobalt" />
-          <span>Samuel's Prior Disclosure Safe Harbor</span>
+          <span>Samuel&apos;s Prior Disclosure Safe Harbor</span>
         </div>
         <p className="statutory-cite text-[13px] text-ink-secondary">
           {active.defense}

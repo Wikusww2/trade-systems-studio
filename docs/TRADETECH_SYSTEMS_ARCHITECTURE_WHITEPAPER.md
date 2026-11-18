@@ -49,7 +49,7 @@ def quantize_currency(value: Decimal) -> Decimal:
 All core engines enforce fail-closed input validation:
 - **Empty-Input Invariant:** Missing required payload fields yield `$0.00` exposure and zero findings rather than defaulting to scenario constants.
 - **Explicit `None` vs. `0` Boundaries:** In FMC Docket 21-08 detention checks (`freight_audit.py`), `0` contracted free days is preserved accurately rather than coerced to a default free-time window.
-- **Statutory Fee & Drawback Math:** Merchandise Processing Fees (MPF capped between `$31.67` and `$614.35` under 19 CFR § 24.23), Harbor Maintenance Fees (`0.125%` under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback claims (enforcing the 5-year statutory time bar) are verified by 37 Hypothesis property-based fuzz tests and 92 E2E compliance tests.
+- **Statutory Fee & Drawback Math:** Merchandise Processing Fees (MPF capped between `$34.58` and `$670.86` under FY2027 91 FR 48398 / 19 CFR § 24.23, with historical FY2024 to FY2026 schedule support), origin-aware Section 301 Chapter 99 surcharges, Harbor Maintenance Fees (`0.125%` under 19 CFR § 24.24), quarterly daily-compounded 19 U.S.C. § 1505 interest, and 99% Section 1313 Duty Drawback claims (enforcing the 5-year statutory time bar) are verified by 37 Hypothesis property-based fuzz tests and 95 E2E compliance tests.
 
 ---
 
@@ -86,13 +86,13 @@ $$\text{Blocked}(\text{Target}) \iff \sum_{i \in \text{SDN}} \text{Ownership}_{\
 
 Crucially, TradeTech Systems Studio separates **OFAC SDN blocking** from **BIS Entity List / Unverified List (UVL)** export licensing controls so distinct statutory regimes are never conflated into the OFAC 50% Rule calculation.
 
-### 4.2 Transitive, Cycle-Safe Traversal & Fail-Closed Resolution
-Modeling corporate equity as a directed graph $G = (V, E)$ with edge ownership weights $w(u, v) \in (0.0, 1.0]$, effective indirect ownership is multiplied along simple paths and aggregated across blocked upstream owners using a `visited` set to guard against circular holding shell cycles:
-$$\text{Ownership}_{\text{effective}}(S, T) = \sum_{p \in P_{\text{simple}}(S, T)} \prod_{(u, v) \in p} w(u, v)$$
+### 4.2 OFAC FAQ 401 Cascade Traversal & Fail-Closed Resolution
+Modeling corporate equity as a directed graph $G = (V, E)$ with edge ownership weights $w(u, v) \in (0.0, 1.0]$, evaluation follows **OFAC Revised Guidance (2014) and FAQ 401**: once an intermediate entity $u$ reaches $\ge 50.0\%$ aggregate blocked ownership, $u$ itself becomes a blocked entity by operation of law and contributes 100% of its direct stake $w(u, v)$ into downstream subsidiaries $v$ (with cycle protection against circular shell holdings):
+$$\text{Blocked}(v) \iff v \in \text{SDN} \;\lor\; \sum_{\substack{(u, v) \in E \\ \text{Blocked}(u)}} w(u, v) \ge 50.0\%$$
 
-- **Persistent FollowTheMoney Dataset:** Backed by a 38-record FollowTheMoney v3 dataset (`backend-engine/app/data/yente_ofac_ftm.jsonl`) loaded from disk on startup.
-- **Fail-Closed Guarantee:** Unknown entity IDs or upstream screening provider outages return `UNSCREENED / HOLD` rather than a false green light.
-- **Fuzzy Name Normalization:** Combines normalized RapidFuzz token-set and partial-ratio scoring to catch transliteration and token-order variants.
+- **Persistent FollowTheMoney Dataset:** Backed by a 37-record FollowTheMoney v3 dataset (`backend-engine/app/data/yente_ofac_ftm.jsonl`) dynamically loaded from disk on startup (`Company`, `Person`, `Vessel`, `LegalEntity`, `Ownership`, and `Sanction` records).
+- **Fail-Closed Guarantee:** Unknown entity IDs or upstream Yente screening provider outages return `UNSCREENED_HOLD` rather than a false green light.
+- **Fuzzy Name Normalization:** Combines normalized RapidFuzz `token_sort_ratio`, `token_set_ratio`, and `partial_ratio` with corporate suffix normalization to catch transliteration and token-order variants.
 
 ---
 
@@ -118,11 +118,11 @@ Every push to `main` enforces automated quality, security, and regression gates 
 
 | Verification Layer | Scope & Enforcement | Verified Outcome |
 | :--- | :--- | :--- |
-| **Pytest Matrix (Python 3.11 & 3.12)** | 200 tests across 15 modules (unit tests, 37 Hypothesis property fuzz tests, 92 4-tier E2E compliance tests) | **200/200 PASS** |
-| **Static Analysis & Type Safety** | `ruff check`, `mypy app` (23 files), strict TypeScript (`npx tsc --noEmit`) | **0 Errors** |
-| **API & Dependency Hardening** | Strict `ALLOWED_ORIGINS` CORS allowlist, `EmailStr` + `max_length` + rate-limited endpoints, Next.js `15.5.29`, Node 22 Docker | **VERIFIED** |
-| **Document & XML Provenance** | Byte-deterministic 2-page synthetic PDF fixtures, local `pypdf` layout extraction, SHA-256 content-addressed CargoWise XML | **VERIFIED** |
-| **Frontend Accessibility & Privacy** | WCAG 2.2 AA contrast (`6.96:1` to `7.47:1`), ARIA landmarks, client-side PII redaction toggle, explicit privacy consent on lead capture | **VERIFIED** |
+| **Pytest Matrix (Python 3.11 & 3.12)** | 230 tests across 16 modules (unit tests, 37 Hypothesis property fuzz tests, 95 E2E compliance tests, real PDF field parser & XSD validation tests) | **230/230 PASS** |
+| **Static Analysis & Type Safety** | `ruff check . ../scripts`, `mypy app` (26 source files), ESLint (`npm run lint`), strict TypeScript (`npx tsc --noEmit`) | **0 Errors** |
+| **API & Dependency Hardening** | Strict `ALLOWED_ORIGINS` CORS allowlist, `EmailStr` + `privacy_consent: Literal[True]` + bounded IP rate limiters, `pip-audit` (0 vulns), `npm audit --omit=dev` (0 vulns), Next.js `15.5.29` | **VERIFIED** |
+| **Document & XML Provenance** | Byte-deterministic 2-page synthetic PDF fixtures, real `pypdf` field & `[0, 1000)` bounding box extraction, XSD-validated SHA-256 content-addressed CargoWise XML | **VERIFIED** |
+| **Frontend Accessibility & Privacy** | WCAG 2.2 AA contrast (`6.96:1` to `7.47:1`), global `reducedMotion="user"`, mute-by-default audio, ARIA dialogs & focusable SVG nodes, inline privacy notice & consent-gated zero-PII telemetry | **VERIFIED** |
 | **Anti-Slop Governance Gate** | Automated zero em-dash / en-dash check across 456 audited files (`scripts/check_em_dashes.py`) | **0 Violations** |
 
 *Benchmarking Note:* In-memory microbenchmarks (`backend-engine/benchmark.py`) measure deterministic engine throughput on structured payloads separately from physical PDF I/O parsing and write results to isolated artifact paths without dirtying tracked repository documentation.

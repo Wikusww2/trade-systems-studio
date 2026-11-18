@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { parseCents, formatUsd } from "@/lib/money";
 
 interface RollingNumberProps {
-  value: number;
+  value: string | number;
   durationMs?: number;
   prefix?: string;
   decimals?: number;
@@ -15,15 +16,23 @@ export const RollingNumber: React.FC<RollingNumberProps> = ({
   prefix = "$",
   decimals = 2,
 }) => {
-  const [displayValue, setDisplayValue] = useState<number>(value);
+  const targetCents = parseCents(value);
+  const targetNum = Number(targetCents) / 100;
+  const [displayValue, setDisplayValue] = useState<number>(targetNum);
+  const [isFinished, setIsFinished] = useState<boolean>(true);
 
   useEffect(() => {
     let startTimestamp: number | null = null;
     const startValue = displayValue;
-    const endValue = value;
+    const endValue = targetNum;
     const change = endValue - startValue;
 
-    if (change === 0) return;
+    if (change === 0) {
+      setIsFinished(true);
+      return;
+    }
+
+    setIsFinished(false);
 
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
@@ -36,12 +45,21 @@ export const RollingNumber: React.FC<RollingNumberProps> = ({
         requestAnimationFrame(step);
       } else {
         setDisplayValue(endValue);
+        setIsFinished(true);
       }
     };
 
     const animId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animId);
-  }, [value, durationMs]);
+  }, [targetNum, durationMs]);
+
+  if (isFinished && prefix === "$") {
+    return (
+      <span className="font-mono tabular-nums">
+        {formatUsd(value, { hideCents: decimals === 0 })}
+      </span>
+    );
+  }
 
   return (
     <span className="font-mono tabular-nums">

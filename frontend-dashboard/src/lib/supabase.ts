@@ -45,10 +45,51 @@ export async function submitLeadCapture(lead: LeadCapturePayload): Promise<{ suc
   }
 }
 
+const TELEMETRY_CONSENT_KEY = "tradetech_telemetry_consent";
+const PII_KEYS = new Set(["name", "email", "phone", "company", "company_name", "full_name"]);
+
+export function isTelemetryConsentGranted(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(TELEMETRY_CONSENT_KEY) === "granted";
+  } catch {
+    return false;
+  }
+}
+
+export function setTelemetryConsent(granted: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (granted) {
+      window.localStorage.setItem(TELEMETRY_CONSENT_KEY, "granted");
+    } else {
+      window.localStorage.removeItem(TELEMETRY_CONSENT_KEY);
+      window.localStorage.removeItem("telemetry_cache");
+    }
+  } catch {
+    // Storage unavailable
+  }
+}
+
+function sanitizeTelemetryMetadata(metadata?: Record<string, any>): Record<string, any> {
+  if (!metadata || typeof metadata !== "object") return {};
+  const clean: Record<string, any> = {};
+  for (const [k, v] of Object.entries(metadata)) {
+    if (!PII_KEYS.has(k.toLowerCase())) {
+      clean[k] = v;
+    }
+  }
+  return clean;
+}
+
 /**
- * Tracks anonymous telemetry event to Supabase or local storage.
+ * Tracks strictly zero-PII telemetry events ONLY when explicit user consent is granted (M13).
  */
 export async function recordTelemetry(event: TelemetryPayload): Promise<void> {
+  if (!isTelemetryConsentGranted()) {
+    return;
+  }
+  const safeMetadata = sanitizeTelemetryMetadata(event.metadata);
   try {
     if (supabase) {
       await supabase.from("telemetry_events").insert([
@@ -56,17 +97,23 @@ export async function recordTelemetry(event: TelemetryPayload): Promise<void> {
           event_type: event.event_type,
           concept_id: event.concept_id || null,
           discrepancy_id: event.discrepancy_id || null,
-          metadata: event.metadata || {},
+          metadata: safeMetadata,
           created_at: new Date().toISOString(),
         },
       ]);
       return;
     }
 
-    // Local fallback
+    // Local fallback (strictly zero-PII, consent-gated)
     if (typeof window !== "undefined") {
       const stored = JSON.parse(localStorage.getItem("telemetry_cache") || "[]");
-      stored.push({ ...event, timestamp: new Date().toISOString() });
+      stored.push({
+        event_type: event.event_type,
+        concept_id: event.concept_id || null,
+        discrepancy_id: event.discrepancy_id || null,
+        metadata: safeMetadata,
+        timestamp: new Date().toISOString(),
+      });
       if (stored.length > 50) stored.shift();
       localStorage.setItem("telemetry_cache", JSON.stringify(stored));
     }

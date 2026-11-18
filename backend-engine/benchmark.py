@@ -8,6 +8,7 @@ across 1,000 consecutive enterprise compliance audits.
 
 import argparse
 import os
+import platform
 import statistics
 import time
 from decimal import Decimal
@@ -101,13 +102,19 @@ def run_comprehensive_benchmark(iterations: int = 500, write_doc: bool = False):
     tier1_max_p99 = max(stats_customs["p99"], stats_freight["p99"], stats_drawback["p99"])
     tier2_max_p99 = max(stats_sanctions["p99"], stats_hts["p99"], stats_valuation["p99"])
 
+    hw_spec = (
+        f"{platform.system()} {platform.release()} ({platform.machine()}), "
+        f"{os.cpu_count() or 'unknown'} logical CPUs, Python {platform.python_version()}"
+    )
+
     report_markdown = f"""# ⚡ Enterprise Performance & Throughput Benchmark
 
 > **System:** TradeTech Systems Studio  
 > **Architect & Lead:** Samuel Rencken (Principal AI Systems Architect & Lead TradeTech Engineer)  
 > **Target Scale:** Enterprise Freight Forwarders, Customs Brokerages, and Tier-1 Importers  
 > **Benchmark Date:** November 2026  
-> **Methodology:** Two-tier measurement separating end-to-end 2-page `pypdf` document parsing from pure in-memory statutory compute ({iterations:,} iterations x 6 engines = {total_audits:,} audits)
+> **Hardware & Runtime:** {hw_spec}  
+> **Methodology:** Two-tier measurement separating end-to-end 2-page `pypdf` document parsing & real field extraction from pure in-memory statutory compute ({iterations:,} iterations x 6 engines = {total_audits:,} audits)
 
 ---
 
