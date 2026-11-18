@@ -34,7 +34,7 @@ const STAGES: PipelineStage[] = [
     id: "docling",
     step: "Stage 02",
     title: "Spatial Layout Extraction",
-    subtitle: "Docling Bounding Box Parser",
+    subtitle: "pypdf / Docling Layout Parser",
     icon: <Cpu className="w-4 h-4" />,
     serviceFile: "backend-engine/app/services/layout_extractor.py",
     contract: "Normalized Coordinates [0, 1000) Space",

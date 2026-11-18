@@ -44,7 +44,7 @@ export const DocumentScannerBeam: React.FC<DocumentScannerBeamProps> = ({
       {/* 3. High-Precision HUD Crosshairs Overlay */}
       <div className="absolute top-4 left-4 flex items-center gap-2 font-mono text-[10px] text-cyan-400 tracking-wider bg-slate-950/80 px-2.5 py-1 border border-cyan-500/40 rounded-xs shadow-md backdrop-blur-xs">
         <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-        <span>DOCLING OCR KERNEL ACTIVE • SCANNING COORDINATES</span>
+        <span>LOCAL LAYOUT KERNEL ACTIVE (PYPDF / DOCLING) • SCANNING COORDINATES</span>
       </div>
 
       <div className="absolute bottom-4 right-4 flex items-center gap-1.5 font-mono text-[9px] text-cyan-300/80 bg-slate-950/80 px-2 py-0.5 border border-cyan-500/30 rounded-xs">

@@ -165,7 +165,7 @@ export const ExecutiveDossierModal: React.FC<ExecutiveDossierModalProps> = ({
                     ${disc.exposure_amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </td>
                   <td className="p-2 font-mono text-slate-600">
-                    {(disc.confidence * 100).toFixed(0)}% (Docling)
+                    {(disc.confidence * 100).toFixed(0)}% (pypdf/docling)
                   </td>
                 </tr>
               ))}

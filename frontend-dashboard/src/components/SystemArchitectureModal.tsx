@@ -518,7 +518,7 @@ export const SystemArchitectureModal: React.FC<SystemArchitectureModalProps> = (
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ 1. INGESTION & DOCUMENT LAYOUT LAYER                                                   │
-│    • Local Docling Layout Parser (Zero per-page external cloud OCR fees)               │
+│    • Local pypdf / Docling Layout Parser (Zero per-page external cloud OCR fees)       │
 │    • Coordinate Normalization into [0, 1000) integer coordinate space                  │
 │    • Deterministic local fallback parser for offline zero-key execution                │
 └────────────────────────────────────────────────────────────────────────────────────────┘

@@ -43,7 +43,7 @@ const TOUR_STEPS: TourStep[] = [
     targetId: "audit-workspace",
     title: "Normalized Coordinate Space [0, 1000)",
     badge: "02 / ZERO-BUDGET OCR",
-    description: "Powered by local Docling layout parsing with zero cloud OCR fees. Bounding boxes are mathematically normalized so highlights stay locked onto canvas text regardless of display zoom or device scale.",
+    description: "Powered by local pypdf / Docling layout parsing with zero cloud OCR fees. Bounding boxes are mathematically normalized so highlights stay locked onto canvas text regardless of display zoom or device scale.",
     statute: "Formula: left = x_norm × scale × (W_base / 1000)",
     actionHint: "Inspect the rendered PDF on the left; highlights stay aligned across zoom levels.",
   },

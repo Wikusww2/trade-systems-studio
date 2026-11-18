@@ -52,7 +52,7 @@ export const ArchitectThesis: React.FC<ArchitectThesisProps> = ({
             Holding a Bachelor of Commerce in Economic Sciences (International Trade) from the University of Pretoria, I approached this problem from statutory first principles: international trade compliance and customs valuation are strictly deterministic state machines, not probabilistic text completions. In customs compliance, a guess on an HTS Chapter 85 subheading or an omitted CIF marine insurance declaration does not save money; it triggers catastrophic 19 U.S.C. § 1592 civil penalties up to 4.0x lawful duty loss.
           </p>
           <p>
-            I built Trade Systems Studio to prove a deterministic alternative: use spatial document vision (Docling) strictly to extract bounding box coordinates, and use deterministic Python rules engines with Python Decimal to enforce 19 CFR valuation math, WCO GRI 1 to 6 classification hierarchies, and CargoWise UniversalShipment XML schemas with zero float drift.
+            I built Trade Systems Studio to prove a deterministic alternative: use spatial document vision (local pypdf / Docling layout extraction) strictly to extract bounding box coordinates, and use deterministic Python rules engines with Python Decimal to enforce 19 CFR valuation math, WCO GRI 1 to 6 classification hierarchies, and CargoWise UniversalShipment XML schemas with zero float drift.
           </p>
           <p className="text-slate-400 font-mono text-[11px]">
             Whether you want to deploy this pre-audit firewall in front of your CargoWise instance, or bring me in to architect autonomous trade systems for your engineering scale-up, you can test the exact production code right on this page.

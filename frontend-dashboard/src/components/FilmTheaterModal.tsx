@@ -49,7 +49,7 @@ const FILM_SCENES: FilmScene[] = [
   {
     id: "scene-02",
     title: "Zero-Hallucination Trade Defense",
-    subtitle: "Samuel's Deterministic Kernel: 100% Decimal Precision & Local Docling Layout",
+    subtitle: "Samuel's Deterministic Kernel: 100% Decimal Precision & Local Document Layout",
     duration: 5,
     imageSrc: "/film/frame-01-at-7.5s.png",
     chapterBadge: "THE ARCHITECTURE",

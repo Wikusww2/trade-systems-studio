@@ -188,7 +188,7 @@ export const ProvenanceMetadataBar: React.FC<{ audit: AuditResult | null }> = ({
 
         <span className="flex items-center gap-1.5">
           <span className="text-slate-400 uppercase tracking-wider">Layout:</span>
-          <span className="text-slate-300">Docling [0,1000) AST</span>
+          <span className="text-slate-300">pypdf / Docling [0,1000) AST</span>
         </span>
 
         <span className="flex items-center gap-1.5">
