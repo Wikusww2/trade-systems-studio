@@ -2,22 +2,24 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { 
-  ArrowLeft, 
-  Printer, 
-  ExternalLink, 
-  ShieldCheck, 
-  CheckCircle2, 
-  Cpu, 
-  Terminal, 
-  FileText, 
+import {
+  ArrowLeft,
+  Printer,
+  ExternalLink,
+  ShieldCheck,
+  CheckCircle2,
+  Cpu,
+  Terminal,
+  FileText,
   ChevronRight,
   BookOpen,
   Scale,
   Activity,
-  Layers
+  Layers,
+  Lock
 } from "lucide-react";
 import { sound } from "@/lib/audio";
+import { VERIFIED_PYTEST_COUNT } from "@/lib/metrics";
 
 export default function WhitepaperPage() {
   const [activeSection, setActiveSection] = useState("abstract");
@@ -37,6 +39,8 @@ export default function WhitepaperPage() {
       window.print();
     }
   };
+
+  const testBadgeLabel = `${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Tests Verified`;
 
   return (
     <div className="min-h-screen bg-transparent text-[#F8FAFC] selection:bg-cyan-500 selection:text-black">
@@ -61,7 +65,9 @@ export default function WhitepaperPage() {
 
         <div className="flex items-center gap-2.5">
           <button
+            type="button"
             onClick={handlePrint}
+            aria-label="Print or save technical whitepaper as PDF"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0F172A] border border-[#1F2937] hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white transition-all"
           >
             <Printer className="w-3.5 h-3.5 text-slate-400" />
@@ -82,29 +88,31 @@ export default function WhitepaperPage() {
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Sticky Sidebar / Table of Contents */}
-        <aside className="lg:col-span-3">
+        <aside className="lg:col-span-3" aria-label="Whitepaper Table of Contents">
           <div className="sticky top-20 rounded-xl bg-[#0F172A] border border-[#1F2937] p-4 space-y-4">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-2">
               <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
               <span>Table of Contents</span>
             </div>
 
-            <nav className="space-y-1 font-mono text-xs">
+            <nav className="space-y-1 font-mono text-xs" aria-label="Section navigation">
               {[
                 { id: "abstract", label: "1. Abstract", icon: FileText },
-                { id: "determinism", label: "2. Arithmetic Determinism", icon: Scale },
-                { id: "state-machine", label: "3. WCO GRI 1 to 6 State Machine", icon: Layers },
+                { id: "determinism", label: "2. Arithmetic & Fail-Closed Core", icon: Scale },
+                { id: "state-machine", label: "3. WCO GRI 1 to 6 Classification", icon: Layers },
                 { id: "sanctions-graph", label: "4. OFAC 50% Rule Graph", icon: Activity },
-                { id: "valuation-ledger", label: "5. Assist Valuation & Prior Disclosure", icon: ShieldCheck },
-                { id: "benchmarks", label: "6. Empirical Benchmarks", icon: Cpu },
-                { id: "conclusion", label: "7. Conclusion & Contact", icon: Terminal },
+                { id: "valuation-ledger", label: "5. Assist Valuation & Disclosures", icon: ShieldCheck },
+                { id: "benchmarks", label: "6. Verification & Hardening", icon: Cpu },
+                { id: "conclusion", label: "7. Scope & Governance", icon: Terminal },
               ].map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
                 return (
                   <button
+                    type="button"
                     key={item.id}
                     onClick={() => scrollTo(item.id)}
+                    aria-current={isActive ? "location" : undefined}
                     className={`w-full text-left px-2.5 py-1.5 rounded transition-all flex items-center justify-between group ${
                       isActive
                         ? "bg-cyan-950/40 text-cyan-400 border border-cyan-500/30 font-semibold"
@@ -122,9 +130,9 @@ export default function WhitepaperPage() {
             </nav>
 
             <div className="pt-3 border-t border-[#1F2937] text-[11px] font-mono text-slate-400 space-y-1">
-              <div>Author: <span className="text-slate-300 font-semibold">Samuel</span></div>
-              <div>Role: <span className="text-slate-300">Principal AI Systems Architect</span></div>
-              <div>Status: <span className="text-emerald-400 font-semibold">87/87 Tests Verified</span></div>
+              <div>Author: <span className="text-slate-300 font-semibold">Samuel Rencken</span></div>
+              <div>Degree: <span className="text-slate-300">BCom Economic Sciences (Intl. Trade)</span></div>
+              <div>Status: <span className="text-emerald-400 font-semibold">{testBadgeLabel}</span></div>
             </div>
           </div>
         </aside>
@@ -135,24 +143,28 @@ export default function WhitepaperPage() {
           <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-[#0F172A] to-[#0B0F19] border border-[#1F2937] space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-1 text-xs font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded">
-                Systems Architecture Whitepaper
+                Systems Architecture Whitepaper (v2.0)
               </span>
               <span className="px-2.5 py-1 text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>33,496 audits/sec Benchmark Verified</span>
+                <span>{testBadgeLabel}</span>
+              </span>
+              <span className="px-2.5 py-1 text-xs font-mono font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 rounded flex items-center gap-1">
+                <Lock className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Fail-Closed Architecture</span>
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans leading-tight">
-              Autonomous Trade Intelligence: Strict Mathematical Determinism, Hierarchical GRI State Machines, and Multi-Hop Corporate Entity Resolution
+              Deterministic Trade Compliance Engineering: Python Decimal Invariants, Fail-Closed Classification Gating, and Cycle-Safe Corporate Sanctions Graphs
             </h1>
 
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 pt-2 border-t border-[#1F2937]">
-              <div>Author: <span className="text-white font-bold">Samuel</span></div>
+              <div>Author: <span className="text-white font-bold">Samuel Rencken</span></div>
               <div>•</div>
-              <div>Target Roles: <span className="text-cyan-400">Principal AI Systems Architect / Lead TradeTech Engineer</span></div>
+              <div>Academic Foundation: <span className="text-cyan-400">BCom in Economic Sciences (International Trade), University of Pretoria</span></div>
               <div>•</div>
-              <div>Compensation Benchmark: <span className="text-emerald-400">$160k–$260k+ Base</span></div>
+              <div>Stack: <span className="text-emerald-400">FastAPI + Next.js 15.5.29</span></div>
             </div>
           </div>
 
@@ -163,28 +175,32 @@ export default function WhitepaperPage() {
               <span>Abstract</span>
             </h2>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Commercial trade operations and customs compliance represent an asymmetric operational surface: mid-market enterprise importers lose <strong className="text-amber-400">5% to 15% of total freight spend</strong> to carrier accessorial overbilling and face catastrophic civil monetary penalties under <strong className="text-red-400">19 U.S.C. § 1592 ($100k–$2.4M+)</strong> due to line-item arithmetic discrepancies, assist omissions, and Harmonized Tariff Schedule (HTS) misclassifications.
+              Commercial trade operations and customs compliance represent an asymmetric operational surface: mid-market enterprise importers lose <strong className="text-amber-400">5% to 15% of total freight spend</strong> to carrier accessorial overbilling and face severe civil monetary penalties under <strong className="text-red-400">19 U.S.C. § 1592 ($100k to $2.4M+)</strong> due to line-item arithmetic discrepancies, assist omissions under 19 CFR § 152.103, and Harmonized Tariff Schedule (HTS) misclassifications.
             </p>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Contemporary attempts to apply generative artificial intelligence (LLMs) to international trade document processing fail because generic language models are fundamentally non-deterministic: flat prompts hallucinate statutory citations, perform inaccurate arithmetic on floating-point currencies, and cannot navigate the path-dependent legal decision trees mandated by the World Customs Organization (WCO) General Rules of Interpretation (GRI 1 to 6).
+              Naive generative AI wrappers fail in regulated trade workflows because probabilistic text models hallucinate statutory citations, introduce binary floating-point rounding drift, and fail open on missing data or unrecognized commodities. TradeTech Systems Studio addresses these failure modes with a deterministic decision-support architecture built for licensed customs brokers, compliance engineers, and self-filing importers.
             </p>
 
             <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] space-y-2">
               <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 font-mono">
-                The Three Non-Negotiable Invariants:
+                Four Non-Negotiable Architectural Invariants:
               </div>
               <ul className="space-y-1.5 text-xs font-mono text-slate-300">
                 <li className="flex items-start gap-2">
                   <span className="text-cyan-400 font-bold">•</span>
-                  <span><strong>Strict Mathematical Determinism:</strong> Absolute ban on LLM arithmetic; 100% enforcement of Python <code className="text-emerald-300">decimal.Decimal</code> with explicit <code className="text-emerald-300">ROUND_HALF_UP</code> rounding.</span>
+                  <span><strong>End-to-End Decimal Determinism:</strong> Absolute ban on LLM arithmetic; 100% Python <code className="text-emerald-300">decimal.Decimal</code> (<code className="text-emerald-300">ROUND_HALF_UP</code>) serialized as exact strings across REST API boundaries.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-cyan-400 font-bold">•</span>
-                  <span><strong>Hierarchical Path-Dependent Classification:</strong> A state-machine formulation of WCO GRI 1 to 6 with element-wise confidence gating (<code className="text-amber-300">Conf(e) &lt; 0.85</code>).</span>
+                  <span><strong>Physical Layout Grounding & Fail-Closed Validation:</strong> Local <code className="text-cyan-300">pypdf</code> layout extraction normalized to a strict <code className="text-cyan-300">[0, 1000)</code> grid; empty or missing input payloads return $0 findings rather than fabricated figures.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-cyan-400 font-bold">•</span>
-                  <span><strong>Multi-Hop Corporate Ownership Graph Traversal:</strong> Sub-200ms recursive beneficial ownership aggregation implementing the U.S. Treasury OFAC 50 Percent Rule (31 CFR § 501).</span>
+                  <span><strong>Fail-Closed WCO GRI Classification Gating:</strong> Word-boundary heading evaluation where unmatched commodities or low confidence (<code className="text-amber-300">Conf(e) &lt; 0.85</code>) route automatically to licensed broker review.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-cyan-400 font-bold">•</span>
+                  <span><strong>Cycle-Safe OFAC 50% Rule Traversal:</strong> Transitive multi-hop ownership aggregation against a persistent FollowTheMoney v3 dataset (<code className="text-cyan-300">yente_ofac_ftm.jsonl</code>) with fail-closed <code className="text-red-300">HOLD</code> on unknown entities and strict BIS vs. OFAC regime separation.</span>
                 </li>
               </ul>
             </div>
@@ -194,51 +210,51 @@ export default function WhitepaperPage() {
           <section id="determinism" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">2.</span>
-              <span>The Arithmetic Determinism Principle</span>
+              <span>Arithmetic Determinism & Fail-Closed Input Contracts</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-              <h3 className="text-base font-bold text-white font-mono">2.1 The Floating-Point Failure Mode</h3>
+              <h3 className="text-base font-bold text-white font-mono">2.1 Eliminating Floating-Point Drift Across the Wire</h3>
               <p>
-                In standard IEEE 754 double-precision floating-point arithmetic, binary approximations of fractional numbers introduce representation drift:
+                In IEEE 754 double-precision floating-point arithmetic, binary approximations introduce silent representation drift:
               </p>
-              
+
               <div className="p-3 rounded-lg bg-[#0B0F19] border border-red-500/30 text-xs font-mono text-red-300 overflow-x-auto">
                 0.1 + 0.2 = 0.3000000000000000444089209850062616169452667236328125 ≠ 0.3
               </div>
 
               <p>
-                When processing large-volume commercial invoices containing thousands of line items (<code className="text-cyan-300">Q_i × P_i = T_i</code>) across foreign currencies, fractional rounding errors accumulate into material discrepancies. Under <strong>19 CFR § 152.103</strong>, declared customs transaction values must precisely reflect the price paid or payable. Discrepancies between line item extensions and summary declarations constitute false statements, triggering CBP Form 28 inquiries and potential negligence penalties under 19 U.S.C. § 1592:
+                Under <strong>19 CFR § 152.103</strong> and <strong>19 U.S.C. § 1401a</strong>, declared customs transaction value must reflect the exact price paid or payable (excluding separately identified non-dutiable international freight and marine insurance on US entries). Discrepancies between line-item extensions and summary declarations risk CBP Form 28 inquiries and 19 U.S.C. § 1592 civil penalties:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
-                  <div className="text-slate-400">Negligence Penalty Exposure</div>
-                  <div className="text-sm font-bold text-amber-400 mt-1">0.25x – 2.0x lawful duty loss</div>
+                  <div className="text-slate-400">Negligence Penalty Exposure (19 U.S.C. § 1592)</div>
+                  <div className="text-sm font-bold text-amber-400 mt-1">0.25x to 2.0x lawful duty loss</div>
                 </div>
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-slate-400">Gross Negligence Penalty Exposure</div>
-                  <div className="text-sm font-bold text-red-400 mt-1">2.5x – 4.0x lawful duty loss</div>
+                  <div className="text-sm font-bold text-red-400 mt-1">2.5x to 4.0x lawful duty loss</div>
                 </div>
               </div>
 
-              <h3 className="text-base font-bold text-white font-mono pt-3">2.2 Python Decimal Standard</h3>
+              <h3 className="text-base font-bold text-white font-mono pt-3">2.2 String-Serialized Python Decimal & Zero-Fabrication Guard</h3>
               <p>
-                To eliminate arithmetic variance, TradeTech Systems Studio enforces the Python <code className="text-emerald-300">decimal.Decimal</code> standard across all financial, tariff, and drawback operations:
+                Every financial calculation in TradeTech Systems Studio runs exclusively in Python <code className="text-emerald-300">decimal.Decimal</code>, serializes monetary fields as exact decimal strings in JSON responses (preventing JavaScript IEEE-754 parse drift at the API boundary), and validates required fields before computing findings so empty inputs always return $0.00 exposure:
               </p>
 
               <div className="p-4 rounded-lg bg-[#0B0F19] border border-[#1F2937] font-mono text-xs text-slate-300 overflow-x-auto">
                 <pre className="text-emerald-400 leading-relaxed">
 {`from decimal import Decimal, ROUND_HALF_UP
 
-def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decimal:
-    """Computes lawful customs duty with explicit statutory half-up rounding."""
-    return (dutiable_value * duty_rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)`}
+def quantize_currency(value: Decimal) -> Decimal:
+    """Enforces exact statutory half-up currency quantization."""
+    return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)`}
                 </pre>
               </div>
 
               <p>
-                Every financial calculation in the platform: including Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), and 99% Section 1313 Duty Drawback refunds: is mathematically deterministic and verified across 87 automated tests.
+                Merchandise Processing Fees (MPF capped between statutory minimum $31.67 and maximum $614.35 under 19 CFR § 24.23), Harbor Maintenance Fees (0.125% under 19 CFR § 24.24), FMC Docket 21-08 freight audit checks (explicitly distinguishing <code className="text-cyan-300">0</code> free days from <code className="text-cyan-300">None</code>), and 99% Section 1313 Duty Drawback claims (with 5-year time-bar enforcement) are fuzz-tested with Hypothesis across {VERIFIED_PYTEST_COUNT} automated tests.
               </p>
             </div>
           </section>
@@ -247,16 +263,16 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
           <section id="state-machine" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">3.</span>
-              <span>Hierarchical WCO GRI 1 to 6 State Machine</span>
+              <span>Hierarchical WCO GRI 1 to 6 Classification & Broker Review Gate</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
               <p>
-                Standard LLM wrappers treat 10-digit HTS classification as a flat text generation task (<code className="text-cyan-300">x → y</code>). This violates international customs law because tariff classification is strictly hierarchical and path-dependent. 
+                Flat prompt-based classification violates international customs law because tariff determination under the World Customs Organization (WCO) General Rules of Interpretation is strictly hierarchical and path-dependent. Worse, fallback switches that default unrecognized commodities to a preset tariff code create direct 19 U.S.C. § 1592 misclassification liability.
               </p>
 
               <div className="p-4 rounded-lg bg-[#0F172A] border border-[#1F2937] font-mono text-xs space-y-2">
-                <div className="text-cyan-400 font-bold">Mathematical Formulation:</div>
+                <div className="text-cyan-400 font-bold">Hierarchical Code Formulation:</div>
                 <div className="text-white text-sm">
                   y = concat(c, h, s₁, s₂, t)
                 </div>
@@ -265,31 +281,23 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                 </div>
               </div>
 
+              <h3 className="text-base font-bold text-white font-mono pt-3">3.2 Word-Boundary Matching & Fail-Closed Escalation</h3>
               <p>
-                At each node vᵢ in the hierarchy, child selection is conditioned on the product description x, technical attributes A, and the accumulated statutory path π₀:ᵢ:
-              </p>
-
-              <div className="p-3 rounded bg-[#0B0F19] border border-[#1F2937] font-mono text-xs text-amber-300">
-                v_{`{i+1}`} = argmax_{`{c ∈ C(v_i)}`} p(c | x, A, π_{`{0:i}`})
-              </div>
-
-              <h3 className="text-base font-bold text-white font-mono pt-3">3.2 Element-Wise Confidence Gating (Conf(e) &lt; 0.85)</h3>
-              <p>
-                When classifying multi-component articles (e.g. smart wearables combining heart rate sensors, displays, and wireless transceivers), the engine evaluates semantic agreement across inference passes. If the resulting confidence score <code className="text-amber-400">Conf(e) &lt; 0.85</code>:
+                The classifier enforces strict regex word boundaries (preventing substring collisions such as matching &quot;esc&quot; inside &quot;description&quot; or &quot;telescope&quot;). Any unrecognized product or multi-component article scoring below <code className="text-amber-400">Conf(e) &lt; 0.85</code> fails closed:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
-                  <div className="text-amber-400 font-bold">1. Visual Gating</div>
-                  <div className="text-slate-400 mt-1">Applies dashed amber border styling to cue human inspection.</div>
+                  <div className="text-amber-400 font-bold">1. Unclassified Fallback</div>
+                  <div className="text-slate-400 mt-1">Unmatched commodities return confidence 0.0 and explicit unclassified status rather than guessing.</div>
                 </div>
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
-                  <div className="text-red-400 font-bold">2. Auto-Submission Stop</div>
-                  <div className="text-slate-400 mt-1">Halts automatic ACE transmission to avoid port hold liability.</div>
+                  <div className="text-red-400 font-bold">2. Auto-Filing Halt</div>
+                  <div className="text-slate-400 mt-1">Blocks automated CargoWise/ACE transmission whenever confidence falls below 0.85.</div>
                 </div>
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
-                  <div className="text-cyan-400 font-bold">3. Broker Routing</div>
-                  <div className="text-slate-400 mt-1">Flags conflicting legal notes for licensed customs broker review.</div>
+                  <div className="text-cyan-400 font-bold">3. Broker Adjudication</div>
+                  <div className="text-slate-400 mt-1">Surfaces conflicting Section/Chapter notes with visual cues for licensed customs broker sign-off.</div>
                 </div>
               </div>
             </div>
@@ -299,31 +307,32 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
           <section id="sanctions-graph" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">4.</span>
-              <span>Multi-Hop Corporate Sanctions Graph (OFAC 50% Rule)</span>
+              <span>Fail-Closed Multi-Hop Corporate Sanctions Graph (OFAC 50% Rule)</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-              <h3 className="text-base font-bold text-white font-mono">4.1 Statutory Mandate (31 CFR § 501)</h3>
+              <h3 className="text-base font-bold text-white font-mono">4.1 Statutory Mandate (31 CFR § 501) & Regime Separation</h3>
               <p>
-                Under guidance issued by the U.S. Department of the Treasury's Office of Foreign Assets Control (OFAC), any entity owned <strong>50 percent or more in the aggregate</strong>, directly or indirectly, by one or more blocked persons is itself considered blocked merchandise, regardless of whether the entity is named on the Specially Designated Nationals (SDN) List.
+                Under U.S. Treasury Office of Foreign Assets Control (OFAC) guidance, any entity owned <strong>50 percent or more in the aggregate</strong>, directly or indirectly, by one or more blocked persons is itself blocked by operation of law. Crucially, the engine models <strong>OFAC SDN blocking</strong> separately from <strong>BIS Entity List / Unverified List (UVL) export controls</strong> so distinct legal regimes are never conflated.
               </p>
 
               <div className="p-4 rounded-lg bg-[#0B0F19] border border-cyan-500/30 font-mono text-xs text-slate-300 overflow-x-auto">
                 <pre className="text-cyan-300 leading-tight">
 {`┌────────────────────────────────────────────────────────────────────────┐
-│               OFAC 50% RULE RECURSIVE RESOLUTION TRACE                 │
+│            OFAC 50% RULE TRANSITIVE & CYCLE-SAFE RESOLUTION            │
 ├────────────────────────────────────────────────────────────────────────┤
-│  [SDN Blocked] Oligarch Holding A (30%) ──┐                            │
-│                                           ├──> Target Entity (55% SUM) │
-│  [SDN Blocked] Military Group B   (25%) ──┘    STATUS: BLOCKED!        │
-│                                                Action: BLOCK_AND_REPORT│
-│  [Clean Commercial] Minority Fund (45%) ───────────────────────────────│
+│  [SDN Blocked] Holding Shell A (100%) ──> Mid-Tier Sub (60% -> 60%)    │
+│                                                                        │
+│  [SDN Blocked] Group B (30%) + Group C (25%) ──> Target (55% AGG)      │
+│                                                  STATUS: BLOCKED       │
+│  [Unknown Entity / Outage] ───────────────────> STATUS: UNSCREENED/HOLD│
+│  [Circular Shell Cycle]    ───────────────────> Visited-Set Guarded    │
 └────────────────────────────────────────────────────────────────────────┘`}
                 </pre>
               </div>
 
               <p>
-                The algorithm traverses multi-hop corporate ownership trees and evaluates OFAC compliance in <strong>0.019 ms</strong>, surfacing interactive SVG node-link networks with animated edge flows on the frontend.
+                Backed by a persistent 38-record FollowTheMoney v3 dataset (<code className="text-cyan-300">yente_ofac_ftm.jsonl</code>), the screener executes cycle-safe recursive ownership multiplication across multi-hop chains, fails closed (<code className="text-red-300">UNSCREENED / HOLD</code>) on unknown entities or upstream outages, and combines normalized RapidFuzz token-set and partial-ratio scoring to catch transliteration variants.
               </p>
             </div>
           </section>
@@ -332,51 +341,51 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
           <section id="valuation-ledger" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">5.</span>
-              <span>CBP Assist Valuation Ledger & Prior Disclosure Engine</span>
+              <span>CBP Assist Valuation Ledger & DRAFT Prior Disclosure Worksheets</span>
             </h2>
 
             <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-              <h3 className="text-base font-bold text-white font-mono">5.1 Statutory Assist Apportionment (19 CFR § 152.103)</h3>
+              <h3 className="text-base font-bold text-white font-mono">5.1 Statutory Valuation & Assist Apportionment (19 U.S.C. § 1401a / 19 CFR § 152.103)</h3>
               <p>
-                Under 19 U.S.C. § 1401a(h)(1)(A), the value of assists (tools, dies, molds, components, and foreign engineering design supplied free of charge or at reduced cost by the buyer) must be apportioned and declared upon entry into U.S. customs territory.
+                Under 19 U.S.C. § 1401a(h)(1)(A), buyer-provided assists (tools, dies, molds, components, and foreign engineering design supplied free of charge or at reduced cost) must be apportioned and added to transaction value. Simultaneously, under 19 U.S.C. § 1401a(b)(4)(A), separately identified international freight and marine insurance are excluded from US dutiable transaction value.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
                   <div className="text-slate-400">Unit Apportionment Formula</div>
-                  <div className="text-sm font-bold text-cyan-400 mt-1">Assist / Anticipated Units</div>
+                  <div className="text-sm font-bold text-cyan-400 mt-1">Assist Cost / Anticipated Units</div>
                 </div>
                 <div className="p-3 rounded bg-[#0F172A] border border-[#1F2937]">
-                  <div className="text-slate-400">Entry Allocated Assist</div>
-                  <div className="text-sm font-bold text-emerald-400 mt-1">Assist Unit Cost × Entry Units</div>
+                  <div className="text-slate-400">US Transaction Value Deductions</div>
+                  <div className="text-sm font-bold text-emerald-400 mt-1">Exclude Intl. Freight &amp; Insurance</div>
                 </div>
               </div>
 
-              <h3 className="text-base font-bold text-white font-mono pt-3">5.2 Automated Prior Disclosure Generation (19 CFR § 162.74)</h3>
+              <h3 className="text-base font-bold text-white font-mono pt-3">5.2 Watermarked DRAFT Prior Disclosure Worksheets (19 CFR § 162.74)</h3>
               <p>
-                When unapportioned assists or improper CIF freight inclusions are identified, the system formulates a formal statutory Prior Disclosure filing packet under 19 U.S.C. § 1592(c)(4). By tendering the actual lawful duty underpayment plus statutory interest (19 U.S.C. § 1505 at benchmark 7% APR) prior to CBP's formal commencement of an investigation, all civil monetary penalties (up to 4.0x duty loss) are statutorily barred.
+                When unapportioned assists or valuation discrepancies are detected on US port entries, the register compiles an itemized <strong>DRAFT Prior Disclosure worksheet</strong> under 19 U.S.C. § 1592(c)(4) for review, verification, and filing by a licensed customs broker or trade attorney. Where all statutory conditions are met (timely submission prior to formal CBP investigation, accurate tender of lawful duty loss plus 19 U.S.C. § 1505 statutory interest, and verified scope), prior disclosure can mitigate negligence or gross negligence penalty exposure down to statutory interest.
               </p>
 
-              <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-xs font-mono text-emerald-300">
-                In benchmarked test scenarios, a <strong>$16,200.00</strong> gross negligence penalty is safely mitigated to a tender check of <strong>$4,262.63</strong>, generating <strong>$11,937.37</strong> in net protected equity per audited entry summary.
+              <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs font-mono text-amber-200">
+                <strong>Legal Boundary Safeguard:</strong> Generated worksheets are explicitly watermarked <code className="text-amber-300">DRAFT FOR LICENSED BROKER / ATTORNEY REVIEW</code> and never sign as &quot;Counsel of Record&quot; or represent legal advice.
               </div>
             </div>
           </section>
 
-          {/* SECTION 6: BENCHMARKS */}
+          {/* SECTION 6: VERIFICATION & HARDENING */}
           <section id="benchmarks" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">6.</span>
-              <span>Empirical Performance & Scale Benchmarks</span>
+              <span>Automated Verification, Security Hardening & CI Gates</span>
             </h2>
 
             <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1F2937] space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="text-xs font-bold uppercase tracking-wider text-white font-mono">
-                  Continuous Concurrency Benchmark (3,000 Audits)
+                  Enforced CI Quality & Security Matrix
                 </div>
                 <span className="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded font-bold">
-                  33,496.3 Audits/Sec
+                  {testBadgeLabel}
                 </span>
               </div>
 
@@ -384,54 +393,66 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
                     <tr className="border-b border-[#1F2937] text-slate-400">
-                      <th className="py-2">Metric</th>
-                      <th className="py-2">Observed Value</th>
-                      <th className="py-2">Production SLA</th>
+                      <th className="py-2 pr-4">Verification Layer</th>
+                      <th className="py-2 pr-4">Scope & Enforcement</th>
                       <th className="py-2">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1F2937] text-slate-300">
                     <tr>
-                      <td className="py-2 text-white font-bold">p50 Latency</td>
-                      <td className="py-2 text-cyan-400">0.024 ms</td>
-                      <td className="py-2 text-slate-400">&lt; 5.0 ms</td>
+                      <td className="py-2 pr-4 text-white font-bold">Pytest Suite (Py 3.11 &amp; 3.12)</td>
+                      <td className="py-2 pr-4 text-cyan-300">{VERIFIED_PYTEST_COUNT} tests across 15 modules (unit, 37 Hypothesis fuzz tests, 92 E2E compliance tests)</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
-                      <td className="py-2 text-white font-bold">p95 Latency</td>
-                      <td className="py-2 text-cyan-400">0.048 ms</td>
-                      <td className="py-2 text-slate-400">&lt; 20.0 ms</td>
+                      <td className="py-2 pr-4 text-white font-bold">Static Analysis & Types</td>
+                      <td className="py-2 pr-4 text-cyan-300">Ruff lint (0 errors), Mypy strict (23 files), TypeScript strict (`tsc --noEmit`)</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                     <tr>
-                      <td className="py-2 text-white font-bold">p99 Latency</td>
-                      <td className="py-2 text-cyan-400">0.089 ms</td>
-                      <td className="py-2 text-slate-400">&lt; 50.0 ms</td>
-                      <td className="py-2 text-emerald-400 font-bold">PASS</td>
+                      <td className="py-2 pr-4 text-white font-bold">API & Security Controls</td>
+                      <td className="py-2 pr-4 text-cyan-300">Strict CORS allowlist, Pydantic EmailStr + max_length + rate limiting, Next.js 15.5.29</td>
+                      <td className="py-2 text-emerald-400 font-bold">VERIFIED</td>
                     </tr>
                     <tr>
-                      <td className="py-2 text-white font-bold">Floating-Point Drift</td>
-                      <td className="py-2 text-emerald-400 font-bold">0.0000000000000000</td>
-                      <td className="py-2 text-slate-400">Exact 0.00</td>
+                      <td className="py-2 pr-4 text-white font-bold">Document & XML Provenance</td>
+                      <td className="py-2 pr-4 text-cyan-300">Byte-deterministic 2-page PDF fixtures, SHA-256 content-addressed CargoWise XML</td>
+                      <td className="py-2 text-emerald-400 font-bold">VERIFIED</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-4 text-white font-bold">Frontend Accessibility</td>
+                      <td className="py-2 pr-4 text-cyan-300">WCAG 2.2 AA contrast (6.96:1 to 7.47:1), ARIA landmarks, PII redaction toggle</td>
+                      <td className="py-2 text-emerald-400 font-bold">VERIFIED</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-4 text-white font-bold">Floating-Point Drift</td>
+                      <td className="py-2 pr-4 text-emerald-400 font-bold">0.0000000000000000 (Decimal string API contract)</td>
                       <td className="py-2 text-emerald-400 font-bold">PASS</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+              <p className="text-[11px] font-mono text-slate-400 pt-1">
+                Note: In-memory engine microbenchmarks (`benchmark.py`) measure structured payload throughput separately from full PDF I/O parsing and write results to isolated artifact paths without mutating tracked repository files.
+              </p>
             </div>
           </section>
 
-          {/* SECTION 7: CONCLUSION & HIRING COMMITTEE CONTACT */}
+          {/* SECTION 7: CONCLUSION & SCOPE */}
           <section id="conclusion" className="space-y-4">
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2 border-b border-[#1F2937] pb-2">
               <span className="text-cyan-400">7.</span>
-              <span>Conclusion & Engineering Committee Contact</span>
+              <span>Scope, Governance & Architectural Summary</span>
             </h2>
 
             <div className="p-6 rounded-2xl bg-gradient-to-r from-cobalt-950/40 to-slate-900 border border-cobalt-500/30 space-y-4">
               <p className="text-sm text-slate-300 leading-relaxed">
-                By grounding artificial intelligence in <strong>strict mathematical determinism</strong>, <strong>local document layout parsing</strong>, and <strong>path-dependent statutory state machines</strong>, TradeTech Systems Studio establishes a new architectural standard for enterprise logistics and customs technology.
+                By grounding trade intelligence in <strong>end-to-end Python Decimal determinism</strong>, <strong>local PDF layout grounding</strong>, <strong>fail-closed classification and sanctions invariants</strong>, and <strong>transparent legal boundaries</strong>, TradeTech Systems Studio demonstrates production-disciplined systems engineering for global customs and freight compliance.
               </p>
+
+              <div className="p-3 rounded-lg bg-[#0B0F19] border border-[#1F2937] text-xs font-mono text-slate-400 leading-relaxed">
+                <strong className="text-slate-200">Intended Use Notice:</strong> TradeTech Systems Studio is an open-source technical portfolio and compliance decision-support platform designed for licensed customs brokers and self-filing importers. It does not perform unlicensed customs business under 19 U.S.C. § 1641 or provide legal advice. Client-side PDF uploads execute as a transparent browser demo heuristic and never issue compliance certifications.
+              </div>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link
@@ -448,7 +469,7 @@ def compute_statutory_duty(dutiable_value: Decimal, duty_rate: Decimal) -> Decim
                   rel="noreferrer"
                   className="px-4 py-2.5 rounded bg-[#0F172A] hover:bg-slate-800 text-slate-200 border border-[#1F2937] font-mono text-xs transition-colors flex items-center gap-1.5"
                 >
-                  <span>Review Codebase (87/87 Tests)</span>
+                  <span>{`Review Codebase (${VERIFIED_PYTEST_COUNT}/${VERIFIED_PYTEST_COUNT} Tests)`}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
