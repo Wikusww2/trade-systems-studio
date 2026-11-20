@@ -16,7 +16,8 @@ def test_concept_1_customs_audit():
     assert response.status_code == 200
     data = response.json()
     assert data["concept_id"] == "concept_1_customs"
-    assert data["metrics"]["penalty_exposure_avoided"] == "125000.00"
+    # Negligence (default culpability): 2 x $31,250 loss of duty
+    assert data["metrics"]["penalty_exposure_avoided"] == "62500.00"
     assert len(data["discrepancies"]) >= 3
     # Verify uncertainty bounding box
     cif = next(d for d in data["discrepancies"] if "CIF" in d["title"])
@@ -42,7 +43,7 @@ def test_aggregate_metrics():
     response = client.get("/api/v1/metrics")
     assert response.status_code == 200
     data = response.json()
-    assert data["penalty_exposure_avoided"] == "125000.00"
+    assert data["penalty_exposure_avoided"] == "62500.00"
     assert data["carrier_overbilling_caught"] == "1547.50"
     assert data["drawback_unclaimed_unlocked"] == "27324.00"
 
@@ -103,7 +104,8 @@ def test_concept_4_sanctions_audit_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["concept_id"] == "concept_4_sanctions"
-    assert data["metrics"]["penalty_exposure_avoided"] == "350000.00"
+    # IEEPA maximum for 2026: greater of $377,700 or 2x the transaction value (not stated)
+    assert data["metrics"]["penalty_exposure_avoided"] == "377700.00"
     assert len(data["discrepancies"]) == 1
     assert "55%" in data["discrepancies"][0]["title"]
 
@@ -356,9 +358,14 @@ def test_audit_upload_valid_pdf_succeeds_200():
     assert response.status_code == 200
     data = response.json()
     assert data["concept_id"] == "concept_1_customs"
-    assert "RUN-2026-UPLOAD-" in data["audit_run_id"]
+    assert data["source"] == "upload"
+    assert data["document_url"] == ""  # the UI keeps the uploaded file's own blob URL
+    assert data["document_filename"] == "my_custom_invoice.pdf"
+    assert data["audit_run_id"].startswith("RUN-")
     assert len(data["discrepancies"]) >= 3
-    assert data["metrics"]["penalty_exposure_avoided"] == "125000.00"
+    assert data["metrics"]["penalty_exposure_avoided"] == "62500.00"
+    import hashlib
+    assert data["document_sha256"] == hashlib.sha256(pdf_bytes).hexdigest()
 
 def test_audit_run_id_changes_when_byte_past_4096_changes():
     """

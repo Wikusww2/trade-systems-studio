@@ -54,6 +54,26 @@ from main import app
 # Shared TestClient for API endpoints
 client = TestClient(app)
 
+
+
+def full_drawback(duties_paid: str, **overrides):
+    """A complete (j)(1) unused-merchandise claim: dates, quantities and direct identification."""
+    payload = {
+        "import_entry": "CBP-7501-84920184",
+        "export_bl": "BGFU-0941824",
+        "entry_date": "2024-01-15",
+        "export_date": "2024-03-10",
+        "claim_date": "2026-11-20",
+        "duties_paid": duties_paid,
+        "imported_quantity": "1000",
+        "exported_quantity": "1000",
+        "direct_identification": True,
+        "drawback_percentage": "0.99",
+    }
+    payload.update(overrides)
+    return payload
+
+
 # Path to ground truth PDF fixtures
 FIXTURES_DIR = Path(__file__).parent.parent / "app" / "data" / "nightmares"
 
@@ -210,7 +230,7 @@ class TestTier1FeatureCoverage:
         """F3.5: Landed cost calculator must use active FY2027 MPF caps ($34.58 min, $670.86 max) with FY2025 support (M3)."""
         # Active FY2027 default
         landed_low = calculate_landed_cost(
-            entered_value=Decimal("1000.00"),
+            entered_value=Decimal("5000.00"),
             duty_rate_ad_valorem=Decimal("0.00"),
             is_ocean_freight=False,
         )
@@ -220,7 +240,7 @@ class TestTier1FeatureCoverage:
 
         # FY2025 compatibility
         landed_fy25 = calculate_landed_cost(
-            entered_value=Decimal("1000.00"),
+            entered_value=Decimal("5000.00"),
             duty_rate_ad_valorem=Decimal("0.00"),
             is_ocean_freight=False,
             fiscal_year="FY2025",
@@ -303,7 +323,7 @@ class TestTier1FeatureCoverage:
 
         # Blocked target (bis-el-cn-0941)
         res_blocked = extractor.run_audit("concept_4_sanctions")
-        assert res_blocked.metrics.penalty_exposure_avoided == Decimal("350000.00")
+        assert res_blocked.metrics.penalty_exposure_avoided == Decimal("377700.00")
         assert len(res_blocked.discrepancies) == 1
         assert "55%" in res_blocked.discrepancies[0].title
         assert "Victor Petrov" in res_blocked.discrepancies[0].description
@@ -313,7 +333,7 @@ class TestTier1FeatureCoverage:
         assert res_clean.metrics.penalty_exposure_avoided == Decimal("0.00")
         assert len(res_clean.discrepancies) == 0
 
-        # Clean auditor probe target
+        # Unknown entity: a caller-supplied "CLEAR_TRANSACTION" must not clear it (fail closed)
         res_probe = extractor.run_audit("concept_4_sanctions", custom_payload={
             "entity_id": "completely-clean-entity",
             "name": "Completely Clean Co",
@@ -321,7 +341,8 @@ class TestTier1FeatureCoverage:
             "action": "CLEAR_TRANSACTION"
         })
         assert res_probe.metrics.penalty_exposure_avoided == Decimal("0.00")
-        assert len(res_probe.discrepancies) == 0
+        assert [d.id for d in res_probe.discrepancies] == ["disc-c4-unscreened-hold"]
+        assert res_probe.quarantine_status == "QUARANTINED"
 
     # --------------------------------------------------------------------------
     # F5: US Valuation & CIF Marine Insurance Deductions (H1, 19 USC 1401a / 19 CFR 152.103)
@@ -399,8 +420,9 @@ class TestTier1FeatureCoverage:
         }
         _, disc_large = audit_customs_invoice(payload_large)
         cif_large = next(d for d in disc_large if "CIF" in d.title)
-        assert cif_large.exposure_amount == Decimal("99999.00")
-        assert "$99,999.00" in cif_large.financial_blast_radius
+        assert cif_large.metadata["non_dutiable_charges"] == "99999.00"
+        assert "$99,999.00" in cif_large.description
+        assert cif_large.exposure_amount == Decimal("0.00")  # line duty rate unknown: no guessed rate
 
         # Probe 2: $450.50 freight
         payload_small = {
@@ -411,8 +433,8 @@ class TestTier1FeatureCoverage:
         }
         _, disc_small = audit_customs_invoice(payload_small)
         cif_small = next(d for d in disc_small if "CIF" in d.title)
-        assert cif_small.exposure_amount == Decimal("450.50")
-        assert "$450.50" in cif_small.financial_blast_radius
+        assert cif_small.metadata["non_dutiable_charges"] == "450.50"
+        assert "$450.50" in cif_small.description
 
     # --------------------------------------------------------------------------
     # F6: Corridor Jurisdiction & Statutory Penalties (H2, 19 USC 1592)
@@ -446,18 +468,16 @@ class TestTier1FeatureCoverage:
         assert "19 U.S.C. § 1592" in lax.get("statute", ""), "US inbound corridor must cite 19 U.S.C. § 1592"
 
     def test_f6_04_1592_negligence_statutory_multiplier_range(self):
-        """F6.4: 19 U.S.C. § 1592 negligence penalty tier is exactly 0.25x (min) to 2.0x (max) lawful duty loss."""
+        """F6.4: 19 U.S.C. 1592(c)(3): negligence maximum is 2x the loss of duty."""
         loss = Decimal("10000.00")
         penalties = calculate_1592_penalties(loss)
-        assert penalties["negligence"][0] == Decimal("2500.00")   # 0.25x
-        assert penalties["negligence"][1] == Decimal("20000.00")  # 2.00x
+        assert penalties["negligence"] == Decimal("20000.00")
 
     def test_f6_05_1592_gross_negligence_statutory_multiplier_range(self):
-        """F6.5: 19 U.S.C. § 1592 gross negligence penalty tier is exactly 2.5x (min) to 4.0x (max) lawful duty loss."""
+        """F6.5: 19 U.S.C. 1592(c)(2): gross negligence maximum is 4x the loss of duty."""
         loss = Decimal("10000.00")
         penalties = calculate_1592_penalties(loss)
-        assert penalties["gross_negligence"][0] == Decimal("25000.00")  # 2.50x
-        assert penalties["gross_negligence"][1] == Decimal("40000.00")  # 4.00x
+        assert penalties["gross_negligence"] == Decimal("40000.00")
 
     # --------------------------------------------------------------------------
     # F7: Legal Representation & Statutory Disclaimers (H3, H10)
@@ -494,7 +514,7 @@ class TestTier1FeatureCoverage:
 
     def test_f7_04_drawback_metadata_omits_contingency_fee_claim(self):
         """F7.4: Duty Drawback audit does not frame findings around a 20% contingency fee (H10)."""
-        payload = {"duties_paid": "10000.00", "is_timely_5yr_window": True}
+        payload = full_drawback("10000.00")
         _, discrepancies = audit_duty_drawback(payload)
         drawback_disc = next(d for d in discrepancies if "Drawback" in d.title)
         assert "contingency_fee_20pct" not in drawback_disc.metadata, (
@@ -587,7 +607,7 @@ class TestTier1FeatureCoverage:
 
     def test_f9_01_exact_99_percent_calculation_via_decimal(self):
         """F9.1: 19 U.S.C. § 1313 drawback calculation is exact 99.0% using Python Decimal without float drift."""
-        payload = {"duties_paid": "10000.00", "is_timely_5yr_window": True}
+        payload = full_drawback("10000.00")
         metrics, _ = audit_duty_drawback(payload)
         assert metrics.drawback_unclaimed_unlocked == Decimal("9900.00")
 
@@ -601,14 +621,14 @@ class TestTier1FeatureCoverage:
 
     def test_f9_03_zero_duties_paid_yields_zero_drawback(self):
         """F9.3: Zero customs duties paid yields exactly $0.00 drawback."""
-        payload = {"duties_paid": "0.00", "is_timely_5yr_window": True}
+        payload = full_drawback("0.00")
         metrics, discrepancies = audit_duty_drawback(payload)
         assert metrics.drawback_unclaimed_unlocked == Decimal("0.00")
         assert len(discrepancies) == 0
 
     def test_f9_04_unlocked_drawback_preserves_full_99_pct_without_contingency_cut(self):
         """F9.4: Unlocked drawback amount is the full 99% ($27,324.00 on $27,600 duties) without contingency deduction."""
-        payload = {"duties_paid": "27600.00", "is_timely_5yr_window": True}
+        payload = full_drawback("27600.00")
         metrics, discrepancies = audit_duty_drawback(payload)
         assert metrics.drawback_unclaimed_unlocked == Decimal("27324.00")
         # Metadata must not report net client recovery diminished by 20% fee
@@ -617,7 +637,7 @@ class TestTier1FeatureCoverage:
 
     def test_f9_05_drawback_quantizes_to_cents_with_round_half_up(self):
         """F9.5: Drawback quantizes to 2 decimal places using ROUND_HALF_UP ($123.45 * 0.99 = $122.2155 -> $122.22)."""
-        payload = {"duties_paid": "123.45", "is_timely_5yr_window": True}
+        payload = full_drawback("123.45")
         metrics, _ = audit_duty_drawback(payload)
         assert metrics.drawback_unclaimed_unlocked == Decimal("122.22")
 
@@ -715,14 +735,13 @@ class TestTier2BoundaryAndCornerCases:
         """T2.04: Extremely large dutiable base ($100,000,000.00) calculates without overflow or precision loss."""
         loss = Decimal("100000000.00") * Decimal("0.25")
         penalties = calculate_1592_penalties(loss)
-        assert penalties["gross_negligence"][1] == Decimal("100000000.00")
+        assert penalties["gross_negligence"] == Decimal("100000000.00")
 
     def test_t2_05_boundary_minimum_penny_financial_value(self):
         """T2.05: Minimum 1-cent dutiable base ($0.01) calculates cleanly with ROUND_HALF_UP."""
         loss = Decimal("0.01")
         penalties = calculate_1592_penalties(loss)
-        assert penalties["negligence"][0] == Decimal("0.00")  # 0.01 * 0.25 = 0.0025 -> 0.00
-        assert penalties["negligence"][1] == Decimal("0.02")  # 0.01 * 2.0 = 0.02
+        assert penalties["negligence"] == Decimal("0.02")  # 0.01 * 2 = 0.02
 
     def test_t2_06_boundary_zero_duty_rate_produces_zero_duty_loss(self):
         """T2.06: Dutiable value declared and lawful rate both 0.00 produces $0.00 lawful duty loss."""
@@ -741,7 +760,7 @@ class TestTier2BoundaryAndCornerCases:
         loss = quantize_currency(Decimal("10000.00") * Decimal("1.00"))
         assert loss == Decimal("10000.00")
         penalties = calculate_1592_penalties(loss)
-        assert penalties["gross_negligence"][1] == Decimal("40000.00")
+        assert penalties["gross_negligence"] == Decimal("40000.00")
 
     def test_t2_08_boundary_1592_fraud_tier_100_percent_domestic_value(self):
         """T2.08: Under 19 U.S.C. § 1592(c)(1), maximum penalty for fraud is 100% of the domestic value of merchandise."""
@@ -750,11 +769,11 @@ class TestTier2BoundaryAndCornerCases:
 
         # 1. Direct Domain Service Verification
         penalties = calculate_1592_penalties(loss, domestic_value=domestic_value)
-        assert "fraud" in penalties, "calculate_1592_penalties must include 'fraud' tier when domestic_value is provided"
-        # 19 U.S.C. § 1592(c)(1): Maximum penalty is strictly 100% of domestic value
-        assert penalties["fraud"][1] == Decimal("250000.00")
-        # 19 CFR Part 171 App. B: Administrative mitigation guideline floor (50%)
-        assert penalties["fraud"][0] == Decimal("125000.00")
+        # 19 U.S.C. 1592(c)(1): maximum penalty is the domestic value
+        assert penalties["fraud"] == Decimal("250000.00")
+        # Negligence and gross negligence: lesser of domestic value or 2x / 4x the loss
+        assert penalties["negligence"] == Decimal("62500.00")
+        assert penalties["gross_negligence"] == Decimal("125000.00")
 
         # 2. Authentic Customs Invoice Audit Pipeline Verification
         payload = {
@@ -768,12 +787,15 @@ class TestTier2BoundaryAndCornerCases:
         metrics, discrepancies = audit_customs_invoice(payload)
         assert metrics.penalty_exposure_avoided == Decimal("250000.00")
 
-        fraud_disc = next((d for d in discrepancies if "1592(c)(1)" in d.statutory_code or "Fraud" in d.title), None)
+        fraud_disc = next((d for d in discrepancies if d.id == "disc-c1-03"), None)
         assert fraud_disc is not None
         assert fraud_disc.exposure_amount == Decimal("250000.00")
-        assert fraud_disc.statutory_code == "19 U.S.C. § 1592(c)(1)"
+        assert fraud_disc.statutory_code == "19 U.S.C. 1592(c)"
+        assert fraud_disc.metadata["culpability_assumed"] == "fraud"
         assert fraud_disc.metadata.get("domestic_value") == "250000.00"
-        assert fraud_disc.metadata.get("fraud_range") == ["125000.00", "250000.00"]
+        assert fraud_disc.metadata["statutory_max_by_culpability"]["fraud"] == "250000.00"
+        # Prior disclosure for fraud: 100% of the loss of duty (1592(c)(4)(A))
+        assert fraud_disc.metadata["prior_disclosure_max_penalty"] == "31250.00"
 
     def test_t2_09_boundary_cyclic_ownership_graph_self_loop(self):
         """T2.09: Entity with a self-referencing ownership loop terminates cleanly without recursion error."""
@@ -952,9 +974,12 @@ class TestTier2BoundaryAndCornerCases:
 
     def test_t2_13_boundary_statutory_mpf_minimum_floor(self):
         """T2.13: Entered value yielding raw MPF < $34.58 is clamped to the statutory floor."""
-        landed = calculate_landed_cost(entered_value=Decimal("500.00"), duty_rate_ad_valorem=Decimal("0.00"))
-        # 500 * 0.003464 = 1.73 -> Clamped to min cap
+        landed = calculate_landed_cost(entered_value=Decimal("5000.00"), duty_rate_ad_valorem=Decimal("0.00"))
+        # Formal entry: 5,000 * 0.003464 = 17.32 -> clamped to the FY2027 minimum
         assert landed.mpf_fee == Decimal("34.58")
+        # Informal entry ($500): flat automated surcharge, not the formal minimum
+        informal = calculate_landed_cost(entered_value=Decimal("500.00"), duty_rate_ad_valorem=Decimal("0.00"))
+        assert informal.mpf_fee == Decimal("2.77")
 
     def test_t2_14_boundary_statutory_mpf_maximum_ceiling(self):
         """T2.14: Entered value yielding raw MPF > $670.86 is clamped to the statutory ceiling."""
@@ -1027,12 +1052,12 @@ class TestTier2BoundaryAndCornerCases:
         assert len(math_disc) == 0
 
     def test_t2_25_boundary_drawback_five_year_statutory_cutoff(self):
-        """T2.25: 5-year window flag strictly governs drawback eligibility under 19 U.S.C. § 1313(r)."""
+        """T2.25: The 5-year limit (19 U.S.C. 1313(r)(1)) is computed from the import date."""
         # Exactly inside window
-        m_timely, _ = audit_duty_drawback({"duties_paid": "1000.00", "is_timely_5yr_window": True})
+        m_timely, _ = audit_duty_drawback(full_drawback("1000.00"))
         assert m_timely.drawback_unclaimed_unlocked == Decimal("990.00")
         # 1 day outside window
-        m_untimely, _ = audit_duty_drawback({"duties_paid": "1000.00", "is_timely_5yr_window": False})
+        m_untimely, _ = audit_duty_drawback(full_drawback("1000.00", export_date="2029-01-16"))
         assert m_untimely.drawback_unclaimed_unlocked == Decimal("0.00")
 
     def test_t2_26_boundary_fsc_billed_rate_equals_authorized_rate(self):
@@ -1070,8 +1095,8 @@ class TestTier3CrossFeatureInteractions:
             "items": [{"line_number": 1, "quantity": "1000", "unit_price": "100.00", "stated_total": "100000.00"}],
         }
         metrics, discrepancies = audit_customs_invoice(payload)
-        # 1592 gross negligence exposure = $100k * 25% * 4.0 = $100,000.00
-        assert metrics.penalty_exposure_avoided == Decimal("100000.00")
+        # Negligence (default culpability) maximum = $100k * 25% * 2 = $50,000.00
+        assert metrics.penalty_exposure_avoided == Decimal("50000.00")
         titles = [d.title for d in discrepancies]
         assert any("HTS Misclassification" in t for t in titles)
         assert any("CIF" in t for t in titles)
@@ -1085,9 +1110,9 @@ class TestTier3CrossFeatureInteractions:
             "items": [{"line_number": 1, "quantity": "10", "unit_price": "5000.00", "stated_total": "50000.00"}]
         }
         metrics, discrepancies = audit_customs_invoice(payload)
-        # Undeclared assist exposure: $50,000 * 25% * 4.0 = $50,000.00
+        # Undeclared assist: $50,000 * 25% = $12,500 loss of duty -> negligence maximum $25,000
         assist_disc = next(d for d in discrepancies if "Assist" in d.title)
-        assert assist_disc.exposure_amount >= Decimal("50000.00")
+        assert assist_disc.exposure_amount == Decimal("25000.00")
         titles = [d.title for d in discrepancies]
         assert any("Assist" in t for t in titles)
         assert any("Sanctioned" in t for t in titles)
@@ -1162,7 +1187,7 @@ class TestTier3CrossFeatureInteractions:
     def test_t3_08_cross_drawback_paired_with_hts_reclassification(self):
         """T3.08: Drawback audit matching entry with Section 301 duties accurately computes 99% recovery on all duties."""
         # Entry paid $25,000 standard duty + $25,000 Section 301 tariff = $50,000 total duties paid
-        payload = {"duties_paid": "50000.00", "is_timely_5yr_window": True}
+        payload = full_drawback("50000.00")
         metrics, disc = audit_duty_drawback(payload)
         assert metrics.drawback_unclaimed_unlocked == Decimal("49500.00")
         assert len(disc) >= 1
@@ -1248,7 +1273,7 @@ class TestTier4RealWorldApplicationScenarios:
             "items": [{"line_number": 1, "quantity": 1000, "unit_price": 125.00, "stated_total": 125000.00}]
         }
         metrics, discrepancies = audit_customs_invoice(payload)
-        assert metrics.penalty_exposure_avoided == Decimal("125000.00")
+        assert metrics.penalty_exposure_avoided == Decimal("62500.00")
         assert any("HTS Misclassification" in d.title for d in discrepancies)
         assert any("CIF" in d.title for d in discrepancies)
 
@@ -1336,14 +1361,7 @@ class TestTier4RealWorldApplicationScenarios:
         - Validates exact 99% refund matching under 19 U.S.C. § 1313.
         - Verifies total absence of 20% broker contingency fee framing.
         """
-        payload = {
-            "dutiable_value": "240000.00",
-            "duties_paid": "27600.00",
-            "drawback_percentage": "0.99",
-            "is_timely_5yr_window": True,
-            "import_entry": "441-9872134-2",
-            "export_bl": "EXP-2024-88412",
-        }
+        payload = full_drawback("27600.00", import_entry="441-9872134-2", export_bl="EXP-2024-88412")
         metrics, discrepancies = audit_duty_drawback(payload)
         assert metrics.drawback_unclaimed_unlocked == Decimal("27324.00")
         assert len(discrepancies) >= 1
