@@ -78,7 +78,7 @@ def test_drawback_audit_contingency_fee():
     disc = next(d for d in discrepancies if "99% Statutory" in d.title)
     assert disc is not None
     assert metrics.drawback_unclaimed_unlocked == Decimal("27324.00")
-    # Verify no contingency fee deduction and broker software service model (H10)
+    # Verify no contingency fee deduction and broker software service model
     assert "contingency_fee_20pct" not in disc.metadata
     assert disc.metadata["cash_recovery_ready"] == "27324.00"
     assert disc.metadata["service_model"] == "compliance_auditing_software_for_licensed_brokers_and_self_filers"

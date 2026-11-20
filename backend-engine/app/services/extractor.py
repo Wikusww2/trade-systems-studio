@@ -139,7 +139,15 @@ def _anchor_box(d: Discrepancy, bboxes: Dict[str, BoundingBox]) -> Optional[Tupl
     return None
 
 
-def _padded(bb: BoundingBox, confidence: float) -> BoundingBox:
+_ROW_ANCHORS = ("line_", "hts_misclassification", "base_freight", "fuel_surcharge", "chassis_split", "detention")
+
+
+def _padded(bb: BoundingBox, confidence: float, key: str = "") -> BoundingBox:
+    if key.startswith(_ROW_ANCHORS):
+        # Table rows: highlight the full row at the anchor's own vertical position.
+        y = max(0.0, bb.y - 4.0)
+        h = min(1000.0 - y, bb.height + 8.0)
+        return BoundingBox(x=60.0, y=y, width=880.0, height=h, page_number=bb.page_number, confidence=confidence)
     x = max(0.0, bb.x - 6.0)
     y = max(0.0, bb.y - 4.0)
     w = min(1000.0 - x, bb.width + 12.0)
@@ -378,7 +386,7 @@ class TradeDocumentExtractor:
             anchored = _anchor_box(d, bboxes)
             if anchored:
                 key, bb = anchored
-                d.bounding_box = _padded(bb, d.confidence)
+                d.bounding_box = _padded(bb, d.confidence, key)
                 d.metadata["layout_verified"] = True
                 d.metadata["layout_anchor"] = key
                 d.metadata["bbox_source"] = "document_text"

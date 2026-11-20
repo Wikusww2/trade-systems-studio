@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Literal, Optional
 
 from app.core.config import settings
 
-ResolutionAction = Literal["APPROVE", "REQUEST_DOCS", "ESCALATE", "OVERRIDE_HTS"]
+ResolutionAction = Literal["APPROVE", "REQUEST_DOCS", "ESCALATE", "OVERRIDE_HTS", "REOPEN"]
 GENESIS_HASH = "0" * 64
 
 

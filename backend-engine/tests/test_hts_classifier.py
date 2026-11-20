@@ -180,7 +180,7 @@ def test_hts_api_endpoints():
 
 
 def test_unclassified_product_requires_human_review():
-    """Verify unclassified merchandise does not default to drone motor and requires broker review (C3)."""
+    """Verify unclassified merchandise does not default to drone motor and requires broker review."""
     engine = HTSClassifierEngine()
     req = ClassificationRequest(
         product_title="Fresh Organic Honeycrisp Apples",
@@ -195,7 +195,7 @@ def test_unclassified_product_requires_human_review():
 
 
 def test_word_boundary_esc_does_not_match_telescope():
-    """Verify word boundary regex prevents substring false matches like 'esc' in 'telescope' (C3)."""
+    """Verify word boundary regex prevents substring false matches like 'esc' in 'telescope'."""
     engine = HTSClassifierEngine()
     req = ClassificationRequest(
         product_title="High Precision Astronomical Telescope",

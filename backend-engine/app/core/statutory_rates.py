@@ -46,6 +46,11 @@ MPF_CAPS_BY_FY: Dict[str, Tuple[Decimal, Decimal]] = {
 # Keys: automated (ACE, filer-prepared), manual (filer-prepared, non-automated),
 # cbp_prepared (prepared by CBP personnel).
 INFORMAL_MPF_BY_FY: Dict[str, Dict[str, Decimal]] = {
+    # FR Doc. 2025-13869 (FY2026); CBP-prepared figure not recorded here
+    "FY2026": {
+        "automated": Decimal("2.69"),
+        "manual": Decimal("8.06"),
+    },
     # FR Doc. 2026-15530 (FY2027)
     "FY2027": {
         "automated": Decimal("2.77"),
@@ -97,9 +102,10 @@ def calculate_mpf(
     )
     fy_key = fiscal_year.upper()
     if resolved_type == "informal":
-        if fy_key not in INFORMAL_MPF_BY_FY:
-            raise KeyError(f"No published informal MPF schedule for {fy_key}")
-        return INFORMAL_MPF_BY_FY[fy_key][informal_method]
+        schedule = INFORMAL_MPF_BY_FY.get(fy_key, {})
+        if informal_method not in schedule:
+            raise KeyError(f"No published {informal_method} informal MPF for {fy_key}")
+        return schedule[informal_method]
     min_cap, max_cap = get_mpf_caps(fy_key)
     raw_mpf = quantize_currency(entered_value * MPF_AD_VALOREM_RATE)
     return min(max_cap, max(min_cap, raw_mpf))

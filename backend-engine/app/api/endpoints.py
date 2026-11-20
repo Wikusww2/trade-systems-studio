@@ -307,7 +307,7 @@ async def upload_audit_document(
 
 class ResolutionRequest(BaseModel):
     finding_id: str = Field(..., min_length=1, max_length=64)
-    action: Literal["APPROVE", "REQUEST_DOCS", "ESCALATE", "OVERRIDE_HTS"]
+    action: Literal["APPROVE", "REQUEST_DOCS", "ESCALATE", "OVERRIDE_HTS", "REOPEN"]
     reason: str = Field(..., min_length=3, max_length=2000)
     actor: str = Field(default="analyst", min_length=1, max_length=120)
     override_value: Optional[str] = Field(default=None, max_length=64)
@@ -503,34 +503,43 @@ async def export_cargowise_xml_endpoint(request: CargoWiseExportRequest):
     return Response(content=xml_content, media_type="application/xml")
 
 @router.get("/scenarios")
-async def get_scenarios():
-    """Returns the 3 pre-loaded trade corridor scenarios."""
+async def get_scenarios(extractor: TradeDocumentExtractor = Depends(get_extractor_service)):
+    """The bundled sample documents, with the engine's headline result on each."""
+    c1, c2, c3 = await asyncio.gather(
+        asyncio.to_thread(extractor.run_audit, "concept_1_customs"),
+        asyncio.to_thread(extractor.run_audit, "concept_2_freight"),
+        asyncio.to_thread(extractor.run_audit, "concept_3_drawback"),
+    )
     return [
         {
-            "id": "scenario_durban_rotterdam",
-            "name": "Port of Durban to Rotterdam Electronics Shipment",
-            "corridor": "ZADUR -> NLRTM",
-            "risk_type": "CIF Marine Insurance Omission & GRI 3(b) Reclassification",
-            "statute": "EU Union Customs Code (Regulation (EU) No 952/2013) & WCO GRI 3(b)",
-            "default_exposure_usd": "36000.00",
+            "id": "scenario_shenzhen_la_invoice",
+            "concept_id": "concept_1_customs",
+            "name": "Shenzhen to Los Angeles commercial invoice",
+            "corridor": "CN -> USLAX",
+            "risk_type": "Classification, CIF valuation and line arithmetic",
+            "statute": "19 U.S.C. § 1592 & 19 U.S.C. § 1401a",
+            "default_exposure_usd": f"{c1.metrics.penalty_exposure_avoided:.2f}",
         },
         {
             "id": "scenario_long_beach_battery",
-            "name": "Trans-Pacific to Long Beach Lithium-Ion Battery Pack",
-            "corridor": "CNSZX -> USLAX",
-            "risk_type": "Section 301 Secondary Tariff & Chassis Split Surcharge",
+            "concept_id": "concept_2_freight",
+            "name": "Yantian to Los Angeles ocean freight bill",
+            "corridor": "CNYTN -> USLAX",
+            "risk_type": "Fuel surcharge, chassis split and detention in free time",
             "statute": "19 U.S.C. § 1592 & 46 CFR Part 541",
-            "default_exposure_usd": "48200.00",
+            "default_exposure_usd": f"{c2.metrics.carrier_overbilling_caught:.2f}",
         },
         {
-            "id": "scenario_steel_drawback",
-            "name": "Cross-Border Steel Assembly Duty Drawback",
-            "corridor": "KRINC -> USHOU",
-            "risk_type": "Unclaimed 99% Section 1313 Duty Drawback",
+            "id": "scenario_la_rotterdam_drawback",
+            "concept_id": "concept_3_drawback",
+            "name": "Los Angeles to Rotterdam re-export drawback",
+            "corridor": "USLAX -> NLRTM",
+            "risk_type": "Unclaimed unused-merchandise drawback",
             "statute": "19 U.S.C. § 1313",
-            "default_exposure_usd": "18400.00",
-        }
+            "default_exposure_usd": f"{c3.metrics.drawback_unclaimed_unlocked:.2f}",
+        },
     ]
+
 
 @router.get("/valuation/ledger", response_model=list[AssistItem])
 async def get_valuation_assist_ledger():

@@ -8,7 +8,7 @@ from app.services.cargowise_xml import cargowise_exporter
 
 
 def test_cargowise_universal_interchange_xsd_validation():
-    """Verify generated XML validates strictly against UniversalInterchange v1.1 XSD schema (M4)."""
+    """Verify generated XML validates strictly against UniversalInterchange v1.1 XSD schema."""
     xsd_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
         "app", "schemas", "cargowise_universal_structural_subset.xsd"
@@ -35,7 +35,7 @@ def test_cargowise_universal_interchange_xsd_validation():
 
 
 def test_cargowise_configurable_company_and_server_ids():
-    """Verify Company/Code, EnterpriseID, and ServerID are configurable via arguments (M4)."""
+    """Verify Company/Code, EnterpriseID, and ServerID are configurable via arguments."""
     xml_output = cargowise_exporter.generate_universal_interchange_xml(
         company_code="CUSTOM_CO",
         enterprise_id="ENT99",

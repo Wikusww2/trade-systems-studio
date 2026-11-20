@@ -74,6 +74,13 @@ def full_drawback(duties_paid: str, **overrides):
     return payload
 
 
+def eu_corridor_xml() -> str:
+    """UniversalShipment XML for a Durban -> Rotterdam (non-US) corridor."""
+    from app.services.cargowise_xml import cargowise_exporter
+
+    return cargowise_exporter.generate_universal_interchange_xml(port_origin_code="ZADUR", port_dest_code="NLRTM")
+
+
 # Path to ground truth PDF fixtures
 FIXTURES_DIR = Path(__file__).parent.parent / "app" / "data" / "nightmares"
 
@@ -89,7 +96,7 @@ class TestTier1FeatureCoverage:
     """
 
     # --------------------------------------------------------------------------
-    # F1: Grounded Document Extraction & Layout Verification (C1, L6)
+    # F1: Grounded Document Extraction & Layout Verification
     # --------------------------------------------------------------------------
 
     def test_f1_01_nightmare_pdf_fixture_exists_and_non_empty(self):
@@ -121,7 +128,7 @@ class TestTier1FeatureCoverage:
         assert "INVOICE" in all_text.upper() or "COMMERCIAL" in all_text.upper() or "DSP" in all_text
 
     def test_f1_04_bounding_box_validates_strict_1000_extent(self):
-        """F1.4: Verify BoundingBox model enforces the [0, 1000) coordinate system (L6)."""
+        """F1.4: Verify BoundingBox model enforces the [0, 1000) coordinate system."""
         # Valid boundary box
         valid_box = BoundingBox(x=900.0, y=900.0, width=100.0, height=100.0, page_number=1, confidence=0.95)
         assert valid_box.x + valid_box.width == 1000.0
@@ -141,29 +148,29 @@ class TestTier1FeatureCoverage:
         assert boxes == [], "Extractor fabricated layout boxes for nonexistent file"
 
     # --------------------------------------------------------------------------
-    # F2: Empty Input & Missing Field Validation (C2)
+    # F2: Empty Input & Missing Field Validation
     # --------------------------------------------------------------------------
 
     def test_f2_01_customs_audit_empty_payload_returns_zero_exposure(self):
-        """F2.1: Calling audit_customs_invoice with empty dict returns $0.00 exposure and 0 findings (C2)."""
+        """F2.1: Calling audit_customs_invoice with empty dict returns $0.00 exposure and 0 findings."""
         metrics, discrepancies = audit_customs_invoice({})
         assert metrics.penalty_exposure_avoided == Decimal("0.00"), "Empty input fabricated penalty exposure"
         assert len(discrepancies) == 0, f"Empty input fabricated {len(discrepancies)} findings"
 
     def test_f2_02_freight_audit_empty_payload_returns_zero_exposure(self):
-        """F2.2: Calling audit_freight_bill with empty dict returns $0.00 overbilling and 0 findings (C2)."""
+        """F2.2: Calling audit_freight_bill with empty dict returns $0.00 overbilling and 0 findings."""
         metrics, discrepancies = audit_freight_bill({})
         assert metrics.carrier_overbilling_caught == Decimal("0.00"), "Empty input fabricated carrier overbilling"
         assert len(discrepancies) == 0, f"Empty input fabricated {len(discrepancies)} findings"
 
     def test_f2_03_drawback_audit_empty_payload_returns_zero_drawback(self):
-        """F2.3: Calling audit_duty_drawback with empty dict returns $0.00 drawback and 0 findings (C2)."""
+        """F2.3: Calling audit_duty_drawback with empty dict returns $0.00 drawback and 0 findings."""
         metrics, discrepancies = audit_duty_drawback({})
         assert metrics.drawback_unclaimed_unlocked == Decimal("0.00"), "Empty input fabricated duty drawback unlock"
         assert len(discrepancies) == 0, f"Empty input fabricated {len(discrepancies)} findings"
 
     def test_f2_04_all_engines_empty_input_sum_to_zero_dollars(self):
-        """F2.4: Sum of fabricated findings across all three engines on empty input must equal exactly $0.00 (C2)."""
+        """F2.4: Sum of fabricated findings across all three engines on empty input must equal exactly $0.00."""
         m_cust, _ = audit_customs_invoice({})
         m_frt, _ = audit_freight_bill({})
         m_drw, _ = audit_duty_drawback({})
@@ -182,11 +189,11 @@ class TestTier1FeatureCoverage:
         assert len(discrepancies) == 0
 
     # --------------------------------------------------------------------------
-    # F3: Autonomous HTS Classification & Word Boundaries (C3, M3)
+    # F3: Autonomous HTS Classification & Word Boundaries
     # --------------------------------------------------------------------------
 
     def test_f3_01_unrelated_goods_bananas_not_defaulted_to_drone_motor(self):
-        """F3.1: Bananas must NOT default to drone motor (8501.31.8000) at 94% confidence (C3)."""
+        """F3.1: Bananas must NOT default to drone motor (8501.31.8000) at 94% confidence."""
         req = ClassificationRequest(
             product_title="Fresh Cavendish Bananas",
             product_description="Grade A edible fresh yellow bananas from Ecuador",
@@ -207,7 +214,7 @@ class TestTier1FeatureCoverage:
         assert res.requires_human_review is True, "Unrelated apparel should flag requires_human_review=True"
 
     def test_f3_03_word_boundary_esc_in_telescope_does_not_match_drone_esc(self):
-        """F3.3: 'telescope' contains 'esc' as a substring but must NOT match drone electronic speed controller (C3)."""
+        """F3.3: 'telescope' contains 'esc' as a substring but must NOT match drone electronic speed controller."""
         req = ClassificationRequest(
             product_title="Astronomical Refractor Telescope",
             product_description="High-power optical telescope with tripod for celestial observation",
@@ -217,7 +224,7 @@ class TestTier1FeatureCoverage:
         assert res.classified_hts_code != "8501.31.8000", "Substring 'esc' in 'telescope' incorrectly triggered drone motor"
 
     def test_f3_04_word_boundary_esc_in_description_does_not_match_drone_esc(self):
-        """F3.4: 'description' contains 'esc' as a substring but must NOT match drone electronic speed controller (C3)."""
+        """F3.4: 'description' contains 'esc' as a substring but must NOT match drone electronic speed controller."""
         req = ClassificationRequest(
             product_title="Industrial Storage Steel Rack",
             product_description="Heavy duty warehouse storage shelving with technical description document",
@@ -227,7 +234,7 @@ class TestTier1FeatureCoverage:
         assert res.classified_hts_code != "8501.31.8000", "Substring 'esc' in 'description' incorrectly triggered drone motor"
 
     def test_f3_05_landed_cost_statutory_mpf_fy2025_statutory_caps(self):
-        """F3.5: Landed cost calculator must use active FY2027 MPF caps ($34.58 min, $670.86 max) with FY2025 support (M3)."""
+        """F3.5: Landed cost calculator must use active FY2027 MPF caps ($34.58 min, $670.86 max) with FY2025 support."""
         # Active FY2027 default
         landed_low = calculate_landed_cost(
             entered_value=Decimal("5000.00"),
@@ -275,11 +282,11 @@ class TestTier1FeatureCoverage:
             assert res.confidence == 0.0
 
     # --------------------------------------------------------------------------
-    # F4: Fail-Closed Sanctions Screening & Cycle-Safe Graph (C5, M5)
+    # F4: Fail-Closed Sanctions Screening & Cycle-Safe Graph
     # --------------------------------------------------------------------------
 
     def test_f4_01_unknown_entity_fails_closed_to_unscreened_or_hold(self):
-        """F4.1: Unknown entity query must fail closed to UNSCREENED or COMPLIANCE_HOLD, never CLEAN_COMMERCIAL (C5)."""
+        """F4.1: Unknown entity query must fail closed to UNSCREENED or COMPLIANCE_HOLD, never CLEAN_COMMERCIAL."""
         graph = sanctions_screener.get_ownership_graph("completely_unknown_entity_99999")
         target_node = graph.nodes[0]
         assert target_node.risk_level in ("UNSCREENED", "COMPLIANCE_HOLD"), (
@@ -287,7 +294,7 @@ class TestTier1FeatureCoverage:
         )
 
     def test_f4_02_unknown_entity_requires_manual_review_action(self):
-        """F4.2: Unknown entity compliance action must be REQUIRES_MANUAL_REVIEW, never CLEAR_TRANSACTION (C5)."""
+        """F4.2: Unknown entity compliance action must be REQUIRES_MANUAL_REVIEW, never CLEAR_TRANSACTION."""
         graph = sanctions_screener.get_ownership_graph("completely_unknown_entity_99999")
         action = graph.evaluation.compliance_action
         assert action == "REQUIRES_MANUAL_REVIEW", (
@@ -302,7 +309,7 @@ class TestTier1FeatureCoverage:
         assert eval_res.compliance_action == "BLOCK_AND_REPORT"
 
     def test_f4_04_bis_entity_list_distinguished_from_ofac_sdn(self):
-        """F4.4: BIS Entity List entities (Global Micro Electronics) are distinguished from OFAC SDN blocking (M5)."""
+        """F4.4: BIS Entity List entities (Global Micro Electronics) are distinguished from OFAC SDN blocking."""
         match = sanctions_screener.match_entity("Global Micro Electronics Ltd")
         assert match.matched is True
         assert any("BIS Entity List" in p or "EAR" in p for p in match.programs), "BIS programs missing"
@@ -441,29 +448,18 @@ class TestTier1FeatureCoverage:
     # --------------------------------------------------------------------------
 
     def test_f6_01_zadur_to_nlrtm_corridor_rejects_19usc1592_penalties(self):
-        """F6.1: Shipment from Durban (ZADUR) to Rotterdam (NLRTM) is governed by EU law, rejecting US 1592 penalties (H2)."""
-        res = client.get("/api/v1/scenarios")
-        assert res.status_code == 200
-        scenarios = res.json()
-        durban = next((s for s in scenarios if s.get("id") == "scenario_durban_rotterdam"), None)
-        assert durban is not None, "Durban to Rotterdam scenario missing from scenarios endpoint"
-        statute_cited = durban.get("statute", "")
-        assert "1592" not in statute_cited, (
-            f"Corridor ZADUR -> NLRTM incorrectly applies US 19 U.S.C. § 1592: {statute_cited}"
-        )
+        """F6.1: Shipment from Durban (ZADUR) to Rotterdam (NLRTM) is governed by EU law, rejecting US 1592 penalties."""
+        xml = eu_corridor_xml()
+        assert "19_USC_1592" not in xml, "Corridor ZADUR -> NLRTM incorrectly tagged with US 19 U.S.C. 1592"
 
     def test_f6_02_scenarios_endpoint_marks_durban_rotterdam_as_eu_ucc(self):
         """F6.2: Scenario ZADUR -> NLRTM must cite EU Union Customs Code (UCC) or EU customs jurisdiction."""
-        res = client.get("/api/v1/scenarios")
-        durban = next(s for s in res.json() if s.get("id") == "scenario_durban_rotterdam")
-        statute_cited = durban.get("statute", "").upper()
-        assert "UCC" in statute_cited or "EU" in statute_cited or "UNION CUSTOMS CODE" in statute_cited, (
-            f"Durban -> Rotterdam must cite EU Union Customs Code, got: {durban.get('statute')}"
-        )
+        assert "EU_UCC_COMPLIANT" in eu_corridor_xml()
 
     def test_f6_03_us_inbound_corridor_applies_1592_penalties(self):
-        """F6.3: Trans-Pacific corridor into US port of entry (CNSZX -> USLAX) correctly cites 19 U.S.C. § 1592."""
+        """F6.3: US-bound sample (Yantian -> Los Angeles) cites 19 U.S.C. § 1592; amounts come from the engine."""
         res = client.get("/api/v1/scenarios")
+        assert all(s["default_exposure_usd"] != "0.00" for s in res.json())
         lax = next(s for s in res.json() if s.get("id") == "scenario_long_beach_battery")
         assert "19 U.S.C. § 1592" in lax.get("statute", ""), "US inbound corridor must cite 19 U.S.C. § 1592"
 
@@ -480,11 +476,11 @@ class TestTier1FeatureCoverage:
         assert penalties["gross_negligence"] == Decimal("40000.00")
 
     # --------------------------------------------------------------------------
-    # F7: Legal Representation & Statutory Disclaimers (H3, H10)
+    # F7: Legal Representation & Statutory Disclaimers
     # --------------------------------------------------------------------------
 
     def test_f7_01_prior_disclosure_contains_draft_review_watermark(self):
-        """F7.1: Prior Disclosure letter contains mandatory DRAFT review watermark (H3)."""
+        """F7.1: Prior Disclosure letter contains mandatory DRAFT review watermark."""
         service = CustomsValuationService()
         audit = service.audit_entry_valuation()
         pd = service.generate_prior_disclosure(audit)
@@ -495,7 +491,7 @@ class TestTier1FeatureCoverage:
         )
 
     def test_f7_02_prior_disclosure_omits_counsel_of_record_claims(self):
-        """F7.2: Generated Prior Disclosure does NOT claim platform acts as Counsel of Record or Special Counsel (H3)."""
+        """F7.2: Generated Prior Disclosure does NOT claim platform acts as Counsel of Record or Special Counsel."""
         service = CustomsValuationService()
         audit = service.audit_entry_valuation()
         pd = service.generate_prior_disclosure(audit)
@@ -513,7 +509,7 @@ class TestTier1FeatureCoverage:
         assert "Compliance Automation Engine" in letter or "Software" in letter
 
     def test_f7_04_drawback_metadata_omits_contingency_fee_claim(self):
-        """F7.4: Duty Drawback audit does not frame findings around a 20% contingency fee (H10)."""
+        """F7.4: Duty Drawback audit does not frame findings around a 20% contingency fee."""
         payload = full_drawback("10000.00")
         _, discrepancies = audit_duty_drawback(payload)
         drawback_disc = next(d for d in discrepancies if "Drawback" in d.title)
@@ -532,11 +528,11 @@ class TestTier1FeatureCoverage:
         assert audit.prior_disclosure_tender_amount == audit.duty_underpayment + audit.statutory_interest_19usc1505
 
     # --------------------------------------------------------------------------
-    # F8: Demurrage & Accessorial Free-Time Logic (M2)
+    # F8: Demurrage & Accessorial Free-Time Logic
     # --------------------------------------------------------------------------
 
     def test_f8_01_zero_free_days_retained_as_zero_not_four(self):
-        """F8.1: port_free_days_allowed=0 must be treated as 0 free days, not 4 (M2)."""
+        """F8.1: port_free_days_allowed=0 must be treated as 0 free days, not 4."""
         payload = {
             "base_freight": "1000.00",
             "port_free_days_allowed": 0,
@@ -642,11 +638,11 @@ class TestTier1FeatureCoverage:
         assert metrics.drawback_unclaimed_unlocked == Decimal("122.22")
 
     # --------------------------------------------------------------------------
-    # F10: API Security, Schemas & Decimal Serialization (H4, H5, H8, M8, L2)
+    # F10: API Security, Schemas & Decimal Serialization
     # --------------------------------------------------------------------------
 
     def test_f10_01_discrepancy_schema_exposure_serializes_as_decimal_string(self):
-        """F10.1: Discrepancy.exposure_amount must serialize as a Decimal string (e.g. '125000.00'), NOT float (H8)."""
+        """F10.1: Discrepancy.exposure_amount must serialize as a Decimal string (e.g. '125000.00'), NOT float."""
         disc = Discrepancy(
             id="disc-test-01",
             concept_id="concept_1_customs",
@@ -659,12 +655,12 @@ class TestTier1FeatureCoverage:
         )
         data = json.loads(disc.model_dump_json())
         assert isinstance(data["exposure_amount"], str), (
-            f"exposure_amount serialized as {type(data['exposure_amount'])}, expected Decimal string (H8)"
+            f"exposure_amount serialized as {type(data['exposure_amount'])}, expected Decimal string"
         )
         assert data["exposure_amount"] == "125000.00"
 
     def test_f10_02_metrics_schema_financial_fields_serialize_as_decimal_string(self):
-        """F10.2: KillShotMetrics money fields must serialize as Decimal strings, NOT float (H8)."""
+        """F10.2: KillShotMetrics money fields must serialize as Decimal strings, NOT float."""
         metrics = KillShotMetrics(
             penalty_exposure_avoided=Decimal("125000.00"),
             carrier_overbilling_caught=Decimal("1547.50"),
@@ -673,10 +669,10 @@ class TestTier1FeatureCoverage:
         data = json.loads(metrics.model_dump_json())
         for field in ("penalty_exposure_avoided", "carrier_overbilling_caught", "drawback_unclaimed_unlocked"):
             val = data[field]
-            assert isinstance(val, str), f"Field {field} serialized as {type(val)} instead of Decimal string (H8)"
+            assert isinstance(val, str), f"Field {field} serialized as {type(val)} instead of Decimal string"
 
     def test_f10_03_cors_configuration_rejects_wildcard_with_credentials(self):
-        """F10.3: CORS middleware must NOT allow wildcard origin ('*') with allow_credentials=True (H4)."""
+        """F10.3: CORS middleware must NOT allow wildcard origin ('*') with allow_credentials=True."""
         from starlette.middleware.cors import CORSMiddleware
         for middleware in app.user_middleware:
             if middleware.cls == CORSMiddleware:
@@ -684,22 +680,22 @@ class TestTier1FeatureCoverage:
                 allow_credentials = middleware.kwargs.get("allow_credentials", False)
                 if "*" in allow_origins:
                     assert not allow_credentials, (
-                        "Security violation (H4): allow_origins=['*'] combined with allow_credentials=True"
+                        "Security violation: allow_origins=['*'] combined with allow_credentials=True"
                     )
 
     def test_f10_04_leads_endpoint_validates_required_fields(self):
-        """F10.4: POST /api/v1/leads validates payload schema and rejects invalid/empty objects (H5)."""
+        """F10.4: POST /api/v1/leads validates payload schema and rejects invalid/empty objects."""
         res = client.post("/api/v1/leads", json={"arbitrary_unvalidated_field": "spam"})
         # Should return 422 Unprocessable Entity if schema validation is enforced
         assert res.status_code in (400, 422), (
-            f"POST /api/v1/leads accepted unvalidated payload with status {res.status_code} (H5)"
+            f"POST /api/v1/leads accepted unvalidated payload with status {res.status_code}"
         )
 
     def test_f10_05_telemetry_endpoint_validates_event_schema(self):
-        """F10.5: POST /api/v1/telemetry validates event structure and rejects unbounded data (H5)."""
+        """F10.5: POST /api/v1/telemetry validates event structure and rejects unbounded data."""
         res = client.post("/api/v1/telemetry", json={"bogus": "event", "malicious_injection": "x" * 10000})
         assert res.status_code in (400, 422), (
-            f"POST /api/v1/telemetry accepted invalid payload with status {res.status_code} (H5)"
+            f"POST /api/v1/telemetry accepted invalid payload with status {res.status_code}"
         )
 
 
@@ -1120,9 +1116,7 @@ class TestTier3CrossFeatureInteractions:
     def test_t3_03_cross_foreign_corridor_with_sanctioned_entity(self):
         """T3.03: Transshipment on foreign corridor (ZADUR -> NLRTM) with sanctioned entity."""
         # Sanctions check applies under international lists, but US 1592 penalties are rejected
-        res = client.get("/api/v1/scenarios")
-        durban = next(s for s in res.json() if s.get("id") == "scenario_durban_rotterdam")
-        assert "1592" not in durban.get("statute", "")
+        assert "19_USC_1592" not in eu_corridor_xml()
         # Screen parties on this corridor
         report = sanctions_screener.screen_parties(shipper="Rosoboronexport JSC", buyer="European Buyer BV")
         assert report.has_violations is True
@@ -1283,7 +1277,7 @@ class TestTier4RealWorldApplicationScenarios:
         data = res.json()
         assert data["concept_id"] == "concept_1_customs"
         # Verify monetary fields are serialized as Decimal strings per H8
-        assert isinstance(data["metrics"]["penalty_exposure_avoided"], str), "API serialized money as float (H8)"
+        assert isinstance(data["metrics"]["penalty_exposure_avoided"], str), "API serialized money as float"
 
     def test_t4_s2_foreign_to_foreign_transshipment_corridor(self):
         """
@@ -1293,11 +1287,9 @@ class TestTier4RealWorldApplicationScenarios:
         - Directs to EU Union Customs Code (UCC).
         - Verifies Prior Disclosure letters omit Counsel of Record claims.
         """
-        res = client.get("/api/v1/scenarios")
-        assert res.status_code == 200
-        durban = next(s for s in res.json() if s.get("id") == "scenario_durban_rotterdam")
-        assert "1592" not in durban.get("statute", ""), "US statute applied to EU corridor"
-        assert "UCC" in durban.get("statute", "").upper() or "EU" in durban.get("statute", "").upper()
+        xml = eu_corridor_xml()
+        assert "19_USC_1592" not in xml, "US statute applied to EU corridor"
+        assert "EU_UCC_COMPLIANT" in xml
 
         # Prior disclosure letter test
         service = CustomsValuationService()

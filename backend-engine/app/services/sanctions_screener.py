@@ -454,7 +454,7 @@ class SanctionsScreener:
                                     queue.append(e["target_id"])
 
                     if net_edges:
-                        net_nodes = [entities_map[nid] for nid in visited if nid in entities_map]
+                        net_nodes = [node for nid, node in entities_map.items() if nid in visited]
                         networks[target_id] = {
                             "target": entities_map[target_id],
                             "nodes": net_nodes,
